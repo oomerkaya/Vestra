@@ -21,11 +21,12 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 8. [x] İlk widget testi + GitHub Actions (analyze + test)
 
 ## Faz 2: Yerel veri
-- [ ] Drift şeması: varlıklar, işlemler/pozisyonlar, fiyat cache'i, ayarlar (tema tercihi kalıcı olur)
-- [ ] Migration stratejisi
-- [ ] Portföy feature'ı: entity, repository arayüzü, use case'ler, testler
+- [x] Drift şeması: varlıklar, işlemler (işlem bazlı), fiyat cache'i, ayarlar (tema tercihi kalıcı)
+- [x] Migration stratejisi (drift `make-migrations`, `drift_schemas/`)
+- [x] Portföy feature'ı: entity, repository arayüzü, use case'ler, testler
 
 ## Faz 3: Piyasa verisi
+- [ ] Altın/gümüş fiyat kaynağını doğrula (Frankfurter XAU/XAG vermiyor olabilir), sikke katsayıları
 - [ ] `FxRateProvider` (Frankfurter), `StockPriceProvider` (Bürküt)
 - [ ] Ayarlar ekranı: API anahtarı gir, doğrula, güvenli sakla
 - [ ] Polling zamanlayıcı (seans saatleri, tatil takvimi, backoff) + testler

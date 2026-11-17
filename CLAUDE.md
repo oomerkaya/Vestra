@@ -45,6 +45,7 @@ lib/
 Kurallar:
 - Bağımlılık yönü: `presentation -> domain <- data`. `domain` katmanı Flutter, Drift veya dio import etmez.
 - UI doğrudan repository/datasource çağırmaz; use case veya notifier üzerinden gider.
+- Portföy işlem bazlıdır (alım/satım satırları); miktar ve ortalama maliyet `HoldingCalculator` ile türetilir, ağırlıklı ortalama yöntemi. Maliyet her zaman TL.
 - DTO ve entity ayrıdır. Dönüşüm data katmanındaki mapper'larda yapılır.
 - Bir dosyada tek sorumluluk. Widget'lar küçük tutulur, iş mantığı widget içinde olmaz.
 - Para ve miktar hesaplarında `double` kullanma; `Decimal` (`decimal` paketi) kullan. Drift'te TEXT kolon + TypeConverter ile saklanır.
@@ -54,7 +55,7 @@ Kurallar:
 Dış veri erişimi **her zaman bir arayüz arkasında** olur; sağlayıcı değişirse yalnızca data katmanı değişir.
 
 - `StockPriceProvider` (hisse): ilk implementasyon **Bürküt API** (ücretsiz plan, BIST verisi **15 dk gecikmeli**). Her kullanıcı kendi API anahtarını ayarlardan girer. Endpoint yollarını ve ücretsiz plan limitlerini Bürküt geliştirici portalından doğrula; tahmin etme.
-- `FxRateProvider` (döviz/altın): birincil **Frankfurter** (anahtarsız, günlük kur). İsteğe bağlı ikinci kaynak **TCMB EVDS** (kullanıcıya ait EVDS anahtarı gerekir; kaynak göstermek zorunlu).
+- `FxRateProvider` (döviz; altın/gümüş için kaynak Faz 3'te doğrulanacak): birincil **Frankfurter** (anahtarsız, günlük kur). İsteğe bağlı ikinci kaynak **TCMB EVDS** (kullanıcıya ait EVDS anahtarı gerekir; kaynak göstermek zorunlu).
 - Bürküt resmi lisanslı veri dağıtıcısı değildir; README'de veri kaynağı ve gecikme açıkça yazılır.
 
 Güncelleme kuralları:
@@ -69,7 +70,7 @@ Güncelleme kuralları:
 ## Derleme
 
 - Kullanıcı Android Studio ile derler. Üretilen dosyalar (Drift `*.g.dart`, `lib/core/l10n/generated/`) git'e dahil edilir; klonlayan kişi `build_runner` çalıştırmadan derleyebilmeli.
-- Drift şeması değişince: `dart run build_runner build --delete-conflicting-outputs`.
+- Drift şeması değişince: `schemaVersion`'ı artır → `dart run build_runner build` → `dart run drift_dev make-migrations` → `onUpgrade`'e adım ekle. `drift_schemas/` altındaki eski JSON'lar asla silinmez/değiştirilmez (ayrıntı: `docs/faz-2-yerel-veri.md`).
 
 ## Güvenlik
 

@@ -36,8 +36,9 @@ final class StorageFailure extends Failure {
   const StorageFailure([super.message]);
 }
 
-/// Input did not pass validation.
-final class ValidationFailure extends Failure {
+/// Input did not pass validation. Left open so features can add typed
+/// reasons (e.g. `TransactionValidationFailure`).
+class ValidationFailure extends Failure {
   const ValidationFailure([super.message]);
 }
 

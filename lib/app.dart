@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vestra/core/l10n/l10n.dart';
 import 'package:vestra/core/router/app_router.dart';
 import 'package:vestra/core/theme/app_theme.dart';
-import 'package:vestra/core/theme/theme_mode_provider.dart';
+import 'package:vestra/features/settings/presentation/theme_mode_provider.dart';
 
 class VestraApp extends ConsumerWidget {
   const VestraApp({super.key});
