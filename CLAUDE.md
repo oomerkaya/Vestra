@@ -60,26 +60,21 @@ Sade fintech tarzı, Inter yazı tipi. Ayrıntı: `docs/tasarim-sistemi.md`.
 
 ## Veri kaynakları
 
-Dış veri erişimi **her zaman bir arayüz arkasında** olur; sağlayıcı değişirse yalnızca data katmanı değişir.
+Dış veri erişimi **her zaman bir arayüz arkasında** olur (`FxRateProvider`, `MetalPriceProvider`, `StockPriceProvider`); sağlayıcı değişirse yalnızca data katmanı değişir.
 
-- `StockPriceProvider` (hisse): ilk implementasyon **Bürküt API** (ücretsiz plan, BIST verisi **15 dk gecikmeli**). Her kullanıcı kendi API anahtarını ayarlardan girer. Endpoint yollarını ve ücretsiz plan limitlerini Bürküt geliştirici portalından doğrula; tahmin etme.
-- `FxRateProvider` (döviz; altın/gümüş için kaynak Faz 3'te doğrulanacak): birincil **Frankfurter** (anahtarsız, günlük kur). İsteğe bağlı ikinci kaynak **TCMB EVDS** (kullanıcıya ait EVDS anahtarı gerekir; kaynak göstermek zorunlu).
-- Bürküt resmi lisanslı veri dağıtıcısı değildir; README'de veri kaynağı ve gecikme açıkça yazılır.
+Kaynaklar (ayrıntı ve araştırma: `docs/faz-3-piyasa-verisi.md`):
+- **Bürküt** (birincil; hisse, döviz, altın, gümüş): `https://api.burkutportfoy.com/api/public/v1`, başlık `X-API-Key`. Ücretsiz plan **ayda 1.000 istek**. Her kullanıcı kendi anahtarını ayarlardan girer. BIST verisi en az 15 dk gecikmeli. Bürküt lisanslı veri dağıtıcısı değildir; README'de yazılır.
+- **Frankfurter** (yalnızca döviz yedeği): ECB günlük kuru, anahtarsız. Altın/gümüş vermez. Bürküt anahtarı yoksa, kota dolduysa ya da Bürküt döviz isteği başarısızsa kullanılır.
+- Döviz ve madenlerde değerleme için **alış (`buying`)** fiyatı kullanılır.
 
-Güncelleme kuralları:
-- Polling yalnızca uygulama açıkken, hafta içi 10:00-18:00 (Europe/Istanbul) arasında, 15 dakikada bir. Arka plan servisi yok.
-- Uygulama öne geldiğinde cache 15 dakikadan eskiyse yenile; pull-to-refresh ile elle yenileme var.
-- Resmi tatil/yarım gün takvimi kodda gömülü değil, güncellenebilir bir JSON asset'inden okunur.
-- Yalnızca portföyde bulunan semboller istenir; mümkünse toplu istek.
-- 429 gelirse exponential backoff. Kota aşılmaz.
-- Piyasa kapalıyken cache'teki son fiyat ve "son güncelleme" zamanı gösterilir.
-- Çekilen fiyatlar yerel DB'ye yazılır; internet yoksa uygulama son bilinen değerle çalışır.
-
-## Derleme
-
-- Flutter sürümü **3.44.6** (stable) olarak sabit; CI (`.github/workflows/ci.yml` → `flutter-version`) aynı sürümü kullanır. Yükseltme bilinçli yapılır: yerelde `flutter upgrade` + CI sürümü aynı commit'te değişir, `flutter analyze`/`flutter test` temiz olmalı. Daha yeni Flutter'da `package:flutter/material.dart` deprecated (yerine `material_ui` paketi); yükseltirken bu geçiş de yapılır.
-- Kullanıcı Android Studio ile derler. Üretilen dosyalar (Drift `*.g.dart`, `lib/core/l10n/generated/`) git'e dahil edilir; klonlayan kişi `build_runner` çalıştırmadan derleyebilmeli.
-- Drift şeması değişince: `schemaVersion`'ı artır → `dart run build_runner build` → `dart run drift_dev make-migrations` → `onUpgrade`'e adım ekle. `drift_schemas/` altındaki eski JSON'lar asla silinmez/değiştirilmez (ayrıntı: `docs/faz-2-yerel-veri.md`).
+Güncelleme kuralları (`RefreshPolicy`):
+- Otomatik yenileme yalnızca uygulama açıkken, hafta içi 10:00-18:00 (Europe/Istanbul, sabit UTC+3), **30 dakikada bir**; yarım günlerde 12:30'a kadar. Arka plan servisi yok.
+- Önbellek boşsa seans dışında da bir kez yenilenir. Pull-to-refresh ile elle yenileme her zaman var.
+- Tatil/yarım gün takvimi `assets/data/market_holidays.json`'dan okunur.
+- Yalnızca portföyde miktarı > 0 olan hisseler istenir (tek toplu istek). `/forex` ve `/gold` tüm listeyi tek istekte döner. Yenileme başına en fazla 3 Bürküt isteği.
+- Anahtar yoksa ya da kota doluysa Bürküt'e istek **gönderilmez**. Uygulama aylık istek sayacı tutar (`app_settings` → `burkut_quota`).
+- 429 dakikalık limit → exponential backoff (1-30 dk, `Retry-After` öncelikli). 429 aylık kota → o ay Bürküt'e istek yok.
+- Çekilen fiyatlar `price_cache`'e yazılır; internet yoksa son bilinen değer ve "son güncelleme" zamanı gösterilir.
 
 ## Güvenlik
 

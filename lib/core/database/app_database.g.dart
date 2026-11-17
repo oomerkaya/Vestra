@@ -911,6 +911,33 @@ class $PriceCacheTable extends PriceCache
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<Decimal?, String> changePercent =
+      GeneratedColumn<String>(
+        'change_percent',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<Decimal?>($PriceCacheTable.$converterchangePercentn);
+  static const VerificationMeta _asOfMeta = const VerificationMeta('asOf');
+  @override
+  late final GeneratedColumn<DateTime> asOf = GeneratedColumn<DateTime>(
+    'as_of',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     type,
@@ -918,6 +945,9 @@ class $PriceCacheTable extends PriceCache
     priceTry,
     source,
     fetchedAt,
+    name,
+    changePercent,
+    asOf,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -963,6 +993,18 @@ class $PriceCacheTable extends PriceCache
     } else if (isInserting) {
       context.missing(_fetchedAtMeta);
     }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    }
+    if (data.containsKey('as_of')) {
+      context.handle(
+        _asOfMeta,
+        asOf.isAcceptableOrUnknown(data['as_of']!, _asOfMeta),
+      );
+    }
     return context;
   }
 
@@ -994,6 +1036,20 @@ class $PriceCacheTable extends PriceCache
         DriftSqlType.dateTime,
         data['${effectivePrefix}fetched_at'],
       )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      ),
+      changePercent: $PriceCacheTable.$converterchangePercentn.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}change_percent'],
+        ),
+      ),
+      asOf: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}as_of'],
+      ),
     );
   }
 
@@ -1004,6 +1060,10 @@ class $PriceCacheTable extends PriceCache
 
   static TypeConverter<Decimal, String> $converterpriceTry =
       const DecimalConverter();
+  static TypeConverter<Decimal, String> $converterchangePercent =
+      const DecimalConverter();
+  static TypeConverter<Decimal?, String?> $converterchangePercentn =
+      NullAwareTypeConverter.wrap($converterchangePercent);
 }
 
 class PriceCacheRow extends DataClass implements Insertable<PriceCacheRow> {
@@ -1012,12 +1072,24 @@ class PriceCacheRow extends DataClass implements Insertable<PriceCacheRow> {
   final Decimal priceTry;
   final String source;
   final DateTime fetchedAt;
+
+  /// Display name from the provider (v2).
+  final String? name;
+
+  /// Daily change in percent, e.g. `1.27` (v2).
+  final Decimal? changePercent;
+
+  /// Provider's own timestamp of the price, if given (v2).
+  final DateTime? asOf;
   const PriceCacheRow({
     required this.type,
     required this.code,
     required this.priceTry,
     required this.source,
     required this.fetchedAt,
+    this.name,
+    this.changePercent,
+    this.asOf,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1031,6 +1103,17 @@ class PriceCacheRow extends DataClass implements Insertable<PriceCacheRow> {
     }
     map['source'] = Variable<String>(source);
     map['fetched_at'] = Variable<DateTime>(fetchedAt);
+    if (!nullToAbsent || name != null) {
+      map['name'] = Variable<String>(name);
+    }
+    if (!nullToAbsent || changePercent != null) {
+      map['change_percent'] = Variable<String>(
+        $PriceCacheTable.$converterchangePercentn.toSql(changePercent),
+      );
+    }
+    if (!nullToAbsent || asOf != null) {
+      map['as_of'] = Variable<DateTime>(asOf);
+    }
     return map;
   }
 
@@ -1041,6 +1124,11 @@ class PriceCacheRow extends DataClass implements Insertable<PriceCacheRow> {
       priceTry: Value(priceTry),
       source: Value(source),
       fetchedAt: Value(fetchedAt),
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      changePercent: changePercent == null && nullToAbsent
+          ? const Value.absent()
+          : Value(changePercent),
+      asOf: asOf == null && nullToAbsent ? const Value.absent() : Value(asOf),
     );
   }
 
@@ -1055,6 +1143,9 @@ class PriceCacheRow extends DataClass implements Insertable<PriceCacheRow> {
       priceTry: serializer.fromJson<Decimal>(json['priceTry']),
       source: serializer.fromJson<String>(json['source']),
       fetchedAt: serializer.fromJson<DateTime>(json['fetchedAt']),
+      name: serializer.fromJson<String?>(json['name']),
+      changePercent: serializer.fromJson<Decimal?>(json['changePercent']),
+      asOf: serializer.fromJson<DateTime?>(json['asOf']),
     );
   }
   @override
@@ -1066,6 +1157,9 @@ class PriceCacheRow extends DataClass implements Insertable<PriceCacheRow> {
       'priceTry': serializer.toJson<Decimal>(priceTry),
       'source': serializer.toJson<String>(source),
       'fetchedAt': serializer.toJson<DateTime>(fetchedAt),
+      'name': serializer.toJson<String?>(name),
+      'changePercent': serializer.toJson<Decimal?>(changePercent),
+      'asOf': serializer.toJson<DateTime?>(asOf),
     };
   }
 
@@ -1075,12 +1169,20 @@ class PriceCacheRow extends DataClass implements Insertable<PriceCacheRow> {
     Decimal? priceTry,
     String? source,
     DateTime? fetchedAt,
+    Value<String?> name = const Value.absent(),
+    Value<Decimal?> changePercent = const Value.absent(),
+    Value<DateTime?> asOf = const Value.absent(),
   }) => PriceCacheRow(
     type: type ?? this.type,
     code: code ?? this.code,
     priceTry: priceTry ?? this.priceTry,
     source: source ?? this.source,
     fetchedAt: fetchedAt ?? this.fetchedAt,
+    name: name.present ? name.value : this.name,
+    changePercent: changePercent.present
+        ? changePercent.value
+        : this.changePercent,
+    asOf: asOf.present ? asOf.value : this.asOf,
   );
   PriceCacheRow copyWithCompanion(PriceCacheCompanion data) {
     return PriceCacheRow(
@@ -1089,6 +1191,11 @@ class PriceCacheRow extends DataClass implements Insertable<PriceCacheRow> {
       priceTry: data.priceTry.present ? data.priceTry.value : this.priceTry,
       source: data.source.present ? data.source.value : this.source,
       fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
+      name: data.name.present ? data.name.value : this.name,
+      changePercent: data.changePercent.present
+          ? data.changePercent.value
+          : this.changePercent,
+      asOf: data.asOf.present ? data.asOf.value : this.asOf,
     );
   }
 
@@ -1099,13 +1206,25 @@ class PriceCacheRow extends DataClass implements Insertable<PriceCacheRow> {
           ..write('code: $code, ')
           ..write('priceTry: $priceTry, ')
           ..write('source: $source, ')
-          ..write('fetchedAt: $fetchedAt')
+          ..write('fetchedAt: $fetchedAt, ')
+          ..write('name: $name, ')
+          ..write('changePercent: $changePercent, ')
+          ..write('asOf: $asOf')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(type, code, priceTry, source, fetchedAt);
+  int get hashCode => Object.hash(
+    type,
+    code,
+    priceTry,
+    source,
+    fetchedAt,
+    name,
+    changePercent,
+    asOf,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1114,7 +1233,10 @@ class PriceCacheRow extends DataClass implements Insertable<PriceCacheRow> {
           other.code == this.code &&
           other.priceTry == this.priceTry &&
           other.source == this.source &&
-          other.fetchedAt == this.fetchedAt);
+          other.fetchedAt == this.fetchedAt &&
+          other.name == this.name &&
+          other.changePercent == this.changePercent &&
+          other.asOf == this.asOf);
 }
 
 class PriceCacheCompanion extends UpdateCompanion<PriceCacheRow> {
@@ -1123,6 +1245,9 @@ class PriceCacheCompanion extends UpdateCompanion<PriceCacheRow> {
   final Value<Decimal> priceTry;
   final Value<String> source;
   final Value<DateTime> fetchedAt;
+  final Value<String?> name;
+  final Value<Decimal?> changePercent;
+  final Value<DateTime?> asOf;
   final Value<int> rowid;
   const PriceCacheCompanion({
     this.type = const Value.absent(),
@@ -1130,6 +1255,9 @@ class PriceCacheCompanion extends UpdateCompanion<PriceCacheRow> {
     this.priceTry = const Value.absent(),
     this.source = const Value.absent(),
     this.fetchedAt = const Value.absent(),
+    this.name = const Value.absent(),
+    this.changePercent = const Value.absent(),
+    this.asOf = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PriceCacheCompanion.insert({
@@ -1138,6 +1266,9 @@ class PriceCacheCompanion extends UpdateCompanion<PriceCacheRow> {
     required Decimal priceTry,
     required String source,
     required DateTime fetchedAt,
+    this.name = const Value.absent(),
+    this.changePercent = const Value.absent(),
+    this.asOf = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : type = Value(type),
        code = Value(code),
@@ -1150,6 +1281,9 @@ class PriceCacheCompanion extends UpdateCompanion<PriceCacheRow> {
     Expression<String>? priceTry,
     Expression<String>? source,
     Expression<DateTime>? fetchedAt,
+    Expression<String>? name,
+    Expression<String>? changePercent,
+    Expression<DateTime>? asOf,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1158,6 +1292,9 @@ class PriceCacheCompanion extends UpdateCompanion<PriceCacheRow> {
       if (priceTry != null) 'price_try': priceTry,
       if (source != null) 'source': source,
       if (fetchedAt != null) 'fetched_at': fetchedAt,
+      if (name != null) 'name': name,
+      if (changePercent != null) 'change_percent': changePercent,
+      if (asOf != null) 'as_of': asOf,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1168,6 +1305,9 @@ class PriceCacheCompanion extends UpdateCompanion<PriceCacheRow> {
     Value<Decimal>? priceTry,
     Value<String>? source,
     Value<DateTime>? fetchedAt,
+    Value<String?>? name,
+    Value<Decimal?>? changePercent,
+    Value<DateTime?>? asOf,
     Value<int>? rowid,
   }) {
     return PriceCacheCompanion(
@@ -1176,6 +1316,9 @@ class PriceCacheCompanion extends UpdateCompanion<PriceCacheRow> {
       priceTry: priceTry ?? this.priceTry,
       source: source ?? this.source,
       fetchedAt: fetchedAt ?? this.fetchedAt,
+      name: name ?? this.name,
+      changePercent: changePercent ?? this.changePercent,
+      asOf: asOf ?? this.asOf,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1200,6 +1343,17 @@ class PriceCacheCompanion extends UpdateCompanion<PriceCacheRow> {
     if (fetchedAt.present) {
       map['fetched_at'] = Variable<DateTime>(fetchedAt.value);
     }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (changePercent.present) {
+      map['change_percent'] = Variable<String>(
+        $PriceCacheTable.$converterchangePercentn.toSql(changePercent.value),
+      );
+    }
+    if (asOf.present) {
+      map['as_of'] = Variable<DateTime>(asOf.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1214,6 +1368,9 @@ class PriceCacheCompanion extends UpdateCompanion<PriceCacheRow> {
           ..write('priceTry: $priceTry, ')
           ..write('source: $source, ')
           ..write('fetchedAt: $fetchedAt, ')
+          ..write('name: $name, ')
+          ..write('changePercent: $changePercent, ')
+          ..write('asOf: $asOf, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2151,6 +2308,9 @@ typedef $$PriceCacheTableCreateCompanionBuilder =
       required Decimal priceTry,
       required String source,
       required DateTime fetchedAt,
+      Value<String?> name,
+      Value<Decimal?> changePercent,
+      Value<DateTime?> asOf,
       Value<int> rowid,
     });
 typedef $$PriceCacheTableUpdateCompanionBuilder =
@@ -2160,6 +2320,9 @@ typedef $$PriceCacheTableUpdateCompanionBuilder =
       Value<Decimal> priceTry,
       Value<String> source,
       Value<DateTime> fetchedAt,
+      Value<String?> name,
+      Value<Decimal?> changePercent,
+      Value<DateTime?> asOf,
       Value<int> rowid,
     });
 
@@ -2197,6 +2360,22 @@ class $$PriceCacheTableFilterComposer
     column: $table.fetchedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<Decimal?, Decimal, String> get changePercent =>
+      $composableBuilder(
+        column: $table.changePercent,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<DateTime> get asOf => $composableBuilder(
+    column: $table.asOf,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$PriceCacheTableOrderingComposer
@@ -2232,6 +2411,21 @@ class $$PriceCacheTableOrderingComposer
     column: $table.fetchedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get changePercent => $composableBuilder(
+    column: $table.changePercent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get asOf => $composableBuilder(
+    column: $table.asOf,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$PriceCacheTableAnnotationComposer
@@ -2257,6 +2451,18 @@ class $$PriceCacheTableAnnotationComposer
 
   GeneratedColumn<DateTime> get fetchedAt =>
       $composableBuilder(column: $table.fetchedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<Decimal?, String> get changePercent =>
+      $composableBuilder(
+        column: $table.changePercent,
+        builder: (column) => column,
+      );
+
+  GeneratedColumn<DateTime> get asOf =>
+      $composableBuilder(column: $table.asOf, builder: (column) => column);
 }
 
 class $$PriceCacheTableTableManager
@@ -2295,6 +2501,9 @@ class $$PriceCacheTableTableManager
                 Value<Decimal> priceTry = const Value.absent(),
                 Value<String> source = const Value.absent(),
                 Value<DateTime> fetchedAt = const Value.absent(),
+                Value<String?> name = const Value.absent(),
+                Value<Decimal?> changePercent = const Value.absent(),
+                Value<DateTime?> asOf = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PriceCacheCompanion(
                 type: type,
@@ -2302,6 +2511,9 @@ class $$PriceCacheTableTableManager
                 priceTry: priceTry,
                 source: source,
                 fetchedAt: fetchedAt,
+                name: name,
+                changePercent: changePercent,
+                asOf: asOf,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -2311,6 +2523,9 @@ class $$PriceCacheTableTableManager
                 required Decimal priceTry,
                 required String source,
                 required DateTime fetchedAt,
+                Value<String?> name = const Value.absent(),
+                Value<Decimal?> changePercent = const Value.absent(),
+                Value<DateTime?> asOf = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PriceCacheCompanion.insert(
                 type: type,
@@ -2318,6 +2533,9 @@ class $$PriceCacheTableTableManager
                 priceTry: priceTry,
                 source: source,
                 fetchedAt: fetchedAt,
+                name: name,
+                changePercent: changePercent,
+                asOf: asOf,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

@@ -1,6 +1,6 @@
 /// Domain-level error description. Exceptions are caught in the data layer
 /// and converted to one of these; the UI maps them to localized messages.
-sealed class Failure {
+sealed class Failure implements Exception {
   const Failure([this.message]);
 
   /// Developer-facing detail. Never shown to users, never contains secrets.
@@ -19,16 +19,26 @@ final class ServerFailure extends Failure {
   final int? statusCode;
 }
 
-/// HTTP 429 or a known quota limit was hit.
+/// Short-term rate limit (HTTP 429). Retry later with backoff.
 final class RateLimitFailure extends Failure {
   const RateLimitFailure({this.retryAfter, String? message}) : super(message);
 
   final Duration? retryAfter;
 }
 
+/// Provider's monthly request quota is used up. No automatic retries until
+/// the quota resets.
+final class QuotaExceededFailure extends Failure {
+  const QuotaExceededFailure([super.message]);
+}
+
 /// Missing or rejected API key.
 final class AuthFailure extends Failure {
-  const AuthFailure([super.message]);
+  const AuthFailure({this.missingKey = false, String? message})
+    : super(message);
+
+  /// True when no key is configured at all (vs. a rejected key).
+  final bool missingKey;
 }
 
 /// Local database / secure storage error.

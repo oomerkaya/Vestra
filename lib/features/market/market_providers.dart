@@ -1,0 +1,107 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vestra/core/di/database_provider.dart';
+import 'package:vestra/core/error/result.dart';
+import 'package:vestra/core/network/dio_factory.dart';
+import 'package:vestra/core/utils/app_logger.dart';
+import 'package:vestra/features/market/data/datasources/burkut_remote_data_source.dart';
+import 'package:vestra/features/market/data/datasources/frankfurter_remote_data_source.dart';
+import 'package:vestra/features/market/data/datasources/price_cache_local_data_source.dart';
+import 'package:vestra/features/market/data/datasources/quota_local_data_source.dart';
+import 'package:vestra/features/market/data/providers/burkut_price_provider.dart';
+import 'package:vestra/features/market/data/providers/frankfurter_fx_provider.dart';
+import 'package:vestra/features/market/data/repositories/market_repository_impl.dart';
+import 'package:vestra/features/market/domain/entities/market_calendar.dart';
+import 'package:vestra/features/market/domain/entities/quota_usage.dart';
+import 'package:vestra/features/market/domain/entities/quote.dart';
+import 'package:vestra/features/market/domain/repositories/market_repository.dart';
+import 'package:vestra/features/market/domain/usecases/refresh_prices.dart';
+import 'package:vestra/features/portfolio/portfolio_providers.dart';
+import 'package:vestra/features/settings/domain/usecases/save_burkut_key.dart';
+import 'package:vestra/features/settings/settings_providers.dart';
+
+final quotaLocalDataSourceProvider = Provider<QuotaLocalDataSource>(
+  (ref) => QuotaLocalDataSource(ref.watch(appDatabaseProvider)),
+);
+
+final burkutPriceProviderProvider = Provider<BurkutPriceProvider>((ref) {
+  final apiKeys = ref.watch(apiKeyRepositoryProvider);
+  return BurkutPriceProvider(
+    remote: BurkutRemoteDataSource(
+      createDio(baseUrl: BurkutRemoteDataSource.baseUrl),
+    ),
+    readApiKey: () async => (await apiKeys.readBurkutKey()).valueOrNull,
+    quota: ref.watch(quotaLocalDataSourceProvider),
+  );
+});
+
+final marketRepositoryProvider = Provider<MarketRepository>((ref) {
+  final burkut = ref.watch(burkutPriceProviderProvider);
+  return MarketRepositoryImpl(
+    fx: burkut,
+    fxFallback: FrankfurterFxProvider(
+      FrankfurterRemoteDataSource(
+        createDio(baseUrl: FrankfurterRemoteDataSource.baseUrl),
+      ),
+    ),
+    metals: burkut,
+    stocks: burkut,
+    cache: PriceCacheLocalDataSource(ref.watch(appDatabaseProvider)),
+    quota: ref.watch(quotaLocalDataSourceProvider),
+  );
+});
+
+final refreshPricesProvider = Provider<RefreshPrices>(
+  (ref) => RefreshPrices(
+    ref.watch(marketRepositoryProvider),
+    ref.watch(portfolioRepositoryProvider),
+  ),
+);
+
+/// Cached quotes, live.
+final quotesProvider = StreamProvider<List<Quote>>(
+  (ref) => ref
+      .watch(marketRepositoryProvider)
+      .watchQuotes()
+      .map(
+        (result) => switch (result) {
+          Success(:final value) => value,
+          Err(:final failure) => throw failure,
+        },
+      ),
+);
+
+final quotaUsageProvider = FutureProvider<QuotaUsage?>(
+  (ref) async =>
+      (await ref.watch(marketRepositoryProvider).quotaUsage()).valueOrNull,
+);
+
+/// Holiday calendar from `assets/data/market_holidays.json`. Falls back to
+/// an empty calendar (weekends only) if the asset can't be read.
+final marketCalendarProvider = FutureProvider<MarketCalendar>((ref) async {
+  try {
+    final raw = await rootBundle.loadString('assets/data/market_holidays.json');
+    return MarketCalendar.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+  } on Object catch (error) {
+    AppLogger.warning('market calendar unavailable: $error');
+    return MarketCalendar.empty;
+  }
+});
+
+/// Turned off in widget tests so no timers or network calls start.
+final autoRefreshEnabledProvider = Provider<bool>((ref) => true);
+
+/// The stored Bürküt key (for status display); `null` when not set.
+final burkutKeyProvider = FutureProvider<String?>(
+  (ref) async =>
+      (await ref.watch(apiKeyRepositoryProvider).readBurkutKey()).valueOrNull,
+);
+
+final saveBurkutKeyProvider = Provider<SaveBurkutKey>(
+  (ref) => SaveBurkutKey(
+    ref.watch(apiKeyRepositoryProvider),
+    ref.watch(burkutPriceProviderProvider),
+  ),
+);

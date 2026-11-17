@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vestra/core/theme/app_tokens.dart';
+import 'package:vestra/core/utils/formatters.dart';
 
 /// Small label above a group of cards, with an optional trailing action.
 class SectionHeader extends StatelessWidget {
@@ -23,7 +24,7 @@ class SectionHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(child: Text(title.toUpperCase(), style: style)),
+          Expanded(child: Text(turkishUpperCase(title), style: style)),
           ?trailing,
         ],
       ),

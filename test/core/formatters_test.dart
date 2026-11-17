@@ -51,4 +51,10 @@ void main() {
       expect(Formatters.number(d('-0.001')), '0');
     });
   });
+
+  test('turkishUpperCase handles dotted and dotless i', () {
+    expect(turkishUpperCase('Hisseler'), 'HİSSELER');
+    expect(turkishUpperCase('Veri kaynağı'), 'VERİ KAYNAĞI');
+    expect(turkishUpperCase('Altın ve gümüş'), 'ALTIN VE GÜMÜŞ');
+  });
 }

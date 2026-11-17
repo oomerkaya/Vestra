@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vestra/core/l10n/l10n.dart';
 import 'package:vestra/core/router/app_router.dart';
 import 'package:vestra/core/theme/app_theme.dart';
+import 'package:vestra/features/market/presentation/price_refresh_controller.dart';
 import 'package:vestra/features/settings/presentation/theme_mode_provider.dart';
 
 class VestraApp extends ConsumerWidget {
@@ -10,6 +11,8 @@ class VestraApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Keeps the price refresher alive for the whole app session.
+    ref.listen(priceRefreshControllerProvider, (_, _) {});
     return MaterialApp.router(
       onGenerateTitle: (context) => context.l10n.appTitle,
       debugShowCheckedModeBanner: false,

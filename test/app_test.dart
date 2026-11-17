@@ -4,9 +4,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:vestra/app.dart';
 import 'package:vestra/core/database/app_database.dart';
 import 'package:vestra/core/di/database_provider.dart';
+import 'package:vestra/features/market/market_providers.dart';
 import 'package:vestra/features/settings/data/datasources/settings_local_data_source.dart';
 import 'package:vestra/features/settings/data/repositories/settings_repository_impl.dart';
+import 'package:vestra/features/settings/settings_providers.dart';
 
+import 'helpers/fakes.dart';
 import 'helpers/test_database.dart';
 
 void main() {
@@ -18,7 +21,11 @@ void main() {
   Future<void> pumpApp(WidgetTester tester) async {
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [appDatabaseProvider.overrideWithValue(db)],
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          autoRefreshEnabledProvider.overrideWithValue(false),
+          apiKeyRepositoryProvider.overrideWithValue(FakeApiKeyRepository()),
+        ],
         child: const VestraApp(),
       ),
     );

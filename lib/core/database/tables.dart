@@ -40,7 +40,8 @@ class AssetTransactions extends Table {
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
-/// Last known price per instrument (filled in Phase 3).
+/// Last known price per instrument. Survives restarts so the app works
+/// offline with the most recent values.
 @DataClassName('PriceCacheRow')
 class PriceCache extends Table {
   TextColumn get type => text()();
@@ -48,6 +49,16 @@ class PriceCache extends Table {
   TextColumn get priceTry => text().map(const DecimalConverter())();
   TextColumn get source => text()();
   DateTimeColumn get fetchedAt => dateTime()();
+
+  /// Display name from the provider (v2).
+  TextColumn get name => text().nullable()();
+
+  /// Daily change in percent, e.g. `1.27` (v2).
+  TextColumn get changePercent =>
+      text().map(const DecimalConverter()).nullable()();
+
+  /// Provider's own timestamp of the price, if given (v2).
+  DateTimeColumn get asOf => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {type, code};

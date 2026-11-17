@@ -63,3 +63,25 @@ abstract final class Formatters {
     return buffer.toString();
   }
 }
+
+/// Date/time display helpers (device local time).
+abstract final class DateFormatters {
+  /// `14:32` today, `17.11 14:32` on other days.
+  static String shortDateTime(DateTime value, {DateTime? now}) {
+    final local = value.toLocal();
+    final today = (now ?? DateTime.now()).toLocal();
+    final time = '${_two(local.hour)}:${_two(local.minute)}';
+    final sameDay =
+        local.year == today.year &&
+        local.month == today.month &&
+        local.day == today.day;
+    return sameDay ? time : '${_two(local.day)}.${_two(local.month)} $time';
+  }
+
+  static String _two(int v) => v.toString().padLeft(2, '0');
+}
+
+/// Turkish-aware upper case: `i` → `İ`, `ı` → `I` (Dart's `toUpperCase`
+/// is locale-independent and would turn "Hisseler" into "HISSELER").
+String turkishUpperCase(String text) =>
+    text.replaceAll('i', 'İ').replaceAll('ı', 'I').toUpperCase();

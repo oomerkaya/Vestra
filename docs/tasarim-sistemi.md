@@ -92,6 +92,7 @@ Başlıklarda hafif negatif harf aralığı var (modern, sıkı görünüm).
 | `ChangeChip` | Kâr/zarar hapı: ▲ yeşil, ▼ kırmızı, — nötr |
 | `ChoiceTiles` | 2-4 seçenekli kare seçici (ikon üstte, etiket altta); seçili olan vurgu tonu + kenarlık |
 | `EmptyState` | Vurgu tonlu kutuda ikon + başlık + açıklama + isteğe bağlı buton |
+| `InstrumentAvatar` | Türe göre renkli kare (döviz mavi, altın sarı, gümüş gri, hisse mor), kısa etiket (Faz 3) |
 
 ## Sayı biçimlendirme ([`formatters.dart`](../lib/core/utils/formatters.dart))
 

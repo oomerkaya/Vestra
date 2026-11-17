@@ -7,7 +7,7 @@
   "portfolioEmptyTitle": "Portföyün boş",
   "portfolioEmptyMessage": "Döviz, altın, gümüş veya hisse ekleyerek portföyünü oluşturmaya başla.",
   "marketEmptyTitle": "Henüz fiyat yok",
-  "marketEmptyMessage": "Portföyüne varlık eklediğinde güncel kurlar ve fiyatlar burada görünür.",
+  "marketEmptyMessage": "Aşağı çekerek fiyatları güncelleyebilirsin.",
   "settingsTheme": "Tema",
   "themeSystem": "Sistem",
   "themeLight": "Aydınlık",
@@ -18,5 +18,87 @@
   "portfolioHoldings": "Varlıklar",
   "settingsSectionAppearance": "Görünüm",
   "settingsSectionAbout": "Hakkında",
-  "settingsLicenses": "Açık kaynak lisansları"
+  "settingsLicenses": "Açık kaynak lisansları",
+  "marketSectionFx": "Döviz",
+  "marketSectionMetals": "Altın ve gümüş",
+  "marketSectionStocks": "Hisseler",
+  "marketLastUpdated": "Son güncelleme {time}",
+  "@marketLastUpdated": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "marketRefreshing": "Güncelleniyor…",
+  "marketSourceBurkut": "Bürküt · hisseler en az 15 dk gecikmeli",
+  "marketSourceFallback": "Döviz: ECB günlük referans kuru (yedek kaynak)",
+  "marketNeedsKeyTitle": "Altın, gümüş ve hisse için API anahtarı gerekli",
+  "marketNeedsKeyMessage": "Döviz kurları ücretsiz yedek kaynaktan geliyor. Bürküt'ten ücretsiz anahtar alıp Ayarlar'a ekle.",
+  "marketGoToSettings": "Ayarlara git",
+  "marketQuotaExhausted": "Bu ayın Bürküt istek kotası doldu. Altın ve hisse fiyatları gelecek ay güncellenecek; döviz yedek kaynaktan geliyor.",
+  "marketKeyRejected": "Bürküt API anahtarı reddedildi. Ayarlar'dan kontrol et.",
+  "errorNetwork": "İnternet bağlantısı yok. Son bilinen fiyatlar gösteriliyor.",
+  "errorRateLimit": "Çok sık istek gönderildi, birazdan tekrar denenecek.",
+  "errorServer": "Veri sağlayıcı şu an yanıt vermiyor.",
+  "errorStorage": "Veriler okunamadı.",
+  "errorUnexpected": "Beklenmeyen bir hata oluştu.",
+  "instrumentUSD": "Amerikan Doları",
+  "instrumentEUR": "Euro",
+  "instrumentGBP": "İngiliz Sterlini",
+  "instrumentCHF": "İsviçre Frangı",
+  "instrumentJPY": "Japon Yeni",
+  "instrumentCAD": "Kanada Doları",
+  "instrumentAUD": "Avustralya Doları",
+  "instrumentDKK": "Danimarka Kronu",
+  "instrumentSEK": "İsveç Kronu",
+  "instrumentNOK": "Norveç Kronu",
+  "instrumentSAR": "Suudi Arabistan Riyali",
+  "instrumentGoldGram": "Gram Altın",
+  "instrumentGoldQuarter": "Çeyrek Altın",
+  "instrumentGoldHalf": "Yarım Altın",
+  "instrumentGoldFull": "Tam Altın",
+  "instrumentGoldRepublic": "Cumhuriyet Altını",
+  "instrumentSilverGram": "Gram Gümüş",
+  "settingsSectionData": "Veri kaynağı",
+  "settingsApiKey": "Bürküt API anahtarı",
+  "settingsApiKeySet": "Kayıtlı · ••••{suffix}",
+  "@settingsApiKeySet": {
+    "placeholders": {
+      "suffix": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsApiKeyNotSet": "Ayarlanmadı · altın, gümüş ve hisse için gerekli",
+  "settingsQuota": "Bu ayki istek kullanımı",
+  "settingsQuotaValue": "{used} / {limit}",
+  "@settingsQuotaValue": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsQuotaExhausted": "Kota doldu",
+  "settingsDataNote": "Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Bürküt lisanslı bir veri dağıtıcısı değildir. Fiyatlar hafta içi 10:00-18:00 arasında, uygulama açıkken 30 dakikada bir güncellenir.",
+  "apiKeySheetTitle": "Bürküt API anahtarı",
+  "apiKeySheetHelp": "burkutportfoy.com/developer adresinden ücretsiz hesap açıp anahtar oluşturabilirsin (ayda 1.000 istek). Anahtar yalnızca bu cihazda şifreli saklanır.",
+  "apiKeyFieldLabel": "API anahtarı",
+  "apiKeySave": "Doğrula ve kaydet",
+  "apiKeyDelete": "Anahtarı sil",
+  "apiKeySaved": "Anahtar doğrulandı ve kaydedildi",
+  "apiKeyDeleted": "Anahtar silindi",
+  "apiKeyErrorEmpty": "Anahtarı gir",
+  "apiKeyErrorMalformed": "Anahtar biçimi geçersiz",
+  "apiKeyErrorRejected": "Bürküt bu anahtarı kabul etmedi",
+  "apiKeyErrorQuota": "Bu ayın kotası dolu olduğu için anahtar doğrulanamadı",
+  "apiKeyShow": "Göster",
+  "apiKeyHide": "Gizle",
+  "unitGram": "gram",
+  "unitPiece": "adet",
+  "exchangeBist": "Borsa İstanbul"
 }

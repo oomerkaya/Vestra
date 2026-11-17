@@ -26,11 +26,12 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 - [x] Portföy feature'ı: entity, repository arayüzü, use case'ler, testler
 
 ## Faz 3: Piyasa verisi
-- [ ] Altın/gümüş fiyat kaynağını doğrula (Frankfurter XAU/XAG vermiyor olabilir), sikke katsayıları
-- [ ] `FxRateProvider` (Frankfurter), `StockPriceProvider` (Bürküt)
-- [ ] Ayarlar ekranı: API anahtarı gir, doğrula, güvenli sakla
-- [ ] Polling zamanlayıcı (seans saatleri, tatil takvimi, backoff) + testler
-- [ ] Cache ve offline davranışı
+- [x] Kaynak araştırması: Frankfurter altın/gümüş vermiyor → Bürküt birincil, Frankfurter döviz yedeği
+- [x] `FxRateProvider`, `MetalPriceProvider`, `StockPriceProvider` (Bürküt + Frankfurter)
+- [x] Ayarlar ekranı: API anahtarı gir, doğrula, güvenli sakla; aylık kota göstergesi
+- [x] Polling zamanlayıcı (seans saatleri, tatil takvimi, backoff, 30 dk) + testler
+- [x] Cache ve offline davranışı (şema v2 migration)
+- [ ] Gerçek Bürküt anahtarıyla sembol/alan doğrulaması (docs/faz-3 "Doğrulanacaklar")
 
 ## Faz 4: Özellikler (dikey dilimler)
 - [ ] Varlık ekleme/düzenleme/silme
