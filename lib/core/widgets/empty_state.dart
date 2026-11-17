@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:vestra/core/theme/app_tokens.dart';
 
-/// Centered icon + title + message, used for empty lists and screens.
+/// Centered illustration-style icon + title + message, for empty screens.
 class EmptyState extends StatelessWidget {
   const EmptyState({
     required this.icon,
@@ -18,30 +19,45 @@ class EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 56, color: theme.colorScheme.primary),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              style: theme.textTheme.titleMedium,
-              textAlign: TextAlign.center,
+    final accent = theme.colorScheme.primary;
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.xxl,
+        vertical: AppSpacing.xxl,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.10),
+              borderRadius: AppRadius.xlAll,
             ),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg + AppSpacing.xs),
+              child: Icon(icon, size: 32, color: accent),
             ),
-            if (action != null) ...[const SizedBox(height: 24), action!],
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          Text(
+            title,
+            style: theme.textTheme.titleMedium,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            message,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              height: 1.45,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          if (action != null) ...[
+            const SizedBox(height: AppSpacing.xl),
+            action!,
           ],
-        ),
+        ],
       ),
     );
   }

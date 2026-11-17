@@ -25,14 +25,14 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get portfolioEmptyMessage =>
-      'Döviz, altın veya hisse ekleyerek başla.';
+      'Döviz, altın, gümüş veya hisse ekleyerek portföyünü oluşturmaya başla.';
 
   @override
   String get marketEmptyTitle => 'Henüz fiyat yok';
 
   @override
   String get marketEmptyMessage =>
-      'Portföyüne varlık eklediğinde güncel fiyatlar burada görünür.';
+      'Portföyüne varlık eklediğinde güncel kurlar ve fiyatlar burada görünür.';
 
   @override
   String get settingsTheme => 'Tema';
@@ -52,4 +52,19 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get settingsDisclaimer =>
       'Vestra yatırım tavsiyesi vermez. Gösterilen fiyatlar gecikmeli olabilir ve yalnızca bilgi amaçlıdır.';
+
+  @override
+  String get portfolioTotalValue => 'Toplam değer';
+
+  @override
+  String get portfolioHoldings => 'Varlıklar';
+
+  @override
+  String get settingsSectionAppearance => 'Görünüm';
+
+  @override
+  String get settingsSectionAbout => 'Hakkında';
+
+  @override
+  String get settingsLicenses => 'Açık kaynak lisansları';
 }

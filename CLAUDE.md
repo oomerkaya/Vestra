@@ -50,6 +50,14 @@ Kurallar:
 - Bir dosyada tek sorumluluk. Widget'lar küçük tutulur, iş mantığı widget içinde olmaz.
 - Para ve miktar hesaplarında `double` kullanma; `Decimal` (`decimal` paketi) kullan. Drift'te TEXT kolon + TypeConverter ile saklanır.
 
+## Tasarım
+
+Sade fintech tarzı, Inter yazı tipi. Ayrıntı: `docs/tasarim-sistemi.md`.
+- Renk/boşluk/köşe için `AppPalette` yerine tema + `context.vestraColors`, `AppSpacing`, `AppRadius` tokenlarını kullan; çıplak sayı yazma.
+- Yeşil/kırmızı yalnızca kâr/zarar için (`ChangeChip`, `vestraColors.gain/loss`).
+- Tutarlar `MoneyText` / `Formatters` ile gösterilir; `double` ile biçimlendirme yok.
+- Ortak bileşenler `lib/core/widgets/`'ta (`AppCard`, `SectionHeader`, `MoneyText`, `ChangeChip`, `ChoiceTiles`, `EmptyState`).
+
 ## Veri kaynakları
 
 Dış veri erişimi **her zaman bir arayüz arkasında** olur; sağlayıcı değişirse yalnızca data katmanı değişir.

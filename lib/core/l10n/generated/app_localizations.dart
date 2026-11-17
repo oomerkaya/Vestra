@@ -127,7 +127,7 @@ abstract class AppLocalizations {
   /// No description provided for @portfolioEmptyMessage.
   ///
   /// In tr, this message translates to:
-  /// **'Döviz, altın veya hisse ekleyerek başla.'**
+  /// **'Döviz, altın, gümüş veya hisse ekleyerek portföyünü oluşturmaya başla.'**
   String get portfolioEmptyMessage;
 
   /// No description provided for @marketEmptyTitle.
@@ -139,7 +139,7 @@ abstract class AppLocalizations {
   /// No description provided for @marketEmptyMessage.
   ///
   /// In tr, this message translates to:
-  /// **'Portföyüne varlık eklediğinde güncel fiyatlar burada görünür.'**
+  /// **'Portföyüne varlık eklediğinde güncel kurlar ve fiyatlar burada görünür.'**
   String get marketEmptyMessage;
 
   /// No description provided for @settingsTheme.
@@ -177,6 +177,36 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Vestra yatırım tavsiyesi vermez. Gösterilen fiyatlar gecikmeli olabilir ve yalnızca bilgi amaçlıdır.'**
   String get settingsDisclaimer;
+
+  /// No description provided for @portfolioTotalValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'Toplam değer'**
+  String get portfolioTotalValue;
+
+  /// No description provided for @portfolioHoldings.
+  ///
+  /// In tr, this message translates to:
+  /// **'Varlıklar'**
+  String get portfolioHoldings;
+
+  /// No description provided for @settingsSectionAppearance.
+  ///
+  /// In tr, this message translates to:
+  /// **'Görünüm'**
+  String get settingsSectionAppearance;
+
+  /// No description provided for @settingsSectionAbout.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hakkında'**
+  String get settingsSectionAbout;
+
+  /// No description provided for @settingsLicenses.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık kaynak lisansları'**
+  String get settingsLicenses;
 }
 
 class _AppLocalizationsDelegate

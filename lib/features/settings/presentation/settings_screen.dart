@@ -1,6 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vestra/core/l10n/l10n.dart';
+import 'package:vestra/core/theme/app_tokens.dart';
+import 'package:vestra/core/widgets/app_card.dart';
+import 'package:vestra/core/widgets/choice_tiles.dart';
+import 'package:vestra/core/widgets/section_header.dart';
 import 'package:vestra/features/settings/presentation/theme_mode_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -9,49 +15,91 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final themeMode = ref.watch(themeModeProvider);
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.navSettings)),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.screen,
+          0,
+          AppSpacing.screen,
+          AppSpacing.xxl,
+        ),
         children: [
-          Text(
-            l10n.settingsTheme,
-            style: Theme.of(context).textTheme.titleSmall,
+          SectionHeader(l10n.settingsSectionAppearance),
+          AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.settingsTheme, style: textTheme.titleSmall),
+                const SizedBox(height: AppSpacing.md),
+                const _ThemeSelector(),
+              ],
+            ),
           ),
-          const SizedBox(height: 8),
-          SegmentedButton<ThemeMode>(
-            segments: [
-              ButtonSegment(
-                value: ThemeMode.system,
-                label: Text(l10n.themeSystem),
-                icon: const Icon(Icons.brightness_auto),
-              ),
-              ButtonSegment(
-                value: ThemeMode.light,
-                label: Text(l10n.themeLight),
-                icon: const Icon(Icons.light_mode),
-              ),
-              ButtonSegment(
-                value: ThemeMode.dark,
-                label: Text(l10n.themeDark),
-                icon: const Icon(Icons.dark_mode),
-              ),
-            ],
-            selected: {themeMode},
-            onSelectionChanged: (selection) =>
-                ref.read(themeModeProvider.notifier).setMode(selection.first),
-          ),
-          const SizedBox(height: 32),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.info_outline),
-            title: Text(l10n.settingsDisclaimerTitle),
-            subtitle: Text(l10n.settingsDisclaimer),
+          SectionHeader(l10n.settingsSectionAbout),
+          AppCard(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.shield_outlined),
+                  title: Text(l10n.settingsDisclaimerTitle),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: AppSpacing.xs),
+                    child: Text(
+                      l10n.settingsDisclaimer,
+                      style: textTheme.bodySmall?.copyWith(height: 1.45),
+                    ),
+                  ),
+                ),
+                const Divider(indent: AppSpacing.lg, endIndent: AppSpacing.lg),
+                ListTile(
+                  leading: const Icon(Icons.description_outlined),
+                  title: Text(l10n.settingsLicenses),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => showLicensePage(
+                    context: context,
+                    applicationName: l10n.appTitle,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ThemeSelector extends ConsumerWidget {
+  const _ThemeSelector();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    return ChoiceTiles<ThemeMode>(
+      selected: ref.watch(themeModeProvider),
+      onChanged: (mode) =>
+          unawaited(ref.read(themeModeProvider.notifier).setMode(mode)),
+      options: [
+        ChoiceTile(
+          value: ThemeMode.system,
+          label: l10n.themeSystem,
+          icon: Icons.brightness_auto_outlined,
+        ),
+        ChoiceTile(
+          value: ThemeMode.light,
+          label: l10n.themeLight,
+          icon: Icons.light_mode_outlined,
+        ),
+        ChoiceTile(
+          value: ThemeMode.dark,
+          label: l10n.themeDark,
+          icon: Icons.dark_mode_outlined,
+        ),
+      ],
     );
   }
 }

@@ -5,13 +5,18 @@
   "navMarket": "Piyasa",
   "navSettings": "Ayarlar",
   "portfolioEmptyTitle": "Portföyün boş",
-  "portfolioEmptyMessage": "Döviz, altın veya hisse ekleyerek başla.",
+  "portfolioEmptyMessage": "Döviz, altın, gümüş veya hisse ekleyerek portföyünü oluşturmaya başla.",
   "marketEmptyTitle": "Henüz fiyat yok",
-  "marketEmptyMessage": "Portföyüne varlık eklediğinde güncel fiyatlar burada görünür.",
+  "marketEmptyMessage": "Portföyüne varlık eklediğinde güncel kurlar ve fiyatlar burada görünür.",
   "settingsTheme": "Tema",
   "themeSystem": "Sistem",
   "themeLight": "Aydınlık",
   "themeDark": "Karanlık",
   "settingsDisclaimerTitle": "Yasal uyarı",
-  "settingsDisclaimer": "Vestra yatırım tavsiyesi vermez. Gösterilen fiyatlar gecikmeli olabilir ve yalnızca bilgi amaçlıdır."
+  "settingsDisclaimer": "Vestra yatırım tavsiyesi vermez. Gösterilen fiyatlar gecikmeli olabilir ve yalnızca bilgi amaçlıdır.",
+  "portfolioTotalValue": "Toplam değer",
+  "portfolioHoldings": "Varlıklar",
+  "settingsSectionAppearance": "Görünüm",
+  "settingsSectionAbout": "Hakkında",
+  "settingsLicenses": "Açık kaynak lisansları"
 }
