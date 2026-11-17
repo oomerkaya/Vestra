@@ -1,0 +1,17 @@
+{
+  "@@locale": "tr",
+  "appTitle": "Vestra",
+  "navPortfolio": "Portföy",
+  "navMarket": "Piyasa",
+  "navSettings": "Ayarlar",
+  "portfolioEmptyTitle": "Portföyün boş",
+  "portfolioEmptyMessage": "Döviz, altın veya hisse ekleyerek başla.",
+  "marketEmptyTitle": "Henüz fiyat yok",
+  "marketEmptyMessage": "Portföyüne varlık eklediğinde güncel fiyatlar burada görünür.",
+  "settingsTheme": "Tema",
+  "themeSystem": "Sistem",
+  "themeLight": "Aydınlık",
+  "themeDark": "Karanlık",
+  "settingsDisclaimerTitle": "Yasal uyarı",
+  "settingsDisclaimer": "Vestra yatırım tavsiyesi vermez. Gösterilen fiyatlar gecikmeli olabilir ve yalnızca bilgi amaçlıdır."
+}
