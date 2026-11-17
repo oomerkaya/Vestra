@@ -20,9 +20,9 @@ class UpdateTransaction {
       case Err(:final failure):
         return Err(failure);
       case Success(:final value):
-        final resulting = [
-          for (final tx in value) tx.id == updated.id ? updated : tx,
-        ];
+        final resulting = value
+            .map((tx) => tx.id == updated.id ? updated : tx)
+            .toList();
         final historyError = TransactionValidator.validateHistory(resulting);
         if (historyError != null) return Err(historyError);
     }

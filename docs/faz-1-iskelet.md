@@ -140,7 +140,7 @@ Boş klasörler git'te kalsın diye `.gitkeep` dosyaları var.
 
 ### 9. CI (`.github/workflows/ci.yml`)
 
-`main`'e push ve her PR'da, Ubuntu üzerinde: `flutter pub get` → `dart format --set-exit-if-changed` → `flutter analyze` → `flutter test`.
+`main`'e push ve her PR'da, Ubuntu üzerinde, **Flutter 3.44.6'ya sabitlenmiş** olarak: `flutter pub get` → `dart format --set-exit-if-changed` → `flutter analyze` → `flutter test`.
 
 ### 10. Git
 
@@ -160,6 +160,10 @@ Boş klasörler git'te kalsın diye `.gitkeep` dosyaları var.
 2. Android Studio → File → Open → proje kök klasörü
 3. Flutter/Dart eklentileri kurulu olmalı
 4. Emülatör ya da USB hata ayıklamalı cihaz seç → Run
+
+## Sonradan yapılan düzeltme: CI sürüm sabitleme
+
+İlk CI çalışmasında `flutter analyze` başarısız oldu. Sebep: workflow yalnızca `channel: stable` diyordu ve GitHub en yeni stable Flutter'ı kurdu. O sürümde `package:flutter/material.dart` deprecated (yerine `material_ui` paketi), bu yüzden her dosyada `deprecated_member_use` uyarısı çıktı. Yerel SDK 3.44.6'da bu uyarı yok. Çözüm: CI `flutter-version: 3.44.6` ile sabitlendi; derleme ortamı ve CI artık birebir aynı. Yükseltme ve `material_ui` geçişi ROADMAP Faz 5'e eklendi.
 
 ## Bilinen eksikler / sonraki faza devredilenler
 

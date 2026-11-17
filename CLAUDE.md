@@ -69,6 +69,7 @@ Güncelleme kuralları:
 
 ## Derleme
 
+- Flutter sürümü **3.44.6** (stable) olarak sabit; CI (`.github/workflows/ci.yml` → `flutter-version`) aynı sürümü kullanır. Yükseltme bilinçli yapılır: yerelde `flutter upgrade` + CI sürümü aynı commit'te değişir, `flutter analyze`/`flutter test` temiz olmalı. Daha yeni Flutter'da `package:flutter/material.dart` deprecated (yerine `material_ui` paketi); yükseltirken bu geçiş de yapılır.
 - Kullanıcı Android Studio ile derler. Üretilen dosyalar (Drift `*.g.dart`, `lib/core/l10n/generated/`) git'e dahil edilir; klonlayan kişi `build_runner` çalıştırmadan derleyebilmeli.
 - Drift şeması değişince: `schemaVersion`'ı artır → `dart run build_runner build` → `dart run drift_dev make-migrations` → `onUpgrade`'e adım ekle. `drift_schemas/` altındaki eski JSON'lar asla silinmez/değiştirilmez (ayrıntı: `docs/faz-2-yerel-veri.md`).
 

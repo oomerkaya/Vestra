@@ -38,6 +38,7 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 - [ ] Fiyat güncelleme ekranı ve "son güncelleme" göstergesi
 
 ## Faz 5: Cila ve yayın
+- [ ] Flutter yükseltmesi + `material.dart` → `material_ui` geçişi (CI sürümüyle birlikte)
 - [ ] Hata ekranları, boş durumlar, erişilebilirlik
 - [ ] Yedekleme/dışa aktarma (veri yerelde olduğu için)
 - [ ] README: kurulum, kendi API anahtarını alma, veri kaynağı ve gecikme uyarısı, yatırım tavsiyesi değildir notu
