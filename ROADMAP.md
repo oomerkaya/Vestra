@@ -40,6 +40,11 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 - [x] Portföy özeti ve toplam değer (K/Z, günlük değişim, halka grafik dağılım)
 - [x] Fiyat güncelleme ekranı ve "son güncelleme" göstergesi (Faz 3'te)
 
+## Sıradaki (Faz 5'ten önce, 2026-11-20)
+- [ ] Frankfurter'ı tamamen kaldır; uygulama yalnızca Bürküt API ile çalışsın (yedek kaynak kodu, testleri, ayarlar/piyasa metinleri, CLAUDE.md ve dokümanlar)
+- [ ] Kullanıcının belirteceği diğer güncellemeler ve genel kontroller
+- [ ] Ardından Faz 5
+
 ## Faz 5: Cila ve yayın
 - [ ] Flutter yükseltmesi + `material.dart` → `material_ui` geçişi (CI sürümüyle birlikte)
 - [ ] Hata ekranları, boş durumlar, erişilebilirlik
