@@ -56,7 +56,7 @@ class MarketRepositoryImpl implements MarketRepository {
   @override
   Future<Result<RefreshReport>> refresh({
     required Set<QuoteCategory> categories,
-    required Set<String> stockSymbols,
+    Set<String>? stockSymbols,
   }) async {
     final quotes = <Quote>[];
     final failures = <QuoteCategory, Failure>{};
@@ -95,13 +95,14 @@ class MarketRepositoryImpl implements MarketRepository {
       }
     }
 
-    // Stocks (only those in the portfolio, one batched request).
-    if (categories.contains(QuoteCategory.stocks) && stockSymbols.isNotEmpty) {
+    // Stocks: whole market or the given symbols, one request either way.
+    if (categories.contains(QuoteCategory.stocks) &&
+        (stockSymbols == null || stockSymbols.isNotEmpty)) {
       if (primaryBlocked != null) {
         failures[QuoteCategory.stocks] = primaryBlocked;
       } else {
-        final symbols = stockSymbols.toList()..sort();
-        switch (await _stocks.fetchQuotes(symbols)) {
+        final symbols = stockSymbols?.toList()?..sort();
+        switch (await _stocks.fetchQuotes(symbols: symbols)) {
           case Success(:final value):
             quotes.addAll(value);
           case Err(:final failure):

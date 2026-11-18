@@ -19,9 +19,10 @@ abstract interface class MetalPriceProvider {
   Future<Result<List<Quote>>> fetchPrices();
 }
 
-/// BIST stock prices for the given symbols (batched in one request).
+/// BIST stock prices in one request: the whole market when `symbols` is
+/// `null`, otherwise only those symbols.
 abstract interface class StockPriceProvider {
-  Future<Result<List<Quote>>> fetchQuotes(List<String> symbols);
+  Future<Result<List<Quote>>> fetchQuotes({List<String>? symbols});
 }
 
 /// The whole BIST stock list (symbol + name) for search.

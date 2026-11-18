@@ -70,7 +70,7 @@ void main() {
     when(() => fx.fetchRates()).thenAnswer((_) async => Success([usd]));
     when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
     when(
-      () => stocks.fetchQuotes(any()),
+      () => stocks.fetchQuotes(symbols: any(named: 'symbols')),
     ).thenAnswer((_) async => Success([thyao]));
 
     final report = (await repo.refresh(
@@ -104,7 +104,7 @@ void main() {
     expect(report.failures[QuoteCategory.stocks], isA<AuthFailure>());
     expect(report.failures.containsKey(QuoteCategory.fx), isFalse);
     verifyNever(() => metals.fetchPrices());
-    verifyNever(() => stocks.fetchQuotes(any()));
+    verifyNever(() => stocks.fetchQuotes(symbols: any(named: 'symbols')));
     expect((await cached()).single.source, QuoteSource.frankfurter);
   });
 
@@ -130,7 +130,7 @@ void main() {
 
     await repo.refresh(categories: _all, stockSymbols: {});
 
-    verifyNever(() => stocks.fetchQuotes(any()));
+    verifyNever(() => stocks.fetchQuotes(symbols: any(named: 'symbols')));
   });
 
   test('a newer quote replaces the cached one', () async {
@@ -184,6 +184,18 @@ void main() {
     expect(report.updated, 1);
     verifyNever(() => fx.fetchRates());
     verifyNever(() => fallback.fetchRates());
-    verifyNever(() => stocks.fetchQuotes(any()));
+    verifyNever(() => stocks.fetchQuotes(symbols: any(named: 'symbols')));
+  });
+
+  test('stockSymbols null = whole market in one request', () async {
+    when(() => fx.fetchRates()).thenAnswer((_) async => Success([usd]));
+    when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
+    when(
+      () => stocks.fetchQuotes(symbols: any(named: 'symbols')),
+    ).thenAnswer((_) async => Success([thyao]));
+
+    await repo.refresh(categories: _all);
+
+    verify(() => stocks.fetchQuotes()).called(1);
   });
 }

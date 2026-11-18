@@ -1,6 +1,8 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:vestra/core/di/database_provider.dart';
+import 'package:vestra/core/domain/instrument.dart';
 import 'package:vestra/core/error/result.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/market_providers.dart';
@@ -91,4 +93,12 @@ assetTransactionsProvider = StreamProvider.family<List<AssetTransaction>, int>(
           Err(:final failure) => throw failure,
         },
       ),
+);
+
+/// Instruments currently held (quantity > 0), for "Portföyümde" lists.
+final heldInstrumentsProvider = Provider<Set<Instrument>>(
+  (ref) => {
+    for (final h in ref.watch(holdingsProvider).value ?? const <Holding>[])
+      if (h.quantity > Decimal.zero) (type: h.asset.type, code: h.asset.code),
+  },
 );

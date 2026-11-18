@@ -122,17 +122,16 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
     };
     final due = <QuoteCategory>{
       for (final category in QuoteCategory.values)
-        if (category != QuoteCategory.stocks || held.isNotEmpty)
-          if (RefreshPolicy.isDue(
-            category: category,
-            now: now,
-            lastSuccess: lastSuccess[category],
-            lastAttempt: _lastAttempt[category],
-            calendar: calendar,
-            manual: manual,
-            backoffUntil: state.backoffUntil,
-          ))
-            category,
+        if (RefreshPolicy.isDue(
+          category: category,
+          now: now,
+          lastSuccess: lastSuccess[category],
+          lastAttempt: _lastAttempt[category],
+          calendar: calendar,
+          manual: manual,
+          backoffUntil: state.backoffUntil,
+        ))
+          category,
     };
     for (final category in due) {
       _lastAttempt[category] = now;
@@ -140,9 +139,10 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
     // A regular stock request covers missing symbols too.
     if (due.contains(QuoteCategory.stocks)) _lastMissingAttempt = now;
 
-    // Stocks without any price (e.g. just added): fetch only those, even
-    // outside the session. Other stocks keep their session schedule.
-    var stockSymbols = held;
+    // Regular stock update = whole market in one request (null). Held
+    // stocks without any price (e.g. a new listing missing from the last
+    // market snapshot): fetch only those, even outside the session.
+    Set<String>? stockSymbols;
     final missing = {
       for (final s in held)
         if (!cachedStocks.contains(s)) s,
@@ -208,24 +208,29 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
   /// When each category was last updated.
   ///
   /// FX and metals: newest `fetchedAt` (fetched together). Stocks: the
-  /// **oldest** `fetchedAt` among held stocks, so fetching one newly added
-  /// stock doesn't make the others look fresh; sold stocks are ignored.
+  /// **oldest** `fetchedAt` among held stocks, so fetching one missing
+  /// stock doesn't make the others look fresh; without held stocks, the
+  /// newest market snapshot.
   static Map<QuoteCategory, DateTime> _lastSuccessByCategory(
     List<Quote> quotes,
     Set<String> held,
   ) {
     final result = <QuoteCategory, DateTime>{};
+    DateTime? oldestHeldStock;
     for (final q in quotes) {
       final category = QuoteCategory.of(q.instrument.type);
-      final isStock = category == QuoteCategory.stocks;
-      if (isStock && !held.contains(q.instrument.code)) continue;
       final current = result[category];
-      final replace =
-          current == null ||
-          (isStock
-              ? q.fetchedAt.isBefore(current)
-              : q.fetchedAt.isAfter(current));
-      if (replace) result[category] = q.fetchedAt;
+      if (current == null || q.fetchedAt.isAfter(current)) {
+        result[category] = q.fetchedAt;
+      }
+      if (category == QuoteCategory.stocks &&
+          held.contains(q.instrument.code) &&
+          (oldestHeldStock == null || q.fetchedAt.isBefore(oldestHeldStock))) {
+        oldestHeldStock = q.fetchedAt;
+      }
+    }
+    if (oldestHeldStock != null) {
+      result[QuoteCategory.stocks] = oldestHeldStock;
     }
     return result;
   }

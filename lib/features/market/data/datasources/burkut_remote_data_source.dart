@@ -20,10 +20,14 @@ class BurkutRemoteDataSource {
 
   Future<BurkutResponse> getGold(String apiKey) => _get('/gold', apiKey);
 
-  /// One request for all [symbols]. The live API honours `?symbols=`
-  /// (verified 2026-11-18); without it `/stocks` returns the whole market
-  /// (560+ stocks), so the result is also filtered here as a safeguard.
-  Future<BurkutResponse> getStocks(String apiKey, List<String> symbols) async {
+  /// One request. Without [symbols]: the whole BIST market (634 stocks on
+  /// 2026-11-18, ~280 KB). With [symbols]: `?symbols=` (honoured by the live
+  /// API) and the result is also filtered here as a safeguard.
+  Future<BurkutResponse> getStocks(
+    String apiKey, {
+    List<String>? symbols,
+  }) async {
+    if (symbols == null) return _get('/stocks', apiKey);
     final wanted = {for (final s in symbols) s.toUpperCase()};
     final response = await _get(
       '/stocks',

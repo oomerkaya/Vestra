@@ -7,8 +7,10 @@ import 'package:vestra/core/l10n/l10n.dart';
 import 'package:vestra/core/theme/app_tokens.dart';
 import 'package:vestra/core/utils/formatters.dart';
 import 'package:vestra/core/widgets/app_card.dart';
+import 'package:vestra/core/widgets/collapsible_section.dart';
 import 'package:vestra/core/widgets/empty_state.dart';
 import 'package:vestra/core/widgets/messages.dart';
+import 'package:vestra/features/market/domain/entities/bist_indices.dart';
 import 'package:vestra/features/market/domain/entities/market_calendar.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/domain/services/refresh_policy.dart';
@@ -16,6 +18,7 @@ import 'package:vestra/features/market/market_providers.dart';
 import 'package:vestra/features/market/presentation/instrument_labels.dart';
 import 'package:vestra/features/market/presentation/price_refresh_controller.dart';
 import 'package:vestra/features/market/presentation/widgets/quote_tile.dart';
+import 'package:vestra/features/portfolio/portfolio_providers.dart';
 
 const String _settingsPath = '/settings';
 
@@ -30,18 +33,26 @@ class MarketCategoryTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final allQuotes = ref.watch(quotesProvider).value ?? const <Quote>[];
-    final held = ref.watch(heldStockSymbolsProvider).value ?? const {};
+    final heldInstruments = ref.watch(heldInstrumentsProvider);
     final refresh = ref.watch(priceRefreshControllerProvider);
     final hasKey = ref.watch(burkutKeyProvider).value != null;
     final calendar =
         ref.watch(marketCalendarProvider).value ?? MarketCalendar.empty;
 
-    final quotes = _quotesFor(allQuotes, held);
+    final quotes = _sorted([
+      for (final q in allQuotes)
+        if (QuoteCategory.of(q.instrument.type) == category) q,
+    ]);
+    final mine = [
+      for (final q in quotes)
+        if (heldInstruments.contains(q.instrument)) q,
+    ];
     final isStocks = category == QuoteCategory.stocks;
 
     return RefreshIndicator(
       onRefresh: () => _onPullToRefresh(context, ref, quotes, calendar),
       child: ListView(
+        key: PageStorageKey('market-${category.name}'),
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.screen,
@@ -62,33 +73,35 @@ class MarketCategoryTab extends ConsumerWidget {
           ),
           ?_notice(l10n, refresh, hasKey: hasKey),
           const SizedBox(height: AppSpacing.lg),
-          if (quotes.isEmpty)
+          if (quotes.isEmpty && !isStocks)
             AppCard(
-              child: isStocks && held.isEmpty
-                  ? EmptyState(
-                      icon: Icons.candlestick_chart_outlined,
-                      title: l10n.marketStocksEmptyTitle,
-                      message: l10n.marketStocksEmptyMessage,
-                    )
-                  : EmptyState(
-                      icon: Icons.candlestick_chart_outlined,
-                      title: l10n.marketEmptyTitle,
-                      message: l10n.marketEmptyMessage,
-                    ),
-            )
-          else
-            AppCard(
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-              child: Column(
-                children: [
-                  for (final (i, quote) in quotes.indexed) ...[
-                    if (i > 0)
-                      const Divider(indent: 72, endIndent: AppSpacing.lg),
-                    QuoteTile(quote: quote),
-                  ],
-                ],
+              child: EmptyState(
+                icon: Icons.candlestick_chart_outlined,
+                title: l10n.marketEmptyTitle,
+                message: l10n.marketEmptyMessage,
               ),
+            )
+          else ...[
+            CollapsibleSection(
+              title: l10n.marketSectionMine,
+              trailing: mine.length.toString(),
+              storageKey: 'market-${category.name}-mine',
+              child: mine.isEmpty
+                  ? _Hint(l10n.marketNoHoldingsInCategory)
+                  : _QuoteList(quotes: mine),
             ),
+            const SizedBox(height: AppSpacing.md),
+            if (isStocks)
+              _IndexSection(quotes: quotes, initiallyExpanded: mine.isEmpty)
+            else
+              CollapsibleSection(
+                title: l10n.marketSectionAll,
+                trailing: quotes.length.toString(),
+                initiallyExpanded: mine.isEmpty,
+                storageKey: 'market-${category.name}-all',
+                child: _QuoteList(quotes: quotes),
+              ),
+          ],
         ],
       ),
     );
@@ -121,14 +134,8 @@ class MarketCategoryTab extends ConsumerWidget {
     messenger.showMessage(message);
   }
 
-  List<Quote> _quotesFor(List<Quote> all, Set<String> held) {
-    return [
-      for (final q in all)
-        if (QuoteCategory.of(q.instrument.type) == category)
-          if (category != QuoteCategory.stocks ||
-              held.contains(q.instrument.code))
-            q,
-    ]..sort((a, b) {
+  static List<Quote> _sorted(List<Quote> quotes) => quotes
+    ..sort((a, b) {
       final byOrder = instrumentOrder(
         a.instrument,
       ).compareTo(instrumentOrder(b.instrument));
@@ -138,7 +145,6 @@ class MarketCategoryTab extends ConsumerWidget {
           ? byType
           : a.instrument.code.compareTo(b.instrument.code);
     });
-  }
 
   Widget? _notice(
     AppLocalizations l10n,
@@ -349,6 +355,116 @@ class _ExchangeSelector extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _QuoteList extends StatelessWidget {
+  const _QuoteList({required this.quotes});
+
+  final List<Quote> quotes;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (final (i, quote) in quotes.indexed) ...[
+          if (i > 0) const Divider(indent: 72, endIndent: AppSpacing.lg),
+          QuoteTile(quote: quote),
+        ],
+      ],
+    );
+  }
+}
+
+class _Hint extends StatelessWidget {
+  const _Hint(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(AppSpacing.lg),
+    child: Text(text, style: Theme.of(context).textTheme.bodySmall),
+  );
+}
+
+/// BIST 30 / BIST 100 list with a selector. Constituents come from the
+/// bundled `bist_indices.json`; prices from the cached market snapshot.
+class _IndexSection extends ConsumerWidget {
+  const _IndexSection({required this.quotes, required this.initiallyExpanded});
+
+  final List<Quote> quotes;
+  final bool initiallyExpanded;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final indices = ref.watch(bistIndicesProvider).value ?? BistIndices.empty;
+    final selected = ref.watch(selectedBistIndexProvider);
+    final members = selected == BistIndex.bist30
+        ? indices.bist30
+        : indices.bist100;
+    final listed = [
+      for (final q in quotes)
+        if (members.contains(q.instrument.code)) q,
+    ];
+    final until = indices.validUntil;
+    final date =
+        '${until.day.toString().padLeft(2, '0')}.'
+        '${until.month.toString().padLeft(2, '0')}.${until.year}';
+
+    return CollapsibleSection(
+      title: l10n.marketSectionIndices,
+      trailing: listed.length.toString(),
+      initiallyExpanded: initiallyExpanded,
+      storageKey: 'market-stocks-indices',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.lg,
+              AppSpacing.xs,
+            ),
+            child: Wrap(
+              spacing: AppSpacing.sm,
+              children: [
+                for (final (index, label) in [
+                  (BistIndex.bist30, l10n.marketBist30),
+                  (BistIndex.bist100, l10n.marketBist100),
+                ])
+                  ChoiceChip(
+                    label: Text(label),
+                    selected: selected == index,
+                    showCheckmark: false,
+                    onSelected: (_) => ref
+                        .read(selectedBistIndexProvider.notifier)
+                        .select(index),
+                  ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            child: Text(
+              indices.isOutdated(DateTime.now())
+                  ? l10n.marketIndexOutdated(date)
+                  : l10n.marketIndexValidUntil(date),
+              style: theme.textTheme.bodySmall,
+            ),
+          ),
+          if (listed.isEmpty)
+            _Hint(l10n.marketIndexNoPrices)
+          else ...[
+            const SizedBox(height: AppSpacing.xs),
+            _QuoteList(quotes: listed),
+          ],
+        ],
+      ),
     );
   }
 }

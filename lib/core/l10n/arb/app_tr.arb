@@ -235,5 +235,36 @@
         "type": "String"
       }
     }
+  },
+  "marketSectionMine": "Portföyümde",
+  "marketSectionAll": "Tümü",
+  "marketSectionIndices": "Endeksler",
+  "marketBist30": "BIST 30",
+  "marketBist100": "BIST 100",
+  "marketNoHoldingsInCategory": "Bu kategoride portföyünde varlık yok.",
+  "marketIndexNoPrices": "Fiyatlar seans açıldığında ilk güncellemeyle gelir.",
+  "marketIndexValidUntil": "Endeks bileşimi {date} tarihine kadar geçerli.",
+  "@marketIndexValidUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "marketIndexOutdated": "Endeks listesi {date} tarihli, güncel olmayabilir.",
+  "@marketIndexOutdated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "marketCount": "{count}",
+  "@marketCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:vestra/core/domain/instrument.dart';
 import 'package:vestra/core/l10n/l10n.dart';
 import 'package:vestra/core/theme/app_tokens.dart';
 import 'package:vestra/core/theme/app_typography.dart';
@@ -52,7 +53,12 @@ class QuoteTile extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.xxs),
                 Text(
-                  instrumentSubtitle(l10n, quote.instrument),
+                  // Stocks: company name from the market snapshot.
+                  quote.instrument.type == AssetType.stock && quote.name != null
+                      ? quote.name!
+                      : instrumentSubtitle(l10n, quote.instrument),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall,
                 ),
               ],

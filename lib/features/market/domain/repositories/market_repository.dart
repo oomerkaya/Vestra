@@ -26,11 +26,12 @@ abstract interface class MarketRepository {
   /// Cached quotes; emits again whenever the cache changes.
   Stream<Result<List<Quote>>> watchQuotes();
 
-  /// Fetches only the given [categories] and stores them. Stocks are
-  /// fetched for [stockSymbols] (one batched request) and skipped if empty.
+  /// Fetches only the given [categories] and stores them. Stocks: the whole
+  /// BIST market when [stockSymbols] is `null` (one request), otherwise
+  /// only those symbols; an empty set fetches nothing.
   Future<Result<RefreshReport>> refresh({
     required Set<QuoteCategory> categories,
-    required Set<String> stockSymbols,
+    Set<String>? stockSymbols,
   });
 
   Future<Result<QuotaUsage>> quotaUsage();

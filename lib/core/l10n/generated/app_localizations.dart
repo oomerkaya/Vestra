@@ -1035,6 +1035,66 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'{quantity} × {price}'**
   String txLine(String quantity, String price);
+
+  /// No description provided for @marketSectionMine.
+  ///
+  /// In tr, this message translates to:
+  /// **'Portföyümde'**
+  String get marketSectionMine;
+
+  /// No description provided for @marketSectionAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümü'**
+  String get marketSectionAll;
+
+  /// No description provided for @marketSectionIndices.
+  ///
+  /// In tr, this message translates to:
+  /// **'Endeksler'**
+  String get marketSectionIndices;
+
+  /// No description provided for @marketBist30.
+  ///
+  /// In tr, this message translates to:
+  /// **'BIST 30'**
+  String get marketBist30;
+
+  /// No description provided for @marketBist100.
+  ///
+  /// In tr, this message translates to:
+  /// **'BIST 100'**
+  String get marketBist100;
+
+  /// No description provided for @marketNoHoldingsInCategory.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kategoride portföyünde varlık yok.'**
+  String get marketNoHoldingsInCategory;
+
+  /// No description provided for @marketIndexNoPrices.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fiyatlar seans açıldığında ilk güncellemeyle gelir.'**
+  String get marketIndexNoPrices;
+
+  /// No description provided for @marketIndexValidUntil.
+  ///
+  /// In tr, this message translates to:
+  /// **'Endeks bileşimi {date} tarihine kadar geçerli.'**
+  String marketIndexValidUntil(String date);
+
+  /// No description provided for @marketIndexOutdated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Endeks listesi {date} tarihli, güncel olmayabilir.'**
+  String marketIndexOutdated(String date);
+
+  /// No description provided for @marketCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count}'**
+  String marketCount(String count);
 }
 
 class _AppLocalizationsDelegate

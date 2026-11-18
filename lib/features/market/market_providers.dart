@@ -15,6 +15,7 @@ import 'package:vestra/features/market/data/providers/burkut_price_provider.dart
 import 'package:vestra/features/market/data/providers/frankfurter_fx_provider.dart';
 import 'package:vestra/features/market/data/repositories/market_repository_impl.dart';
 import 'package:vestra/features/market/data/repositories/stock_directory_repository_impl.dart';
+import 'package:vestra/features/market/domain/entities/bist_indices.dart';
 import 'package:vestra/features/market/domain/entities/market_calendar.dart';
 import 'package:vestra/features/market/domain/entities/quota_usage.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
@@ -123,3 +124,29 @@ final stockListingsProvider = FutureProvider<List<StockListing>>((ref) async {
     Err(:final failure) => throw failure,
   };
 });
+
+/// BIST 30 / BIST 100 constituents from `assets/data/bist_indices.json`.
+final bistIndicesProvider = FutureProvider<BistIndices>((ref) async {
+  try {
+    final raw = await rootBundle.loadString('assets/data/bist_indices.json');
+    return BistIndices.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+  } on Object catch (error) {
+    AppLogger.warning('bist indices unavailable: $error');
+    return BistIndices.empty;
+  }
+});
+
+enum BistIndex { bist30, bist100 }
+
+/// Which index the Borsa tab lists (kept while the app runs).
+final selectedBistIndexProvider =
+    NotifierProvider<SelectedBistIndex, BistIndex>(SelectedBistIndex.new);
+
+class SelectedBistIndex extends Notifier<BistIndex> {
+  @override
+  BistIndex build() => BistIndex.bist30;
+
+  // A setter would hide intent at call sites.
+  // ignore: use_setters_to_change_properties
+  void select(BistIndex index) => state = index;
+}

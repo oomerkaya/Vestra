@@ -122,6 +122,42 @@ Toplam **153 test**, hepsi geçti (Faz 3 sonunda 127, +26).
 
 Testler (157): seans dışında eklenen hissede sadece o sembol isteniyor, 5 dk sonra tekrar istenmiyor; ertesi sabah tüm hisseler birlikte güncelleniyor; fiyat dönmeyen sembol her dakika denenmiyor.
 
+## Sonradan eklenen: piyasada "Portföyümde / Tümü" ve BIST 30 / 100 (2026-11-18)
+
+**İstek:** Her piyasa sekmesinde açılıp kapanan iki bölüm olsun: portföydeki enstrümanlar ve tümü. Borsada "tümü" yerine BIST 30 / BIST 100 seçenekleri olsun. Soru: API isteği artar mı?
+
+**Cevap: Artmaz.**
+- `/forex` ve `/gold` zaten tüm listeyi tek istekte getiriyordu.
+- `/stocks` parametresiz çağrılınca tüm piyasayı (634 hisse) yine **tek istekte** döndürüyor, yani portföydekileri istemekle aynı maliyet.
+- Hisselerde düzenli güncelleme artık tüm piyasayı çekiyor. Bunun yan faydası: seans kapalıyken eklenen hissenin fiyatı son seansın anlık görüntüsünden hazır geliyor. Yalnızca anlık görüntüde olmayan bir sembol (ör. yeni halka arz) için tek hisselik istek atılıyor.
+
+**Endeks verisi:** Bürküt'te yok. Kullanıcının anahtarıyla denendi: `/indices` → 404 (kotadan düşmedi), `/stocks?index=XU030` → parametre yok sayıldı, 634 hissenin tamamı döndü (1 istek). Bu yüzden BIST 30 ve BIST 100 üyeleri `assets/data/bist_indices.json` dosyasında tutuluyor:
+- Kaynak: 2026 4. çeyrek dönemi (1 Ekim - 31 Aralık 2026) listesi, Milliyet Uzmanpara'dan 2026-11-18'de alındı.
+- Duyurulan dönem değişiklikleriyle karşılaştırıldı (BIST 30'a TRMET girdi, DSTKF çıktı). BIST 30 ⊂ BIST 100 ve tüm semboller Bürküt piyasa listesinde var.
+- Dönem bitince ekranda "Endeks listesi … tarihli, güncel olmayabilir" uyarısı çıkıyor.
+- Dosya her çeyrek güncellenmeli.
+
+**Arayüz:**
+- `CollapsibleSection`: açılır-kapanır kart. Durumu sekme değişince korunuyor (`PageStorage`).
+- Her sekmede iki bölüm var: **Portföyümde** (sayı ile) ve **Tümü** (Borsa'da **Endeksler**, BIST 30 / BIST 100 seçimiyle). Portföyde o kategoriden bir şey yoksa ikinci bölüm açık başlıyor.
+- Hisse satırlarında alt yazı artık şirket adı (piyasa verisinden geliyor).
+
+| Döviz | Borsa, Endeksler |
+|---|---|
+| ![](images/market_sections_fx.png) | ![](images/market_sections_borsa.png) |
+
+**Kod:**
+- `StockPriceProvider.fetchQuotes({symbols})`: `null` = tüm piyasa.
+- `MarketRepository.refresh(stockSymbols: null)` aynı şekilde.
+- Denetleyici: düzenli hisse güncellemesi elde hisse olmasa da yapılıyor. Hisselerin "son güncelleme" zamanı, tutulan hisselerin en eskisi; tutulan hisse yoksa en yeni anlık görüntü.
+- Yeni: `BistIndices`, `bistIndicesProvider`, `selectedBistIndexProvider`, `heldInstrumentsProvider`.
+
+**Testler (164):**
+- Endeks dosyası bütünlüğü: 30 ve 100 tekil sembol, alt küme, sembol biçimi, geçerlilik.
+- Tüm piyasa tek istek.
+- Anlık görüntüde olan yeni hisse için istek gitmiyor; anlık görüntüde olmayan hisse için yalnızca o sembol isteniyor.
+- Ertesi seans yine tüm piyasa güncelleniyor.
+
 ## Bilinen eksikler / sonraki faza devredilenler
 
 - **ABD borsası:** Finnhub'dan yazılı onay bekleniyor (Faz 3 dokümanı).

@@ -86,10 +86,10 @@ void main() {
       {'symbol': 'ASELS', 'price': 65.9},
     ]);
 
-    final response = await source.getStocks('bk_live_fake', [
-      'thyao',
-      'ASELS',
-    ]);
+    final response = await source.getStocks(
+      'bk_live_fake',
+      symbols: ['thyao', 'ASELS'],
+    );
 
     expect(response.items.map((i) => i.symbol), ['THYAO', 'ASELS']);
     expect(adapter.lastRequest!.queryParameters['symbols'], 'THYAO,ASELS');

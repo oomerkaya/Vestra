@@ -60,12 +60,16 @@ class BurkutPriceProvider
   );
 
   @override
-  Future<Result<List<Quote>>> fetchQuotes(List<String> symbols) {
-    if (symbols.isEmpty) return Future.value(const Success(<Quote>[]));
+  Future<Result<List<Quote>>> fetchQuotes({List<String>? symbols}) {
+    if (symbols != null && symbols.isEmpty) {
+      return Future.value(const Success(<Quote>[]));
+    }
     return _call(
       'stocks',
       (key) async => [
-        for (final dto in await _items(_remote.getStocks(key, symbols)))
+        for (final dto in await _items(
+          _remote.getStocks(key, symbols: symbols),
+        ))
           _quote((type: AssetType.stock, code: dto.symbol), dto),
       ],
     );

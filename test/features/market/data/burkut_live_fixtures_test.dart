@@ -108,7 +108,7 @@ void main() {
 
   test('/stocks: price and changePercent', () async {
     final quotes = byCode(
-      (await provider.fetchQuotes(['THYAO', 'ASELS'])).valueOrNull!,
+      (await provider.fetchQuotes(symbols: ['THYAO', 'ASELS'])).valueOrNull!,
     );
 
     expect(quotes['THYAO']!.priceTry, d('323.75'));

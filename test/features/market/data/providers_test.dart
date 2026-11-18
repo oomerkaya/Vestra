@@ -221,7 +221,9 @@ void main() {
     });
 
     test('stocks: spec shape, one request, empty list sends nothing', () async {
-      when(() => remote.getStocks(any(), any())).thenAnswer(
+      when(
+        () => remote.getStocks(any(), symbols: any(named: 'symbols')),
+      ).thenAnswer(
         (_) async => _response([
           {
             'symbol': 'THYAO',
@@ -233,17 +235,20 @@ void main() {
         ]),
       );
 
-      expect((await provider().fetchQuotes([])).valueOrNull, isEmpty);
-      verifyNever(() => remote.getStocks(any(), any()));
+      expect((await provider().fetchQuotes(symbols: [])).valueOrNull, isEmpty);
+      verifyNever(
+        () => remote.getStocks(any(), symbols: any(named: 'symbols')),
+      );
 
-      final thyao = (await provider().fetchQuotes([
-        'THYAO',
-        'ASELS',
-      ])).valueOrNull!.single;
+      final thyao = (await provider().fetchQuotes(
+        symbols: ['THYAO', 'ASELS'],
+      )).valueOrNull!.single;
       expect(thyao.instrument, (type: AssetType.stock, code: 'THYAO'));
       expect(thyao.priceTry, d('304.5'));
       expect(thyao.changePercent, d('2.44'));
-      verify(() => remote.getStocks(any(), ['THYAO', 'ASELS'])).called(1);
+      verify(
+        () => remote.getStocks(any(), symbols: ['THYAO', 'ASELS']),
+      ).called(1);
       expect((await quota.current()).used, 1);
     });
 
