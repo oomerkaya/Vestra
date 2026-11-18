@@ -62,32 +62,53 @@ void main() {
     });
   });
 
-  group('Bürküt DTOs (SDK field names)', () {
-    test('rate item', () {
-      final dto = BurkutRateDto.fromJson({
-        'symbol': 'usd',
-        'name': 'Amerikan Doları',
-        'buying': 42.1,
-        'selling': 42.2,
-        'change_rate': -0.35,
-      })!;
-      expect(dto.symbol, 'USD');
-      expect(dto.buying, d('42.1'));
-      expect(dto.changeRate, d('-0.35'));
+  group('BurkutPriceDto (REST spec and SDK field names)', () {
+    BurkutPriceDto? parse(Map<String, dynamic> json) =>
+        BurkutPriceDto.fromJson({'symbol': 'x', ...json});
+
+    test('price: buying, then price, then last_price', () {
+      expect(parse({'buying': 1, 'price': 2, 'last_price': 3})!.price, d('1'));
+      expect(parse({'price': 2, 'last_price': '3'})!.price, d('2'));
+      expect(parse({'last_price': '312.50'})!.price, d('312.50'));
+      expect(parse({'selling': 4}), isNull, reason: 'no usable price');
     });
 
-    test('items without symbol or price are dropped', () {
-      expect(BurkutRateDto.fromJson({'symbol': 'USD'}), isNull);
-      expect(BurkutStockDto.fromJson({'last_price': 1}), isNull);
+    test('change: changePercent, dailyChangePct or change_rate', () {
+      expect(
+        parse({'price': 1, 'changePercent': 2.44})!.changePercent,
+        d('2.44'),
+      );
+      expect(
+        parse({'price': 1, 'dailyChangePct': 0.62})!.changePercent,
+        d('0.62'),
+      );
+      expect(
+        parse({'price': 1, 'change_rate': -0.35})!.changePercent,
+        d('-0.35'),
+      );
     });
 
-    test('stock item', () {
-      final dto = BurkutStockDto.fromJson({
-        'symbol': 'THYAO',
-        'last_price': '312.50',
-        'change_rate': 1.2,
-      })!;
-      expect(dto.lastPrice, d('312.50'));
+    test('time: updatedAt or time', () {
+      expect(
+        parse({'price': 1, 'updatedAt': '2026-10-15T15:30:00Z'})!.updatedAt,
+        DateTime.utc(2026, 10, 15, 15, 30),
+      );
+      expect(
+        parse({'price': 1, 'time': '2026-10-15T15:30:00Z'})!.updatedAt,
+        DateTime.utc(2026, 10, 15, 15, 30),
+      );
+    });
+
+    test('symbol is upper-cased; missing symbol drops the item', () {
+      expect(parse({'price': 1})!.symbol, 'X');
+      expect(BurkutPriceDto.fromJson({'price': 1}), isNull);
+    });
+
+    test('isTry is derived from unit', () {
+      expect(parse({'price': 1, 'unit': 'TL/Gr'})!.isTry, isTrue);
+      expect(parse({'price': 1, 'unit': 'TL/Adet'})!.isTry, isTrue);
+      expect(parse({'price': 1})!.isTry, isTrue);
+      expect(parse({'price': 1, 'unit': 'USD/Ons'})!.isTry, isFalse);
     });
   });
 

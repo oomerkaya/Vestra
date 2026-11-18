@@ -25,6 +25,7 @@ String instrumentName(
     (type: AssetType.gold, code: 'YARIM') => l10n.instrumentGoldHalf,
     (type: AssetType.gold, code: 'TAM') => l10n.instrumentGoldFull,
     (type: AssetType.gold, code: 'CUMHURIYET') => l10n.instrumentGoldRepublic,
+    (type: AssetType.gold, code: 'ATA') => l10n.instrumentGoldAta,
     (type: AssetType.silver, code: 'SILVER_GRAM') => l10n.instrumentSilverGram,
     _ => null,
   };
@@ -38,6 +39,7 @@ String instrumentShortLabel(Instrument instrument) => switch (instrument) {
   (type: AssetType.gold, code: 'YARIM') => '½',
   (type: AssetType.gold, code: 'TAM') => '1',
   (type: AssetType.gold, code: 'CUMHURIYET') => 'CMH',
+  (type: AssetType.gold, code: 'ATA') => 'ATA',
   (type: AssetType.silver, code: _) => 'AG',
   _ => instrument.code,
 };
@@ -46,7 +48,7 @@ String instrumentShortLabel(Instrument instrument) => switch (instrument) {
 int instrumentOrder(Instrument instrument) {
   const order = [
     'USD', 'EUR', 'GBP', //
-    'GRAM', 'CEYREK', 'YARIM', 'TAM', 'CUMHURIYET', 'SILVER_GRAM',
+    'GRAM', 'CEYREK', 'YARIM', 'TAM', 'CUMHURIYET', 'ATA', 'SILVER_GRAM',
   ];
   final index = order.indexOf(instrument.code);
   return index == -1 ? order.length : index;

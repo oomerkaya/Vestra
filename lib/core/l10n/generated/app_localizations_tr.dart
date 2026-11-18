@@ -258,4 +258,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get exchangeBist => 'Borsa İstanbul';
+
+  @override
+  String get instrumentGoldAta => 'Ata Altın';
 }

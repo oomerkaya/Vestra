@@ -100,5 +100,6 @@
   "apiKeyHide": "Gizle",
   "unitGram": "gram",
   "unitPiece": "adet",
-  "exchangeBist": "Borsa İstanbul"
+  "exchangeBist": "Borsa İstanbul",
+  "instrumentGoldAta": "Ata Altın"
 }

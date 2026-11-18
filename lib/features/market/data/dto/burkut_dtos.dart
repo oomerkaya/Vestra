@@ -1,66 +1,71 @@
 import 'package:decimal/decimal.dart';
 import 'package:vestra/features/market/data/dto/json_parsing.dart';
 
-/// `/forex` and `/gold` item. Field names from the official SDK
-/// (github.com/sametakan29/burkut-sdks, `nodejs/src/types.ts`).
-class BurkutRateDto {
-  const BurkutRateDto({
+/// One item from `/forex`, `/gold` or `/stocks`.
+///
+/// Two sources disagree on field names, so every field is read leniently:
+/// - Bürküt AI/REST spec (`price`, `changePercent`, `dailyChangePct`,
+///   `updatedAt`, `buying`/`selling` only on `/gold`, `unit`),
+/// - official SDK types (`buying`, `selling`, `last_price`, `change_rate`,
+///   `time`).
+/// Whichever the live API uses, parsing works. See
+/// docs/faz-3-piyasa-verisi.md, "Bürküt API spesifikasyonu".
+class BurkutPriceDto {
+  const BurkutPriceDto({
     required this.symbol,
-    required this.buying,
-    this.selling,
+    required this.price,
     this.name,
-    this.changeRate,
-    this.time,
+    this.changePercent,
+    this.updatedAt,
+    this.unit,
   });
 
-  static BurkutRateDto? fromJson(Map<String, dynamic> json) {
-    final symbol = json['symbol']?.toString();
-    final buying = parseDecimal(json['buying']);
-    if (symbol == null || buying == null) return null;
-    return BurkutRateDto(
+  /// `null` when the item has no symbol or no usable price.
+  static BurkutPriceDto? fromJson(Map<String, dynamic> json) {
+    final symbol = json['symbol']?.toString().trim();
+    // Buying price first (conservative value for a holding), then the
+    // single quoted price, then the SDK's stock field.
+    final price =
+        parseDecimal(json['buying']) ??
+        parseDecimal(json['price']) ??
+        parseDecimal(json['last_price']);
+    if (symbol == null || symbol.isEmpty || price == null) return null;
+    return BurkutPriceDto(
       symbol: symbol.toUpperCase(),
-      buying: buying,
-      selling: parseDecimal(json['selling']),
+      price: price,
       name: json['name']?.toString(),
-      changeRate: parseDecimal(json['change_rate']),
-      time: parseDateTime(json['time']),
+      changePercent:
+          parseDecimal(json['changePercent']) ??
+          parseDecimal(json['dailyChangePct']) ??
+          parseDecimal(json['change_rate']),
+      updatedAt: parseDateTime(json['updatedAt'] ?? json['time']),
+      unit: json['unit']?.toString(),
     );
   }
 
   final String symbol;
-  final Decimal buying;
-  final Decimal? selling;
+  final Decimal price;
   final String? name;
-  final Decimal? changeRate;
-  final DateTime? time;
+
+  /// Daily change in percent (`2.44` = +2.44 %).
+  final Decimal? changePercent;
+  final DateTime? updatedAt;
+
+  /// Only on `/gold`, e.g. `TL/Gr`, `TL/Adet`, `USD/Ons`.
+  final String? unit;
+
+  /// False when the provider says the price is not in TRY (e.g. `USD/Ons`).
+  bool get isTry {
+    final u = unit?.toUpperCase();
+    return u == null || u.startsWith('TL') || u.startsWith('TRY');
+  }
 }
 
-/// `/stocks` item.
-class BurkutStockDto {
-  const BurkutStockDto({
-    required this.symbol,
-    required this.lastPrice,
-    this.name,
-    this.changeRate,
-    this.time,
-  });
+/// Parsed list plus the monthly quota the server reports in
+/// `X-Quota-Remaining` (if present).
+class BurkutResponse {
+  const BurkutResponse(this.items, {this.quotaRemaining});
 
-  static BurkutStockDto? fromJson(Map<String, dynamic> json) {
-    final symbol = json['symbol']?.toString();
-    final price = parseDecimal(json['last_price']);
-    if (symbol == null || price == null) return null;
-    return BurkutStockDto(
-      symbol: symbol.toUpperCase(),
-      lastPrice: price,
-      name: json['name']?.toString(),
-      changeRate: parseDecimal(json['change_rate']),
-      time: parseDateTime(json['time']),
-    );
-  }
-
-  final String symbol;
-  final Decimal lastPrice;
-  final String? name;
-  final Decimal? changeRate;
-  final DateTime? time;
+  final List<BurkutPriceDto> items;
+  final int? quotaRemaining;
 }

@@ -16,7 +16,8 @@ import 'package:vestra/features/settings/domain/repositories/api_key_repository.
 ///
 /// Before each request: needs an API key (else `AuthFailure(missingKey)`)
 /// and remaining quota (else `QuotaExceededFailure`); no request is sent in
-/// either case. Every sent request is counted.
+/// either case. Every sent request is counted, and the local counter is
+/// synced to the server's `X-Quota-Remaining` whenever it is reported.
 class BurkutPriceProvider
     implements
         FxRateProvider,
@@ -39,9 +40,9 @@ class BurkutPriceProvider
   Future<Result<List<Quote>>> fetchRates() => _call(
     'forex',
     (key) async => [
-      for (final dto in await _remote.getForex(key))
+      for (final dto in await _items(_remote.getForex(key)))
         if (burkutForexInstrument(dto.symbol) case final instrument?)
-          _rateQuote(instrument, dto),
+          _quote(instrument, dto),
     ],
   );
 
@@ -49,9 +50,10 @@ class BurkutPriceProvider
   Future<Result<List<Quote>>> fetchPrices() => _call(
     'gold',
     (key) async => [
-      for (final dto in await _remote.getGold(key))
-        if (burkutMetalSymbols[dto.symbol] case final instrument?)
-          _rateQuote(instrument, dto),
+      for (final dto in await _items(_remote.getGold(key)))
+        if (dto.isTry)
+          if (burkutMetalSymbols[dto.symbol] case final instrument?)
+            _quote(instrument, dto),
     ],
   );
 
@@ -61,8 +63,8 @@ class BurkutPriceProvider
     return _call(
       'stocks',
       (key) async => [
-        for (final dto in await _remote.getStocks(key, symbols))
-          _stockQuote(dto),
+        for (final dto in await _items(_remote.getStocks(key, symbols)))
+          _quote((type: AssetType.stock, code: dto.symbol), dto),
       ],
     );
   }
@@ -74,7 +76,7 @@ class BurkutPriceProvider
     if (usage.isExhausted) return const Err(QuotaExceededFailure());
     await _quota.recordRequest();
     try {
-      await _remote.getForex(key);
+      await _items(_remote.getForex(key));
       return const Success(null);
     } on DioException catch (e) {
       return Err(await _handle(e));
@@ -110,23 +112,22 @@ class BurkutPriceProvider
     return failure;
   }
 
-  Quote _rateQuote(Instrument instrument, BurkutRateDto dto) => Quote(
-    instrument: instrument,
-    priceTry: dto.buying,
-    source: QuoteSource.burkut,
-    fetchedAt: _clock(),
-    name: dto.name,
-    changePercent: dto.changeRate,
-    asOf: dto.time,
-  );
+  /// Unwraps a response and syncs the quota counter if the server
+  /// reported the remaining monthly requests.
+  Future<List<BurkutPriceDto>> _items(Future<BurkutResponse> call) async {
+    final response = await call;
+    final remaining = response.quotaRemaining;
+    if (remaining != null) await _quota.syncRemaining(remaining);
+    return response.items;
+  }
 
-  Quote _stockQuote(BurkutStockDto dto) => Quote(
-    instrument: (type: AssetType.stock, code: dto.symbol),
-    priceTry: dto.lastPrice,
+  Quote _quote(Instrument instrument, BurkutPriceDto dto) => Quote(
+    instrument: instrument,
+    priceTry: dto.price,
     source: QuoteSource.burkut,
     fetchedAt: _clock(),
     name: dto.name,
-    changePercent: dto.changeRate,
-    asOf: dto.time,
+    changePercent: dto.changePercent,
+    asOf: dto.updatedAt,
   );
 }

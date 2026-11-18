@@ -21,6 +21,14 @@ class _MockBurkut extends Mock implements BurkutRemoteDataSource {}
 
 class _MockFrankfurter extends Mock implements FrankfurterRemoteDataSource {}
 
+/// Builds a response from raw JSON items, as the API would send them.
+BurkutResponse _response(
+  List<Map<String, dynamic>> items, {
+  int? remaining,
+}) => BurkutResponse([
+  for (final json in items) ?BurkutPriceDto.fromJson(json),
+], quotaRemaining: remaining);
+
 void main() {
   late AppDatabase db;
   late QuotaLocalDataSource quota;
@@ -45,47 +53,126 @@ void main() {
   );
 
   group('BurkutPriceProvider', () {
-    test('maps forex and counts one request', () async {
+    test('forex: REST spec shape (price only) is mapped', () async {
       when(() => remote.getForex(any())).thenAnswer(
-        (_) async => [
-          BurkutRateDto(symbol: 'USD', buying: d('42.10'), selling: d('42.2')),
-          BurkutRateDto(symbol: 'XAU', buying: d('1')), // metal code: skipped
-          BurkutRateDto(symbol: 'GRAM-ALTIN', buying: d('1')), // skipped
-        ],
+        (_) async => _response([
+          // Sample item from Bürküt's REST spec.
+          {
+            'symbol': 'USD',
+            'name': 'Amerikan Doları',
+            'price': 38.42,
+            'changePercent': 0.15,
+            'updatedAt': '2026-10-15T15:30:00Z',
+          },
+          {'symbol': 'XAU', 'price': 1}, // metal code: skipped
+          {'symbol': 'GRAM-ALTIN', 'price': 1}, // not ISO: skipped
+        ]),
       );
 
-      final result = await provider().fetchRates();
+      final quotes = (await provider().fetchRates()).valueOrNull!;
 
-      final quotes = result.valueOrNull!;
-      expect(quotes.first.instrument, (
-        type: AssetType.currency,
-        code: 'USD',
-      ));
-      expect(quotes.first.priceTry, d('42.10'), reason: 'uses buying price');
       expect(quotes, hasLength(1));
+      final usd = quotes.single;
+      expect(usd.instrument, (type: AssetType.currency, code: 'USD'));
+      expect(usd.priceTry, d('38.42'));
+      expect(usd.changePercent, d('0.15'));
+      expect(usd.asOf, DateTime.utc(2026, 10, 15, 15, 30));
       expect((await quota.current()).used, 1);
     });
 
-    test('maps known gold/silver symbols and ignores unknown ones', () async {
-      when(() => remote.getGold(any())).thenAnswer(
-        (_) async => [
-          BurkutRateDto(symbol: 'ALTIN', buying: d('3500')),
-          BurkutRateDto(symbol: 'CEYREK_YENI', buying: d('5700')),
-          BurkutRateDto(symbol: 'GUMUS', buying: d('42')),
-          BurkutRateDto(symbol: 'BILINMEYEN', buying: d('1')),
-        ],
+    test('forex: SDK shape (buying/change_rate) still works', () async {
+      when(() => remote.getForex(any())).thenAnswer(
+        (_) async => _response([
+          {'symbol': 'EUR', 'buying': 42.1, 'selling': 42.2, 'change_rate': -1},
+        ]),
       );
 
-      final quotes = (await provider().fetchPrices()).valueOrNull!;
+      final eur = (await provider().fetchRates()).valueOrNull!.single;
 
-      expect(
-        quotes.map((q) => q.instrument),
-        [
+      expect(eur.priceTry, d('42.1'));
+      expect(eur.changePercent, d('-1'));
+    });
+
+    test('forex: USDTRY / USD/TRY symbols are normalised', () async {
+      when(() => remote.getForex(any())).thenAnswer(
+        (_) async => _response([
+          {'symbol': 'USDTRY', 'price': 38},
+          {'symbol': 'EUR/TRY', 'price': 42},
+        ]),
+      );
+
+      final codes = (await provider().fetchRates()).valueOrNull!.map(
+        (q) => q.instrument.code,
+      );
+
+      expect(codes, ['USD', 'EUR']);
+    });
+
+    test(
+      'gold: spec symbols, buying price, USD-priced items skipped',
+      () async {
+        when(() => remote.getGold(any())).thenAnswer(
+          (_) async => _response([
+            {
+              'symbol': 'ALTIN',
+              'unit': 'TL/Gr',
+              'buying': 3178.2,
+              'selling': 3180.5,
+              'price': 3180.5,
+              'dailyChangePct': 0.62,
+            },
+            {
+              'symbol': 'XAUUSD',
+              'unit': 'USD/Ons',
+              'buying': 2574.1,
+              'price': 2574.8,
+            },
+            {'symbol': 'CEYREK_YENI', 'unit': 'TL/Adet', 'buying': 5180},
+            {'symbol': 'YARIM', 'unit': 'TL/Adet', 'buying': 10360},
+            {'symbol': 'TAM', 'unit': 'TL/Adet', 'buying': 20720},
+            {'symbol': 'CUMHURIYET', 'unit': 'TL/Adet', 'buying': 21300},
+            {'symbol': 'ATA', 'unit': 'TL/Adet', 'buying': 21400},
+            {'symbol': 'GUMTRY', 'unit': 'TL/Gr', 'buying': 42},
+            {'symbol': 'PLATIN', 'unit': 'TL/Gr', 'buying': 1500},
+          ]),
+        );
+
+        final quotes = (await provider().fetchPrices()).valueOrNull!;
+
+        expect(quotes.map((q) => q.instrument), [
           (type: AssetType.gold, code: 'GRAM'),
           (type: AssetType.gold, code: 'CEYREK'),
+          (type: AssetType.gold, code: 'YARIM'),
+          (type: AssetType.gold, code: 'TAM'),
+          (type: AssetType.gold, code: 'CUMHURIYET'),
+          (type: AssetType.gold, code: 'ATA'),
           (type: AssetType.silver, code: 'SILVER_GRAM'),
-        ],
-      );
+        ]);
+        expect(quotes.first.priceTry, d('3178.2'), reason: 'buying, not price');
+        expect(quotes.first.changePercent, d('0.62'));
+      },
+    );
+
+    test('server X-Quota-Remaining overrides the local estimate', () async {
+      when(
+        () => remote.getGold(any()),
+      ).thenAnswer((_) async => _response([], remaining: 688));
+
+      await provider().fetchPrices();
+
+      final usage = await quota.current();
+      expect(usage.used, 312);
+      expect(usage.isExhausted, isFalse);
+    });
+
+    test('X-Quota-Remaining of 0 marks the quota exhausted', () async {
+      when(
+        () => remote.getGold(any()),
+      ).thenAnswer((_) async => _response([], remaining: 0));
+
+      await provider().fetchPrices();
+
+      expect((await quota.current()).isExhausted, isTrue);
     });
 
     test('no key: fails without sending a request', () async {
@@ -133,25 +220,35 @@ void main() {
       expect((await quota.current()).isExhausted, isTrue);
     });
 
-    test('stocks: one batched request, empty list sends nothing', () async {
+    test('stocks: spec shape, one request, empty list sends nothing', () async {
       when(() => remote.getStocks(any(), any())).thenAnswer(
-        (_) async => [BurkutStockDto(symbol: 'THYAO', lastPrice: d('312.5'))],
+        (_) async => _response([
+          {
+            'symbol': 'THYAO',
+            'name': 'TURK HAVA YOLLARI',
+            'price': 304.5,
+            'change': 7.25,
+            'changePercent': 2.44,
+          },
+        ]),
       );
 
       expect((await provider().fetchQuotes([])).valueOrNull, isEmpty);
       verifyNever(() => remote.getStocks(any(), any()));
 
-      final quotes = (await provider().fetchQuotes([
+      final thyao = (await provider().fetchQuotes([
         'THYAO',
         'ASELS',
-      ])).valueOrNull!;
-      expect(quotes.single.instrument, (type: AssetType.stock, code: 'THYAO'));
+      ])).valueOrNull!.single;
+      expect(thyao.instrument, (type: AssetType.stock, code: 'THYAO'));
+      expect(thyao.priceTry, d('304.5'));
+      expect(thyao.changePercent, d('2.44'));
       verify(() => remote.getStocks(any(), ['THYAO', 'ASELS'])).called(1);
       expect((await quota.current()).used, 1);
     });
 
     test('validate() sends one request with the candidate key', () async {
-      when(() => remote.getForex(any())).thenAnswer((_) async => []);
+      when(() => remote.getForex(any())).thenAnswer((_) async => _response([]));
 
       final result = await provider().validate('bk_live_candidate_1');
 
@@ -199,12 +296,18 @@ void main() {
       expect((await q.current()).period, '2026-12');
     });
 
-    test('is exhausted at the limit', () async {
+    test('remaining is limit minus used', () async {
       for (var i = 0; i < 3; i++) {
         await quota.recordRequest();
       }
       final usage = await quota.current();
       expect(usage.remaining, 997);
+      expect(usage.isExhausted, isFalse);
+    });
+
+    test('syncRemaining clamps values above the free limit', () async {
+      final usage = await quota.syncRemaining(49000);
+      expect(usage.used, 0);
       expect(usage.isExhausted, isFalse);
     });
   });

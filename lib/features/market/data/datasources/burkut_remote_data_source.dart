@@ -4,38 +4,41 @@ import 'package:vestra/features/market/data/dto/json_parsing.dart';
 
 /// Raw HTTP access to the Bürküt public API. Throws [DioException].
 ///
-/// Endpoints and auth taken from the official SDK source
-/// (`DEFAULT_BASE_URL`, `X-API-Key` header). Every call costs one request
-/// from the user's monthly quota.
+/// Base URL and `X-API-Key` auth from the official SDK and Bürküt's REST
+/// spec. Every call costs one request from the monthly quota (free plan:
+/// 1,000/month, 10/minute).
 class BurkutRemoteDataSource {
   BurkutRemoteDataSource(this._dio);
 
   static const String baseUrl = 'https://api.burkutportfoy.com/api/public/v1';
+  static const String quotaHeader = 'x-quota-remaining';
 
   final Dio _dio;
 
-  Future<List<BurkutRateDto>> getForex(String apiKey) async =>
-      _rates(await _get('/forex', apiKey));
+  Future<BurkutResponse> getForex(String apiKey) => _get('/forex', apiKey);
 
-  Future<List<BurkutRateDto>> getGold(String apiKey) async =>
-      _rates(await _get('/gold', apiKey));
+  Future<BurkutResponse> getGold(String apiKey) => _get('/gold', apiKey);
 
-  /// All [symbols] in a single request (`?symbols=A,B,C`).
-  Future<List<BurkutStockDto>> getStocks(
-    String apiKey,
-    List<String> symbols,
-  ) async {
-    final data = await _get(
+  /// The REST spec says `/stocks` returns the whole market (560+ stocks)
+  /// for one request; `symbols` is sent as a hint (supported by the SDK)
+  /// and the result is filtered to [symbols] either way.
+  Future<BurkutResponse> getStocks(String apiKey, List<String> symbols) async {
+    final wanted = {for (final s in symbols) s.toUpperCase()};
+    final response = await _get(
       '/stocks',
       apiKey,
-      query: {'symbols': symbols.map((s) => s.toUpperCase()).join(',')},
+      query: {'symbols': wanted.join(',')},
     );
-    return [
-      for (final json in unwrapList(data)) ?BurkutStockDto.fromJson(json),
-    ];
+    return BurkutResponse(
+      [
+        for (final dto in response.items)
+          if (wanted.contains(dto.symbol)) dto,
+      ],
+      quotaRemaining: response.quotaRemaining,
+    );
   }
 
-  Future<Object?> _get(
+  Future<BurkutResponse> _get(
     String path,
     String apiKey, {
     Map<String, String>? query,
@@ -45,10 +48,14 @@ class BurkutRemoteDataSource {
       queryParameters: query,
       options: Options(headers: {'X-API-Key': apiKey}),
     );
-    return response.data;
+    return BurkutResponse(
+      [
+        for (final json in unwrapList(response.data))
+          ?BurkutPriceDto.fromJson(json),
+      ],
+      quotaRemaining: int.tryParse(
+        response.headers.value(quotaHeader)?.trim() ?? '',
+      ),
+    );
   }
-
-  List<BurkutRateDto> _rates(Object? data) => [
-    for (final json in unwrapList(data)) ?BurkutRateDto.fromJson(json),
-  ];
 }

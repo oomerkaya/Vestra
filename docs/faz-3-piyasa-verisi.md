@@ -28,9 +28,31 @@ Ekran görüntülerindeki fiyatlar **örnek veridir**; ekranı göstermek için 
 | Bürküt uç noktaları | `GET /forex`, `/forex/{sym}`, `/gold`, `/gold/{sym}`, `/stocks?symbols=A,B`, `/stocks/{sym}` | SDK `resources/*.ts` |
 | Yanıt biçimi | `{data: [...]}` ya da düz liste. Alanlar: döviz/altın `symbol, name, buying, selling, change_rate, time`; hisse `symbol, name, last_price, change_rate, time` | SDK `types.ts` |
 | Hata kodları | 401 geçersiz anahtar, 403 yetki yok, 429 + `MONTHLY_QUOTA_EXCEEDED` aylık kota, 429 + `Retry-After` dakikalık limit | SDK `errors.ts`, `client.ts` |
-| Ücretsiz plan | **Ayda 1.000 istek**, kredi kartı gerekmez. Dakikalık limit açıklanmamış | burkutportfoy.com/developers (SSS) |
+| Ücretsiz plan | **Ayda 1.000 istek**, kredi kartı gerekmez. Dakikada 10 istek (REST spesifikasyonu) | burkutportfoy.com/developers (SSS), REST spesifikasyonu |
 | Gecikme / yasal durum | BIST verisi en az 15 dk gecikmeli. Bürküt lisanslı veri dağıtıcısı değildir; eğitim/kişisel kullanım amaçlıdır | PyPI `burkut` sayfası |
-| Altın sembolleri | SDK örneklerinde yalnızca `ALTIN` (gram) ve `CEYREK_YENI` görünüyor. Diğerleri ve gümüş **doğrulanmadı** | SDK README, PyPI |
+| Altın sembolleri | İlk araştırmada yalnızca `ALTIN` ve `CEYREK_YENI` biliniyordu; tam liste REST spesifikasyonunda (aşağıda) | SDK README, REST spesifikasyonu |
+
+## Bürküt API spesifikasyonu (sonradan eklendi, 2026-11-18)
+
+Bürküt'ün yapay zekâ araçları için yayımladığı REST spesifikasyonu, ilk araştırmada dayanılan resmi SDK'dan **önemli noktalarda farklı** çıktı. SDK'ya göre yazılmış ilk kod, gerçek API'de dövizi ve hisseleri hiç gösteremeyecekti. Farklar ve yapılan düzeltmeler:
+
+| Konu | SDK (ilk kod) | REST spesifikasyonu | Düzeltme |
+|---|---|---|---|
+| `/forex` alanları | `buying`, `selling`, `change_rate`, `time` | `price`, `changePercent`, `updatedAt` (alış/satış yok) | Esnek okuma (aşağıda). Döviz değerlemesinde `price` |
+| `/stocks` alanları | `last_price`, `change_rate` | `price`, `change`, `changePercent`, `updatedAt` | Esnek okuma |
+| `/stocks` parametresi | `?symbols=A,B` | Parametre yok; **560+ hissenin tamamı** 1 istekte | `symbols` yine gönderiliyor, sonuç **istemcide** portföy hisselerine süzülüyor |
+| `/gold` değişim alanı | `change_rate` | `dailyChangePct`; ayrıca `unit` (`TL/Gr`, `TL/Adet`, `USD/Ons`) | Esnek okuma; TL olmayan birimler atlanıyor |
+| Altın sembolleri | `ALTIN`, `CEYREK_YENI` (+ tahminler) | `ALTIN`, `CEYREK_YENI`, `YARIM`, `TAM`, `CUMHURIYET`, `ATA`, `XAUUSD`, `GUMTRY`, `PLATIN`, `PALADYUM`; takma adlar `GRAM_ALTIN`, `GAU`, `CEYREK`, `GUMUS` | Eşleme düzeltildi, **Ata Altın** eklendi. `XAUUSD` (USD), platin ve paladyum kapsam dışı |
+| Dakikalık limit | belirtilmemiş | Ücretsiz: **10 istek/dk**; Pro: 60/dk, 50.000+/ay | Bizim yenileme en fazla 3 istek; sorun yok |
+| Yanıt başlıkları | — | `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After`, **`X-Quota-Remaining`** | Aylık sayaç her yanıtta sunucudaki `X-Quota-Remaining` değerine eşitleniyor |
+| `/forex` sembolleri | `USD` | 60+ kur; `USDTRY` ve `USD/TRY` biçimleri de tanınır | `USDTRY` / `USD/TRY` → `USD` normalleştirmesi |
+
+**Esnek okuma kuralı** ([`burkut_dtos.dart`](../lib/features/market/data/dto/burkut_dtos.dart), tek `BurkutPriceDto`). Gerçek API hangi biçimi kullanırsa kullansın çalışır:
+- Fiyat: `buying` → `price` → `last_price`. Altında alış fiyatı varsa o kullanılır; döviz ve hissede tek fiyat var.
+- Değişim (%): `changePercent` → `dailyChangePct` → `change_rate`
+- Zaman: `updatedAt` → `time`
+
+Spesifikasyondaki örnek fiyatlar (USD 38,42 gibi) gösterim amaçlıdır.
 
 ## Alınan kararlar
 
@@ -98,9 +120,9 @@ Ekran görüntülerindeki fiyatlar **örnek veridir**; ekranı göstermek için 
 |---|---|
 | `datasources/burkut_remote_data_source.dart` | `/forex`, `/gold`, `/stocks?symbols=` (dio, `X-API-Key`) |
 | `datasources/frankfurter_remote_data_source.dart` | `/latest?base=TRY&symbols=...` |
-| `datasources/quota_local_data_source.dart` | Aylık sayaç (`app_settings` → `burkut_quota`, JSON) |
+| `datasources/quota_local_data_source.dart` | Aylık sayaç (`app_settings` → `burkut_quota`, JSON); `syncRemaining` ile sunucunun `X-Quota-Remaining` değerine eşitlenir |
 | `datasources/price_cache_local_data_source.dart` | Önbelleği izleme ve toplu upsert |
-| `dto/json_parsing.dart`, `dto/burkut_dtos.dart` | Esnek JSON okuma: sayı ya da metin, virgüllü ondalık, `{data:[]}` ya da düz liste. Bozuk öğe atlanır |
+| `dto/json_parsing.dart`, `dto/burkut_dtos.dart` | Esnek JSON okuma: sayı ya da metin, virgüllü ondalık, `{data:[]}` ya da düz liste, SDK ve REST spesifikasyonu alan adları. Bozuk öğe atlanır. `BurkutResponse` kalan kotayı da taşır |
 | `mappers/burkut_symbols.dart` | Bürküt sembolü → Vestra enstrümanı. XAU/XAG/TRY döviz sayılmaz |
 | `mappers/quote_mappers.dart` | `Quote` ↔ `price_cache` satırı. Bilinmeyen tür/kaynak satırları atlanır |
 | `providers/burkut_price_provider.dart` | Üç fiyat arayüzü + `ApiKeyValidator`. Anahtar ve kota kontrolü, sayaç, hata eşleme |
@@ -140,10 +162,11 @@ Ekran görüntülerindeki fiyatlar **örnek veridir**; ekranı göstermek için 
 
 ## Testler
 
-Toplam **97 test**, hepsi geçti (Faz 2 sonunda 52).
+Toplam **107 test**, hepsi geçti (Faz 2 sonunda 52; REST spesifikasyonu düzeltmesiyle +10).
 
 | Dosya | Kapsam |
 |---|---|
+| `test/features/market/data/burkut_remote_data_source_test.dart` | Sahte HTTP adaptörüyle: `X-API-Key` gönderimi, `X-Quota-Remaining` okuma, `{data:[]}` zarfı, `/stocks` tüm piyasa yanıtının portföy hisselerine süzülmesi |
 | `test/features/market/domain/refresh_policy_test.dart` | Seans saatleri, İstanbul saati, hafta sonu, tatil, yarım gün, 30 dk aralık, önbellek boşken yenileme, backoff dizisi ve `Retry-After`, takvim JSON'u |
 | `test/features/market/data/parsing_and_errors_test.dart` | Decimal/tarih/liste okuma, DTO'lar, `DioException` → `Failure` (ağ, 401/403, kota, limit + `Retry-After`, 5xx) |
 | `test/features/market/data/providers_test.dart` | Bürküt eşleme ve alış fiyatı. Anahtarsız ya da kota doluyken istek gitmemesi, sunucu kota yanıtında sayacın kilitlenmesi, toplu hisse isteği, `validate`, Frankfurter ters çevirme, aylık sayaç sıfırlanması |
@@ -158,18 +181,18 @@ Toplam **97 test**, hepsi geçti (Faz 2 sonunda 52).
 |---|---|
 | `dart format --set-exit-if-changed lib test` | Temiz |
 | `flutter analyze` | No issues found |
-| `flutter test` | 97/97 |
+| `flutter test` | 107/107 |
 | `flutter build apk --debug` | Başarılı |
 | Canlı: `GET api.frankfurter.dev/v1/latest?base=TRY&symbols=...` | Beklenen biçim; USD = 1 / 0,019836 ≈ ₺50,41 |
 | Canlı: `GET api.burkutportfoy.com/api/public/v1/gold` (anahtarsız) | `401 UNAUTHORIZED`; adres ve hata biçimi doğru |
 
 ## Doğrulanacaklar (gerçek anahtarla, Faz 4'ten önce)
 
-1. `/gold` yanıtındaki gerçek semboller: `YARIM_YENI`, `TAM_YENI`, `ATA_YENI` ve **gümüş** (`GUMUS`?) gerçekten var mı? Gerekirse [`burkut_symbols.dart`](../lib/features/market/data/mappers/burkut_symbols.dart) güncellenecek.
-2. `change_rate` yüzde mi (1,27) yoksa oran mı (0,0127)?
-3. `time` alanının biçimi.
-4. `/forex`'te hangi para birimleri var?
-5. Yanıt `{data: [...]}` mi, düz liste mi? İkisi de destekleniyor, yine de teyit edilecek.
+REST spesifikasyonu çoğu soruyu yanıtladı: semboller, alan adları, yüzde biçimi (`2.44` = %2,44) ve zaman biçimi (ISO 8601). Gerçek anahtarla bakılacaklar:
+
+1. Canlı yanıt SDK biçiminde mi, spesifikasyon biçiminde mi? İkisi de destekleniyor; hangisi olduğu kayda geçirilecek.
+2. `X-Quota-Remaining` başlığı gerçekten geliyor mu?
+3. `/stocks?symbols=` parametresi yok sayılıyor mu, yoksa sonucu süzüyor mu? İki durumda da çalışıyor.
 
 ## Bilinen eksikler / sonraki faza devredilenler
 

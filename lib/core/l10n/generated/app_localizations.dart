@@ -555,6 +555,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Borsa İstanbul'**
   String get exchangeBist;
+
+  /// No description provided for @instrumentGoldAta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ata Altın'**
+  String get instrumentGoldAta;
 }
 
 class _AppLocalizationsDelegate

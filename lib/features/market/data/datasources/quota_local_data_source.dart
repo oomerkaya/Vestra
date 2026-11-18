@@ -5,8 +5,9 @@ import 'package:vestra/features/market/domain/entities/quota_usage.dart';
 
 /// Counts Bürküt requests per calendar month in `app_settings`.
 ///
-/// The count is the app's own estimate (the provider's counter may reset
-/// on a different day); the server's "quota exceeded" answer always wins.
+/// The count is the app's own estimate, corrected by the server's
+/// `X-Quota-Remaining` header whenever it is present; the server's
+/// "quota exceeded" answer always wins.
 class QuotaLocalDataSource {
   QuotaLocalDataSource(this._db, {DateTime Function()? clock})
     : _clock = clock ?? DateTime.now;
@@ -38,6 +39,17 @@ class QuotaLocalDataSource {
       used: u.used + 1,
       limit: u.limit,
       exhaustedByServer: u.exhaustedByServer,
+    ),
+  );
+
+  /// Aligns the counter with the server's `X-Quota-Remaining` header,
+  /// which is authoritative (the server knows its own reset date).
+  Future<QuotaUsage> syncRemaining(int remaining) => _update(
+    (u) => QuotaUsage(
+      period: u.period,
+      used: (u.limit - remaining).clamp(0, u.limit),
+      limit: u.limit,
+      exhaustedByServer: remaining <= 0,
     ),
   );
 

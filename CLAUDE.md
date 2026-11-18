@@ -63,7 +63,7 @@ Sade fintech tarzı, Inter yazı tipi. Ayrıntı: `docs/tasarim-sistemi.md`.
 Dış veri erişimi **her zaman bir arayüz arkasında** olur (`FxRateProvider`, `MetalPriceProvider`, `StockPriceProvider`); sağlayıcı değişirse yalnızca data katmanı değişir.
 
 Kaynaklar (ayrıntı ve araştırma: `docs/faz-3-piyasa-verisi.md`):
-- **Bürküt** (birincil; hisse, döviz, altın, gümüş): `https://api.burkutportfoy.com/api/public/v1`, başlık `X-API-Key`. Ücretsiz plan **ayda 1.000 istek**. Her kullanıcı kendi anahtarını ayarlardan girer. BIST verisi en az 15 dk gecikmeli. Bürküt lisanslı veri dağıtıcısı değildir; README'de yazılır.
+- **Bürküt** (birincil; hisse, döviz, altın, gümüş): `https://api.burkutportfoy.com/api/public/v1`, başlık `X-API-Key`. Ücretsiz plan **ayda 1.000 istek, dakikada 10 istek**. Sunucu kalan aylık kotayı `X-Quota-Remaining` başlığında bildirir; uygulama sayacı buna eşitler. Alan adları SDK ile REST spesifikasyonu arasında farklı; DTO ikisini de okur. Her kullanıcı kendi anahtarını ayarlardan girer. BIST verisi en az 15 dk gecikmeli. Bürküt lisanslı veri dağıtıcısı değildir; README'de yazılır.
 - **Frankfurter** (yalnızca döviz yedeği): ECB günlük kuru, anahtarsız. Altın/gümüş vermez. Bürküt anahtarı yoksa, kota dolduysa ya da Bürküt döviz isteği başarısızsa kullanılır.
 - Döviz ve madenlerde değerleme için **alış (`buying`)** fiyatı kullanılır.
 
@@ -71,7 +71,7 @@ Güncelleme kuralları (`RefreshPolicy`):
 - Otomatik yenileme yalnızca uygulama açıkken, hafta içi 10:00-18:00 (Europe/Istanbul, sabit UTC+3), **30 dakikada bir**; yarım günlerde 12:30'a kadar. Arka plan servisi yok.
 - Önbellek boşsa seans dışında da bir kez yenilenir. Pull-to-refresh ile elle yenileme her zaman var.
 - Tatil/yarım gün takvimi `assets/data/market_holidays.json`'dan okunur.
-- Yalnızca portföyde miktarı > 0 olan hisseler istenir (tek toplu istek). `/forex` ve `/gold` tüm listeyi tek istekte döner. Yenileme başına en fazla 3 Bürküt isteği.
+- Yalnızca portföyde miktarı > 0 olan hisseler istenir (tek toplu istek). `/forex`, `/gold` ve `/stocks` tüm listeyi tek istekte döner; hisseler istemcide portföye süzülür. Yenileme başına en fazla 3 Bürküt isteği.
 - Anahtar yoksa ya da kota doluysa Bürküt'e istek **gönderilmez**. Uygulama aylık istek sayacı tutar (`app_settings` → `burkut_quota`).
 - 429 dakikalık limit → exponential backoff (1-30 dk, `Retry-After` öncelikli). 429 aylık kota → o ay Bürküt'e istek yok.
 - Çekilen fiyatlar `price_cache`'e yazılır; internet yoksa son bilinen değer ve "son güncelleme" zamanı gösterilir.
