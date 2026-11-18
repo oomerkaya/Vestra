@@ -7,6 +7,7 @@ import 'package:vestra/core/error/result.dart';
 import 'package:vestra/core/l10n/failure_messages.dart';
 import 'package:vestra/core/l10n/l10n.dart';
 import 'package:vestra/core/theme/app_tokens.dart';
+import 'package:vestra/core/widgets/messages.dart';
 import 'package:vestra/features/market/market_providers.dart';
 import 'package:vestra/features/market/presentation/price_refresh_controller.dart';
 import 'package:vestra/features/settings/domain/usecases/save_burkut_key.dart';
@@ -62,7 +63,7 @@ class _ApiKeySheetState extends ConsumerState<ApiKeySheet> {
               .refreshDue(manual: true),
         );
         navigator.pop();
-        messenger.showSnackBar(SnackBar(content: Text(l10n.apiKeySaved)));
+        messenger.showMessage(l10n.apiKeySaved);
       case Err(:final failure):
         setState(() {
           _busy = false;
@@ -78,7 +79,7 @@ class _ApiKeySheetState extends ConsumerState<ApiKeySheet> {
     await ref.read(apiKeyRepositoryProvider).deleteBurkutKey();
     ref.invalidate(burkutKeyProvider);
     navigator.pop();
-    messenger.showSnackBar(SnackBar(content: Text(l10n.apiKeyDeleted)));
+    messenger.showMessage(l10n.apiKeyDeleted);
   }
 
   static String _message(AppLocalizations l10n, Failure failure) =>

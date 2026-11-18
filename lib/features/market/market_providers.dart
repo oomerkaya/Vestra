@@ -10,13 +10,17 @@ import 'package:vestra/features/market/data/datasources/burkut_remote_data_sourc
 import 'package:vestra/features/market/data/datasources/frankfurter_remote_data_source.dart';
 import 'package:vestra/features/market/data/datasources/price_cache_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/quota_local_data_source.dart';
+import 'package:vestra/features/market/data/datasources/stock_listing_local_data_source.dart';
 import 'package:vestra/features/market/data/providers/burkut_price_provider.dart';
 import 'package:vestra/features/market/data/providers/frankfurter_fx_provider.dart';
 import 'package:vestra/features/market/data/repositories/market_repository_impl.dart';
+import 'package:vestra/features/market/data/repositories/stock_directory_repository_impl.dart';
 import 'package:vestra/features/market/domain/entities/market_calendar.dart';
 import 'package:vestra/features/market/domain/entities/quota_usage.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
+import 'package:vestra/features/market/domain/entities/stock_listing.dart';
 import 'package:vestra/features/market/domain/repositories/market_repository.dart';
+import 'package:vestra/features/market/domain/repositories/stock_directory_repository.dart';
 import 'package:vestra/features/market/domain/usecases/watch_held_stock_symbols.dart';
 import 'package:vestra/features/portfolio/portfolio_providers.dart';
 import 'package:vestra/features/settings/domain/usecases/save_burkut_key.dart';
@@ -103,3 +107,19 @@ final saveBurkutKeyProvider = Provider<SaveBurkutKey>(
     ref.watch(burkutPriceProviderProvider),
   ),
 );
+
+final stockDirectoryRepositoryProvider = Provider<StockDirectoryRepository>(
+  (ref) => StockDirectoryRepositoryImpl(
+    provider: ref.watch(burkutPriceProviderProvider),
+    local: StockListingLocalDataSource(ref.watch(appDatabaseProvider)),
+  ),
+);
+
+/// BIST stock list for the search field (cached, weekly refresh).
+final stockListingsProvider = FutureProvider<List<StockListing>>((ref) async {
+  final result = await ref.watch(stockDirectoryRepositoryProvider).listings();
+  return switch (result) {
+    Success(:final value) => value,
+    Err(:final failure) => throw failure,
+  };
+});

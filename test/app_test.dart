@@ -32,6 +32,13 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// Drift closes stream queries with a zero-delay timer; unmount the app
+  /// and let those timers run before the test body ends.
+  Future<void> unmount(WidgetTester tester) async {
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(seconds: 1));
+  }
+
   Brightness currentBrightness(WidgetTester tester) =>
       Theme.of(tester.element(find.byType(Scaffold).last)).brightness;
 
@@ -40,6 +47,8 @@ void main() {
 
     expect(find.byType(NavigationBar), findsOneWidget);
     expect(find.text('Portföyün boş'), findsOneWidget);
+
+    await unmount(tester);
   });
 
   testWidgets('switching to dark theme is applied and persisted', (
@@ -57,6 +66,8 @@ void main() {
       () => SettingsLocalDataSource(db).read(SettingsRepositoryImpl.themeKey),
     );
     expect(saved, 'dark');
+
+    await unmount(tester);
   });
 
   testWidgets('saved theme is restored on start', (tester) async {
@@ -71,5 +82,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(currentBrightness(tester), Brightness.dark);
+
+    await unmount(tester);
   });
 }

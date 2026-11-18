@@ -8,6 +8,7 @@ import 'package:vestra/core/theme/app_tokens.dart';
 import 'package:vestra/core/utils/formatters.dart';
 import 'package:vestra/core/widgets/app_card.dart';
 import 'package:vestra/core/widgets/empty_state.dart';
+import 'package:vestra/core/widgets/messages.dart';
 import 'package:vestra/features/market/domain/entities/market_calendar.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/domain/services/refresh_policy.dart';
@@ -117,9 +118,7 @@ class MarketCategoryTab extends ConsumerWidget {
       if (next == null) return;
       message = l10n.marketUpToDate(DateFormatters.shortDateTime(next));
     }
-    messenger
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message)));
+    messenger.showMessage(message);
   }
 
   List<Quote> _quotesFor(List<Quote> all, Set<String> held) {

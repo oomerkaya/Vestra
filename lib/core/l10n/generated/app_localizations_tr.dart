@@ -333,4 +333,187 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get marketExchangeBist => 'BIST';
+
+  @override
+  String get portfolioAddAsset => 'Varlık ekle';
+
+  @override
+  String get portfolioPnl => 'Kâr/zarar';
+
+  @override
+  String get portfolioToday => 'Bugün';
+
+  @override
+  String get portfolioAllocation => 'Dağılım';
+
+  @override
+  String get portfolioNoPrice => 'Fiyat yok';
+
+  @override
+  String get portfolioCostUnknown => 'Maliyet bilinmiyor';
+
+  @override
+  String get categoryFx => 'Döviz';
+
+  @override
+  String get categoryMetals => 'Altın ve gümüş';
+
+  @override
+  String get categoryStocks => 'Borsa';
+
+  @override
+  String get commonCancel => 'Vazgeç';
+
+  @override
+  String get commonDelete => 'Sil';
+
+  @override
+  String get commonSave => 'Kaydet';
+
+  @override
+  String get txTitleAdd => 'Varlık ekle';
+
+  @override
+  String get txTitleEdit => 'İşlemi düzenle';
+
+  @override
+  String get txTitleBuy => 'Alım ekle';
+
+  @override
+  String get txTitleSell => 'Satış ekle';
+
+  @override
+  String get txType => 'Tür';
+
+  @override
+  String get txInstrument => 'Varlık';
+
+  @override
+  String get txSelectInstrument => 'Varlık seç';
+
+  @override
+  String get txKindBuy => 'Alım';
+
+  @override
+  String get txKindSell => 'Satış';
+
+  @override
+  String get txQuantity => 'Miktar';
+
+  @override
+  String get txUnitPrice => 'Birim fiyat (TL)';
+
+  @override
+  String get txUnitPriceHelp => 'Bilmiyorsan boş bırakabilirsin';
+
+  @override
+  String get txPriceFilled => 'Güncel fiyatla dolduruldu';
+
+  @override
+  String get txDate => 'Tarih';
+
+  @override
+  String get txNote => 'Not (isteğe bağlı)';
+
+  @override
+  String get txDelete => 'İşlemi sil';
+
+  @override
+  String get txDeleteConfirmTitle => 'İşlem silinsin mi?';
+
+  @override
+  String get txDeleteConfirmMessage => 'Bu işlem kalıcı olarak silinir.';
+
+  @override
+  String get txErrorQuantity => 'Geçerli bir miktar gir';
+
+  @override
+  String get txErrorPriceFormat => 'Geçerli bir fiyat gir';
+
+  @override
+  String get txErrorPrice => 'Fiyat negatif olamaz';
+
+  @override
+  String get txErrorOversell =>
+      'Bu tarihte elindeki miktardan fazla satamazsın; önceki bir alım silinirse ya da azalırsa da olmaz';
+
+  @override
+  String get txErrorInstrument => 'Bir varlık seç';
+
+  @override
+  String get txSaved => 'İşlem kaydedildi';
+
+  @override
+  String get txDeleted => 'İşlem silindi';
+
+  @override
+  String get pickerTitle => 'Varlık seç';
+
+  @override
+  String get pickerSearchStocks => 'Hisse ara (ör. THYAO)';
+
+  @override
+  String get pickerStockListUnavailable =>
+      'Hisse listesi için Bürküt API anahtarı gerekli. Sembolü elle yazabilirsin.';
+
+  @override
+  String get pickerNoResults => 'Sonuç yok';
+
+  @override
+  String get assetDetailTransactions => 'İşlemler';
+
+  @override
+  String get assetDetailQuantity => 'Miktar';
+
+  @override
+  String get assetDetailAvgCost => 'Ortalama maliyet';
+
+  @override
+  String get assetDetailValue => 'Güncel değer';
+
+  @override
+  String get assetDetailRealized => 'Gerçekleşen kâr/zarar';
+
+  @override
+  String get assetDetailBuy => 'Alım ekle';
+
+  @override
+  String get assetDetailSell => 'Satış ekle';
+
+  @override
+  String get assetDelete => 'Varlığı sil';
+
+  @override
+  String get assetDeleteConfirmTitle => 'Varlık silinsin mi?';
+
+  @override
+  String get assetDeleted => 'Varlık silindi';
+
+  @override
+  String get assetNotFound => 'Varlık bulunamadı';
+
+  @override
+  String portfolioMissingPrices(String count) {
+    return '$count varlığın güncel fiyatı yok; toplama dahil edilmedi.';
+  }
+
+  @override
+  String holdingQuantityAvg(String quantity, String cost) {
+    return '$quantity · ort. $cost';
+  }
+
+  @override
+  String pickerUseSymbol(String symbol) {
+    return '\"$symbol\" sembolünü kullan';
+  }
+
+  @override
+  String assetDeleteConfirmMessage(String name) {
+    return '$name ve tüm işlemleri kalıcı olarak silinir.';
+  }
+
+  @override
+  String txLine(String quantity, String price) {
+    return '$quantity × $price';
+  }
 }

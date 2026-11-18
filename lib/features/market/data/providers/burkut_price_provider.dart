@@ -9,6 +9,7 @@ import 'package:vestra/features/market/data/datasources/quota_local_data_source.
 import 'package:vestra/features/market/data/dto/burkut_dtos.dart';
 import 'package:vestra/features/market/data/mappers/burkut_symbols.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
+import 'package:vestra/features/market/domain/entities/stock_listing.dart';
 import 'package:vestra/features/market/domain/providers/price_providers.dart';
 import 'package:vestra/features/settings/domain/repositories/api_key_repository.dart';
 
@@ -23,6 +24,7 @@ class BurkutPriceProvider
         FxRateProvider,
         MetalPriceProvider,
         StockPriceProvider,
+        StockListingProvider,
         ApiKeyValidator {
   BurkutPriceProvider({
     required this._remote,
@@ -69,6 +71,15 @@ class BurkutPriceProvider
     );
   }
 
+  @override
+  Future<Result<List<StockListing>>> fetchListings() => _call(
+    'stock list',
+    (key) async => [
+      for (final dto in await _items(_remote.getAllStocks(key)))
+        StockListing(symbol: dto.symbol, name: dto.name ?? dto.symbol),
+    ],
+  );
+
   /// Validates a key with one cheap request (counts against the quota).
   @override
   Future<Result<void>> validate(String key) async {
@@ -83,9 +94,9 @@ class BurkutPriceProvider
     }
   }
 
-  Future<Result<List<Quote>>> _call(
+  Future<Result<T>> _call<T>(
     String what,
-    Future<List<Quote>> Function(String key) body,
+    Future<T> Function(String key) body,
   ) async {
     final key = await _readApiKey();
     if (key == null || key.isEmpty) {

@@ -693,6 +693,348 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'BIST'**
   String get marketExchangeBist;
+
+  /// No description provided for @portfolioAddAsset.
+  ///
+  /// In tr, this message translates to:
+  /// **'Varlık ekle'**
+  String get portfolioAddAsset;
+
+  /// No description provided for @portfolioPnl.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kâr/zarar'**
+  String get portfolioPnl;
+
+  /// No description provided for @portfolioToday.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün'**
+  String get portfolioToday;
+
+  /// No description provided for @portfolioAllocation.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dağılım'**
+  String get portfolioAllocation;
+
+  /// No description provided for @portfolioNoPrice.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fiyat yok'**
+  String get portfolioNoPrice;
+
+  /// No description provided for @portfolioCostUnknown.
+  ///
+  /// In tr, this message translates to:
+  /// **'Maliyet bilinmiyor'**
+  String get portfolioCostUnknown;
+
+  /// No description provided for @categoryFx.
+  ///
+  /// In tr, this message translates to:
+  /// **'Döviz'**
+  String get categoryFx;
+
+  /// No description provided for @categoryMetals.
+  ///
+  /// In tr, this message translates to:
+  /// **'Altın ve gümüş'**
+  String get categoryMetals;
+
+  /// No description provided for @categoryStocks.
+  ///
+  /// In tr, this message translates to:
+  /// **'Borsa'**
+  String get categoryStocks;
+
+  /// No description provided for @commonCancel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vazgeç'**
+  String get commonCancel;
+
+  /// No description provided for @commonDelete.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sil'**
+  String get commonDelete;
+
+  /// No description provided for @commonSave.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydet'**
+  String get commonSave;
+
+  /// No description provided for @txTitleAdd.
+  ///
+  /// In tr, this message translates to:
+  /// **'Varlık ekle'**
+  String get txTitleAdd;
+
+  /// No description provided for @txTitleEdit.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlemi düzenle'**
+  String get txTitleEdit;
+
+  /// No description provided for @txTitleBuy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alım ekle'**
+  String get txTitleBuy;
+
+  /// No description provided for @txTitleSell.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satış ekle'**
+  String get txTitleSell;
+
+  /// No description provided for @txType.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tür'**
+  String get txType;
+
+  /// No description provided for @txInstrument.
+  ///
+  /// In tr, this message translates to:
+  /// **'Varlık'**
+  String get txInstrument;
+
+  /// No description provided for @txSelectInstrument.
+  ///
+  /// In tr, this message translates to:
+  /// **'Varlık seç'**
+  String get txSelectInstrument;
+
+  /// No description provided for @txKindBuy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alım'**
+  String get txKindBuy;
+
+  /// No description provided for @txKindSell.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satış'**
+  String get txKindSell;
+
+  /// No description provided for @txQuantity.
+  ///
+  /// In tr, this message translates to:
+  /// **'Miktar'**
+  String get txQuantity;
+
+  /// No description provided for @txUnitPrice.
+  ///
+  /// In tr, this message translates to:
+  /// **'Birim fiyat (TL)'**
+  String get txUnitPrice;
+
+  /// No description provided for @txUnitPriceHelp.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bilmiyorsan boş bırakabilirsin'**
+  String get txUnitPriceHelp;
+
+  /// No description provided for @txPriceFilled.
+  ///
+  /// In tr, this message translates to:
+  /// **'Güncel fiyatla dolduruldu'**
+  String get txPriceFilled;
+
+  /// No description provided for @txDate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tarih'**
+  String get txDate;
+
+  /// No description provided for @txNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Not (isteğe bağlı)'**
+  String get txNote;
+
+  /// No description provided for @txDelete.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlemi sil'**
+  String get txDelete;
+
+  /// No description provided for @txDeleteConfirmTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlem silinsin mi?'**
+  String get txDeleteConfirmTitle;
+
+  /// No description provided for @txDeleteConfirmMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu işlem kalıcı olarak silinir.'**
+  String get txDeleteConfirmMessage;
+
+  /// No description provided for @txErrorQuantity.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçerli bir miktar gir'**
+  String get txErrorQuantity;
+
+  /// No description provided for @txErrorPriceFormat.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçerli bir fiyat gir'**
+  String get txErrorPriceFormat;
+
+  /// No description provided for @txErrorPrice.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fiyat negatif olamaz'**
+  String get txErrorPrice;
+
+  /// No description provided for @txErrorOversell.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu tarihte elindeki miktardan fazla satamazsın; önceki bir alım silinirse ya da azalırsa da olmaz'**
+  String get txErrorOversell;
+
+  /// No description provided for @txErrorInstrument.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir varlık seç'**
+  String get txErrorInstrument;
+
+  /// No description provided for @txSaved.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlem kaydedildi'**
+  String get txSaved;
+
+  /// No description provided for @txDeleted.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlem silindi'**
+  String get txDeleted;
+
+  /// No description provided for @pickerTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Varlık seç'**
+  String get pickerTitle;
+
+  /// No description provided for @pickerSearchStocks.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hisse ara (ör. THYAO)'**
+  String get pickerSearchStocks;
+
+  /// No description provided for @pickerStockListUnavailable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hisse listesi için Bürküt API anahtarı gerekli. Sembolü elle yazabilirsin.'**
+  String get pickerStockListUnavailable;
+
+  /// No description provided for @pickerNoResults.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonuç yok'**
+  String get pickerNoResults;
+
+  /// No description provided for @assetDetailTransactions.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlemler'**
+  String get assetDetailTransactions;
+
+  /// No description provided for @assetDetailQuantity.
+  ///
+  /// In tr, this message translates to:
+  /// **'Miktar'**
+  String get assetDetailQuantity;
+
+  /// No description provided for @assetDetailAvgCost.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ortalama maliyet'**
+  String get assetDetailAvgCost;
+
+  /// No description provided for @assetDetailValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'Güncel değer'**
+  String get assetDetailValue;
+
+  /// No description provided for @assetDetailRealized.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gerçekleşen kâr/zarar'**
+  String get assetDetailRealized;
+
+  /// No description provided for @assetDetailBuy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alım ekle'**
+  String get assetDetailBuy;
+
+  /// No description provided for @assetDetailSell.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satış ekle'**
+  String get assetDetailSell;
+
+  /// No description provided for @assetDelete.
+  ///
+  /// In tr, this message translates to:
+  /// **'Varlığı sil'**
+  String get assetDelete;
+
+  /// No description provided for @assetDeleteConfirmTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Varlık silinsin mi?'**
+  String get assetDeleteConfirmTitle;
+
+  /// No description provided for @assetDeleted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Varlık silindi'**
+  String get assetDeleted;
+
+  /// No description provided for @assetNotFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'Varlık bulunamadı'**
+  String get assetNotFound;
+
+  /// No description provided for @portfolioMissingPrices.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} varlığın güncel fiyatı yok; toplama dahil edilmedi.'**
+  String portfolioMissingPrices(String count);
+
+  /// No description provided for @holdingQuantityAvg.
+  ///
+  /// In tr, this message translates to:
+  /// **'{quantity} · ort. {cost}'**
+  String holdingQuantityAvg(String quantity, String cost);
+
+  /// No description provided for @pickerUseSymbol.
+  ///
+  /// In tr, this message translates to:
+  /// **'\"{symbol}\" sembolünü kullan'**
+  String pickerUseSymbol(String symbol);
+
+  /// No description provided for @assetDeleteConfirmMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'{name} ve tüm işlemleri kalıcı olarak silinir.'**
+  String assetDeleteConfirmMessage(String name);
+
+  /// No description provided for @txLine.
+  ///
+  /// In tr, this message translates to:
+  /// **'{quantity} × {price}'**
+  String txLine(String quantity, String price);
 }
 
 class _AppLocalizationsDelegate

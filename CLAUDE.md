@@ -56,7 +56,10 @@ Sade fintech tarzı, Inter yazı tipi. Ayrıntı: `docs/tasarim-sistemi.md`.
 - Renk/boşluk/köşe için `AppPalette` yerine tema + `context.vestraColors`, `AppSpacing`, `AppRadius` tokenlarını kullan; çıplak sayı yazma.
 - Yeşil/kırmızı yalnızca kâr/zarar için (`ChangeChip`, `vestraColors.gain/loss`).
 - Tutarlar `MoneyText` / `Formatters` ile gösterilir; `double` ile biçimlendirme yok.
-- Ortak bileşenler `lib/core/widgets/`'ta (`AppCard`, `SectionHeader`, `MoneyText`, `ChangeChip`, `ChoiceTiles`, `EmptyState`).
+- Ortak bileşenler `lib/core/widgets/`'ta (`AppCard`, `SectionHeader`, `MoneyText`, `ChangeChip`, `ChoiceTiles`, `EmptyState`, `DonutChart`, `InstrumentAvatar`, `confirmDestructive`).
+- Bildirim için `ScaffoldMessenger.of(context).showMessage(...)` kullan (sıraya girmez); doğrudan `showSnackBar` çağırma.
+- Kullanıcıdan sayı alırken `parseDecimalInput` (Türkçe `12,5` / `1.250,75`) ve `formatDecimalInput` kullan.
+- Widget testlerinde Drift akışları kapanırken zamanlayıcı bırakır; testin sonunda uygulamayı kaldır (`pumpWidget(SizedBox())` + `pump(1 sn)`).
 
 ## Veri kaynakları
 

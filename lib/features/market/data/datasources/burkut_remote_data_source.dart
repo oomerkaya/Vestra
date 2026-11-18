@@ -40,6 +40,10 @@ class BurkutRemoteDataSource {
     );
   }
 
+  /// Whole BIST market (560+ stocks) in one request; used for the
+  /// stock search list, not for prices.
+  Future<BurkutResponse> getAllStocks(String apiKey) => _get('/stocks', apiKey);
+
   Future<BurkutResponse> _get(
     String path,
     String apiKey, {

@@ -1,61 +1,94 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:vestra/core/l10n/l10n.dart';
+import 'package:vestra/core/router/app_routes.dart';
 import 'package:vestra/core/theme/app_tokens.dart';
 import 'package:vestra/core/widgets/app_card.dart';
 import 'package:vestra/core/widgets/empty_state.dart';
-import 'package:vestra/core/widgets/money_text.dart';
 import 'package:vestra/core/widgets/section_header.dart';
+import 'package:vestra/features/portfolio/domain/entities/portfolio_summary.dart';
+import 'package:vestra/features/portfolio/portfolio_providers.dart';
+import 'package:vestra/features/portfolio/presentation/widgets/allocation_card.dart';
+import 'package:vestra/features/portfolio/presentation/widgets/holding_tile.dart';
+import 'package:vestra/features/portfolio/presentation/widgets/portfolio_summary_card.dart';
 
-/// Placeholder until Phase 4 wires holdings and prices in.
-class PortfolioScreen extends StatelessWidget {
+class PortfolioScreen extends ConsumerWidget {
   const PortfolioScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final summary =
+        ref.watch(portfolioSummaryProvider).value ?? PortfolioSummary.empty;
+
     return Scaffold(
       appBar: AppBar(title: Text(l10n.navPortfolio)),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.push(AppRoutes.addTransaction),
+        icon: const Icon(Icons.add_rounded),
+        label: Text(l10n.portfolioAddAsset),
+      ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.screen,
           AppSpacing.sm,
           AppSpacing.screen,
-          AppSpacing.xxl,
+          AppSpacing.xxxl + AppSpacing.xxl,
         ),
         children: [
-          _TotalCard(label: l10n.portfolioTotalValue, total: Decimal.zero),
-          SectionHeader(l10n.portfolioHoldings),
-          AppCard(
-            child: EmptyState(
-              icon: Icons.account_balance_wallet_outlined,
-              title: l10n.portfolioEmptyTitle,
-              message: l10n.portfolioEmptyMessage,
+          PortfolioSummaryCard(summary: summary),
+          if (summary.totalValue > Decimal.zero) ...[
+            SectionHeader(l10n.portfolioAllocation),
+            AllocationCard(
+              valueByCategory: summary.valueByCategory,
+              total: summary.totalValue,
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TotalCard extends StatelessWidget {
-  const _TotalCard({required this.label, required this.total});
-
-  final String label;
-  final Decimal total;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    return AppCard(
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: text.labelMedium),
-          const SizedBox(height: AppSpacing.sm),
-          MoneyText(total, style: text.displaySmall, emphasizeInteger: true),
+          ],
+          SectionHeader(l10n.portfolioHoldings),
+          if (summary.isEmpty)
+            AppCard(
+              child: EmptyState(
+                icon: Icons.account_balance_wallet_outlined,
+                title: l10n.portfolioEmptyTitle,
+                message: l10n.portfolioEmptyMessage,
+              ),
+            )
+          else ...[
+            AppCard(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+              child: Column(
+                children: [
+                  for (final (i, valued) in summary.holdings.indexed) ...[
+                    if (i > 0)
+                      const Divider(indent: 72, endIndent: AppSpacing.lg),
+                    HoldingTile(
+                      valued: valued,
+                      onTap: () => context.push(
+                        AppRoutes.assetDetail(valued.holding.asset.id),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (summary.missingPriceCount > 0)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.xs,
+                  AppSpacing.md,
+                  AppSpacing.xs,
+                  0,
+                ),
+                child: Text(
+                  l10n.portfolioMissingPrices(
+                    summary.missingPriceCount.toString(),
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+          ],
         ],
       ),
     );

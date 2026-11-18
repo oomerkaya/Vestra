@@ -36,9 +36,9 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 
 ## Faz 4: Özellikler (dikey dilimler)
 - [ ] (Bekliyor) ABD borsası: Finnhub'dan yazılı onay gelirse. Ayrıntı: docs/faz-3 "ABD borsası değerlendirmesi"
-- [ ] Varlık ekleme/düzenleme/silme
-- [ ] Portföy özeti ve toplam değer
-- [ ] Fiyat güncelleme ekranı ve "son güncelleme" göstergesi
+- [x] Varlık ekleme/düzenleme/silme (BIST arama listesi, güncel fiyatla otomatik doldurma)
+- [x] Portföy özeti ve toplam değer (K/Z, günlük değişim, halka grafik dağılım)
+- [x] Fiyat güncelleme ekranı ve "son güncelleme" göstergesi (Faz 3'te)
 
 ## Faz 5: Cila ve yayın
 - [ ] Flutter yükseltmesi + `material.dart` → `material_ui` geçişi (CI sürümüyle birlikte)

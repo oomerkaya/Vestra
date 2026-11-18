@@ -137,5 +137,103 @@
   },
   "marketStocksEmptyTitle": "Portföyünde hisse yok",
   "marketStocksEmptyMessage": "Portföye hisse eklediğinde fiyatları burada görünür.",
-  "marketExchangeBist": "BIST"
+  "marketExchangeBist": "BIST",
+  "portfolioAddAsset": "Varlık ekle",
+  "portfolioPnl": "Kâr/zarar",
+  "portfolioToday": "Bugün",
+  "portfolioAllocation": "Dağılım",
+  "portfolioNoPrice": "Fiyat yok",
+  "portfolioCostUnknown": "Maliyet bilinmiyor",
+  "categoryFx": "Döviz",
+  "categoryMetals": "Altın ve gümüş",
+  "categoryStocks": "Borsa",
+  "commonCancel": "Vazgeç",
+  "commonDelete": "Sil",
+  "commonSave": "Kaydet",
+  "txTitleAdd": "Varlık ekle",
+  "txTitleEdit": "İşlemi düzenle",
+  "txTitleBuy": "Alım ekle",
+  "txTitleSell": "Satış ekle",
+  "txType": "Tür",
+  "txInstrument": "Varlık",
+  "txSelectInstrument": "Varlık seç",
+  "txKindBuy": "Alım",
+  "txKindSell": "Satış",
+  "txQuantity": "Miktar",
+  "txUnitPrice": "Birim fiyat (TL)",
+  "txUnitPriceHelp": "Bilmiyorsan boş bırakabilirsin",
+  "txPriceFilled": "Güncel fiyatla dolduruldu",
+  "txDate": "Tarih",
+  "txNote": "Not (isteğe bağlı)",
+  "txDelete": "İşlemi sil",
+  "txDeleteConfirmTitle": "İşlem silinsin mi?",
+  "txDeleteConfirmMessage": "Bu işlem kalıcı olarak silinir.",
+  "txErrorQuantity": "Geçerli bir miktar gir",
+  "txErrorPriceFormat": "Geçerli bir fiyat gir",
+  "txErrorPrice": "Fiyat negatif olamaz",
+  "txErrorOversell": "Bu tarihte elindeki miktardan fazla satamazsın; önceki bir alım silinirse ya da azalırsa da olmaz",
+  "txErrorInstrument": "Bir varlık seç",
+  "txSaved": "İşlem kaydedildi",
+  "txDeleted": "İşlem silindi",
+  "pickerTitle": "Varlık seç",
+  "pickerSearchStocks": "Hisse ara (ör. THYAO)",
+  "pickerStockListUnavailable": "Hisse listesi için Bürküt API anahtarı gerekli. Sembolü elle yazabilirsin.",
+  "pickerNoResults": "Sonuç yok",
+  "assetDetailTransactions": "İşlemler",
+  "assetDetailQuantity": "Miktar",
+  "assetDetailAvgCost": "Ortalama maliyet",
+  "assetDetailValue": "Güncel değer",
+  "assetDetailRealized": "Gerçekleşen kâr/zarar",
+  "assetDetailBuy": "Alım ekle",
+  "assetDetailSell": "Satış ekle",
+  "assetDelete": "Varlığı sil",
+  "assetDeleteConfirmTitle": "Varlık silinsin mi?",
+  "assetDeleted": "Varlık silindi",
+  "assetNotFound": "Varlık bulunamadı",
+  "portfolioMissingPrices": "{count} varlığın güncel fiyatı yok; toplama dahil edilmedi.",
+  "@portfolioMissingPrices": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "holdingQuantityAvg": "{quantity} · ort. {cost}",
+  "@holdingQuantityAvg": {
+    "placeholders": {
+      "quantity": {
+        "type": "String"
+      },
+      "cost": {
+        "type": "String"
+      }
+    }
+  },
+  "pickerUseSymbol": "\"{symbol}\" sembolünü kullan",
+  "@pickerUseSymbol": {
+    "placeholders": {
+      "symbol": {
+        "type": "String"
+      }
+    }
+  },
+  "assetDeleteConfirmMessage": "{name} ve tüm işlemleri kalıcı olarak silinir.",
+  "@assetDeleteConfirmMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "txLine": "{quantity} × {price}",
+  "@txLine": {
+    "placeholders": {
+      "quantity": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  }
 }

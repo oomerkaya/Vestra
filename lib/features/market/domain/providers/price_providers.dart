@@ -4,6 +4,7 @@
 
 import 'package:vestra/core/error/result.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
+import 'package:vestra/features/market/domain/entities/stock_listing.dart';
 
 /// Every external price source sits behind one of these interfaces, so a
 /// provider can be swapped by changing only the data layer.
@@ -21,4 +22,9 @@ abstract interface class MetalPriceProvider {
 /// BIST stock prices for the given symbols (batched in one request).
 abstract interface class StockPriceProvider {
   Future<Result<List<Quote>>> fetchQuotes(List<String> symbols);
+}
+
+/// The whole BIST stock list (symbol + name) for search.
+abstract interface class StockListingProvider {
+  Future<Result<List<StockListing>>> fetchListings();
 }
