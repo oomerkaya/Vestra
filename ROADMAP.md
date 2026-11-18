@@ -32,8 +32,10 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 - [x] Polling zamanlayıcı (seans saatleri, tatil takvimi, backoff, 30 dk) + testler
 - [x] Cache ve offline davranışı (şema v2 migration)
 - [x] Gerçek Bürküt anahtarıyla sembol/alan doğrulaması (docs/faz-3 "Canlı doğrulama")
+- [x] Piyasa ekranı sekmeli: Döviz / Madenler / Borsa (BIST)
 
 ## Faz 4: Özellikler (dikey dilimler)
+- [ ] (Bekliyor) ABD borsası: Finnhub'dan yazılı onay gelirse. Ayrıntı: docs/faz-3 "ABD borsası değerlendirmesi"
 - [ ] Varlık ekleme/düzenleme/silme
 - [ ] Portföy özeti ve toplam değer
 - [ ] Fiyat güncelleme ekranı ve "son güncelleme" göstergesi

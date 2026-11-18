@@ -49,6 +49,10 @@ class MarketCategoryTab extends ConsumerWidget {
           AppSpacing.xxl,
         ),
         children: [
+          if (isStocks) ...[
+            _ExchangeSelector(labels: [l10n.marketExchangeBist]),
+            const SizedBox(height: AppSpacing.lg),
+          ],
           _StatusCard(
             category: category,
             quotes: quotes,
@@ -308,6 +312,44 @@ class _NoticeCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Exchange chips inside the Borsa tab. Only BIST for now; more exchanges
+/// (e.g. US) can be added as further chips later.
+class _ExchangeSelector extends StatelessWidget {
+  const _ExchangeSelector({required this.labels});
+
+  final List<String> labels;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final accent = theme.colorScheme.primary;
+    return Row(
+      children: [
+        for (final (i, label) in labels.indexed) ...[
+          if (i > 0) const SizedBox(width: AppSpacing.sm),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.12),
+              borderRadius: AppRadius.pillAll,
+              border: Border.all(color: accent, width: 1.5),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.xs + AppSpacing.xxs,
+              ),
+              child: Text(
+                label,
+                style: theme.textTheme.labelLarge?.copyWith(color: accent),
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

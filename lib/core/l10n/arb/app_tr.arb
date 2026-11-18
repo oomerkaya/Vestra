@@ -114,7 +114,7 @@
   "instrumentRUB": "Rus Rublesi",
   "marketTabFx": "Döviz",
   "marketTabMetals": "Madenler",
-  "marketTabStocks": "Hisseler",
+  "marketTabStocks": "Borsa",
   "marketNextUpdate": "Sonraki güncelleme {time}",
   "@marketNextUpdate": {
     "placeholders": {
@@ -136,5 +136,6 @@
     }
   },
   "marketStocksEmptyTitle": "Portföyünde hisse yok",
-  "marketStocksEmptyMessage": "Portföye hisse eklediğinde fiyatları burada görünür."
+  "marketStocksEmptyMessage": "Portföye hisse eklediğinde fiyatları burada görünür.",
+  "marketExchangeBist": "BIST"
 }

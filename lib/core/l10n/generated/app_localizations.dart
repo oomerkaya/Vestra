@@ -637,7 +637,7 @@ abstract class AppLocalizations {
   /// No description provided for @marketTabStocks.
   ///
   /// In tr, this message translates to:
-  /// **'Hisseler'**
+  /// **'Borsa'**
   String get marketTabStocks;
 
   /// No description provided for @marketNextUpdate.
@@ -687,6 +687,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Portföye hisse eklediğinde fiyatları burada görünür.'**
   String get marketStocksEmptyMessage;
+
+  /// No description provided for @marketExchangeBist.
+  ///
+  /// In tr, this message translates to:
+  /// **'BIST'**
+  String get marketExchangeBist;
 }
 
 class _AppLocalizationsDelegate

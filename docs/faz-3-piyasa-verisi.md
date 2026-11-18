@@ -93,6 +93,25 @@ Spesifikasyondaki örnek fiyatlar (USD 38,42 gibi) gösterim amaçlıdır.
 
 `refresh_policy_test.dart` yeni kurallara göre yeniden yazıldı. Repository'ye "yalnızca istenen kategori" testi eklendi.
 
+## "Borsa" sekmesi ve ABD borsası değerlendirmesi (2026-11-18)
+
+- "Hisseler" sekmesinin adı **Borsa** oldu. İçinde şimdilik tek bir **BIST** seçimi var (`_ExchangeSelector`); ileride başka borsalar yan yana eklenebilir.
+
+![](images/light_market_borsa.png)
+
+- **ABD borsası ertelendi.** Ücretsiz seçenekler araştırıldı: Finnhub (dakikada 60 istek, kişisel kullanım), Twelve Data (günde 800, gecikmeli), Alpha Vantage (günde 25). En uygunu Finnhub. Ancak [kullanım şartları](https://finnhub.io/terms-of-service) şöyle diyor:
+  - "Tüm planlar **kesinlikle kişisel kullanım** içindir."
+  - "Verileri veya verilerden türetilen sonuçları üçüncü taraflarla Finnhub'ın **yazılı onayı olmadan** paylaşmayacaksınız."
+  - "Abonelik sona erdiğinde tüm veriler silinmelidir."
+
+  Kodun açık kaynak olması ve her kullanıcının kendi anahtarını kullanması bu şartlarla çelişmiyor gibi görünüyor. Yine de kullanıcı kararıyla, önce Finnhub'dan yazılı onay beklenecek. Onay gelirse uyulacak kurallar:
+  - Gerçek Finnhub yanıtları repoya konmaz; testler uydurma veriyle yazılır.
+  - README'de gerçek ABD fiyatı gösterilmez.
+  - Finnhub anahtarı silinince ABD fiyat önbelleği de silinir.
+  - Ortak anahtar ya da sunucu kullanılmaz.
+
+  Alınmış kararlar: ABD hisselerinde maliyet **USD** girilecek; ABD seansı NYSE takvimine göre (İstanbul saatiyle yaklaşık 16:30-23:00, ABD kış saatinde 17:30-00:00) olacak.
+
 ## Alınan kararlar
 
 | Karar | Alternatif | Gerekçe |

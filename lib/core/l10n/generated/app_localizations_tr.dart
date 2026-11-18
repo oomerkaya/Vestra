@@ -299,7 +299,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get marketTabMetals => 'Madenler';
 
   @override
-  String get marketTabStocks => 'Hisseler';
+  String get marketTabStocks => 'Borsa';
 
   @override
   String marketNextUpdate(String time) {
@@ -330,4 +330,7 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get marketStocksEmptyMessage =>
       'Portföye hisse eklediğinde fiyatları burada görünür.';
+
+  @override
+  String get marketExchangeBist => 'BIST';
 }
