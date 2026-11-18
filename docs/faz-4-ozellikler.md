@@ -148,6 +148,11 @@ Kullanıcı geri bildirimleriyle sırayla yapıldı; son durum aşağıda.
 - Bürküt'ün canlı `/gold` listesindeki ons altın (`XAUUSD`, USD/ons) bir süre USD/TRY ile TL'ye çevrilerek eklendi.
 - Kullanıcı istemediği için **kaldırıldı**; çevirme kodu da silindi.
 - Madenler: gram, çeyrek, yarım, tam, cumhuriyet, ata altın ve gram gümüş.
+- **Kalıntı temizliği:** Kaldırıldıktan sonra da ons, telefonun önbelleğinde kalan eski satırdan görünmeye devam etti. İki çözüm uygulandı:
+  - Desteklenmeyen maden satırları artık gösterilmiyor (`MarketRepositoryImpl._isSupported`).
+  - Bir kategori sağlayıcının **tam listesiyle** güncellenince listede olmayan eski satırlar önbellekten siliniyor (`PriceCacheLocalDataSource.deleteMissing`). Böylece borsadan çıkan hisseler de temizleniyor.
+  - Yalnızca 10 kur döndüren Frankfurter yedeği ve boş cevaplar hiçbir şey silmiyor.
+  - Bu kurallar için 4 yeni test var.
 
 ### 4b. "Tümü"de yalnızca portföy hisseleri görünmesi (düzeltildi)
 

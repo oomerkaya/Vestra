@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:vestra/core/domain/instrument.dart';
 import 'package:vestra/core/error/failure.dart';
 import 'package:vestra/core/error/result.dart';
 import 'package:vestra/core/utils/app_logger.dart';
 import 'package:vestra/features/market/data/datasources/market_meta_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/price_cache_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/quota_local_data_source.dart';
+import 'package:vestra/features/market/data/mappers/burkut_symbols.dart';
 import 'package:vestra/features/market/data/mappers/quote_mappers.dart';
 import 'package:vestra/features/market/domain/entities/quota_usage.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
@@ -43,7 +45,10 @@ class MarketRepositoryImpl implements MarketRepository {
   Stream<Result<List<Quote>>> watchQuotes() => _cache
       .watchAll()
       .map<Result<List<Quote>>>(
-        (rows) => Success([for (final row in rows) ?row.toEntity()]),
+        (rows) => Success([
+          for (final row in rows)
+            if (row.toEntity() case final q? when _isSupported(q)) q,
+        ]),
       )
       .transform(
         StreamTransformer.fromHandlers(
@@ -68,12 +73,16 @@ class MarketRepositoryImpl implements MarketRepository {
     var usedFallback = false;
     Failure? primaryBlocked;
     var wholeMarket = false;
+    // Categories fetched as the provider's complete list (not the partial
+    // free FX fallback): their stale rows are replaced, not kept.
+    final complete = <QuoteCategory>{};
 
     // FX: primary, falling back to the free source on any failure.
     if (categories.contains(QuoteCategory.fx)) {
       switch (await _fx.fetchRates()) {
         case Success(:final value):
           quotes.addAll(value);
+          complete.add(QuoteCategory.fx);
         case Err(:final failure):
           if (_blocksPrimary(failure)) primaryBlocked = failure;
           switch (await _fxFallback.fetchRates()) {
@@ -95,6 +104,7 @@ class MarketRepositoryImpl implements MarketRepository {
       switch (await _metals.fetchPrices()) {
         case Success(:final value):
           quotes.addAll(value);
+          complete.add(QuoteCategory.metals);
         case Err(:final failure):
           failures[QuoteCategory.metals] = failure;
           if (_blocksPrimary(failure)) primaryBlocked = failure;
@@ -111,7 +121,10 @@ class MarketRepositoryImpl implements MarketRepository {
         switch (await _stocks.fetchQuotes(symbols: symbols)) {
           case Success(:final value):
             quotes.addAll(value);
-            if (symbols == null && value.isNotEmpty) wholeMarket = true;
+            if (symbols == null && value.isNotEmpty) {
+              wholeMarket = true;
+              complete.add(QuoteCategory.stocks);
+            }
           case Err(:final failure):
             failures[QuoteCategory.stocks] = failure;
         }
@@ -122,6 +135,7 @@ class MarketRepositoryImpl implements MarketRepository {
       if (quotes.isNotEmpty) {
         await _cache.upsertAll([for (final q in quotes) q.toCompanion()]);
       }
+      await _dropStale(complete, quotes);
       if (wholeMarket) await _meta.setStocksSnapshotAt(_clock());
     } on Object catch (error, stackTrace) {
       AppLogger.error('cache write', error: error, stackTrace: stackTrace);
@@ -136,6 +150,38 @@ class MarketRepositoryImpl implements MarketRepository {
       ),
     );
   }
+
+  /// For each complete category with a non-empty result, deletes cached
+  /// rows the provider no longer lists.
+  Future<void> _dropStale(
+    Set<QuoteCategory> complete,
+    List<Quote> quotes,
+  ) async {
+    for (final category in complete) {
+      final fetched = [
+        for (final q in quotes)
+          if (QuoteCategory.of(q.instrument.type) == category) q,
+      ];
+      if (fetched.isEmpty) continue; // never wipe on an empty answer
+      await _cache.deleteMissing(
+        {
+          for (final t in AssetType.values)
+            if (QuoteCategory.of(t) == category) t.name,
+        },
+        {for (final q in fetched) q.instrument.code},
+      );
+    }
+  }
+
+  /// Metals are limited to the instruments the app supports, so rows left
+  /// from older versions (e.g. ounce gold) are not shown.
+  static bool _isSupported(Quote q) =>
+      QuoteCategory.of(q.instrument.type) != QuoteCategory.metals ||
+      _supportedMetals.contains(q.instrument);
+
+  static final Set<Instrument> _supportedMetals = {
+    ...burkutMetalSymbols.values,
+  };
 
   @override
   Future<DateTime?> stocksSnapshotAt() async {

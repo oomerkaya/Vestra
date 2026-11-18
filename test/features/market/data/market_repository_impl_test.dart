@@ -7,6 +7,7 @@ import 'package:vestra/core/error/result.dart';
 import 'package:vestra/features/market/data/datasources/market_meta_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/price_cache_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/quota_local_data_source.dart';
+import 'package:vestra/features/market/data/mappers/quote_mappers.dart';
 import 'package:vestra/features/market/data/repositories/market_repository_impl.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/domain/providers/price_providers.dart';
@@ -227,5 +228,54 @@ void main() {
     );
 
     expect(await repo.stocksSnapshotAt(), isNull);
+  });
+
+  group('stale rows', () {
+    final ons = _q(AssetType.gold, 'ONS', '176000', QuoteSource.burkut);
+    final gbp = _q(AssetType.currency, 'GBP', '56', QuoteSource.burkut);
+
+    test('unsupported metals in the cache are not shown', () async {
+      await PriceCacheLocalDataSource(db).upsertAll([
+        ons.toCompanion(),
+        gram.toCompanion(),
+      ]);
+
+      final shown = await cached();
+
+      expect(shown.map((q) => q.instrument.code), ['GRAM']);
+    });
+
+    test('a complete metals list removes rows it no longer contains', () async {
+      await PriceCacheLocalDataSource(db).upsertAll([ons.toCompanion()]);
+      when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
+
+      await repo.refresh(categories: {QuoteCategory.metals});
+
+      final rows = await db.select(db.priceCache).get();
+      expect(rows.map((r) => r.code), ['GRAM']);
+    });
+
+    test('the partial FX fallback does not delete other currencies', () async {
+      await PriceCacheLocalDataSource(db).upsertAll([gbp.toCompanion()]);
+      when(
+        () => fx.fetchRates(),
+      ).thenAnswer((_) async => const Err(NetworkFailure()));
+
+      await repo.refresh(categories: {QuoteCategory.fx});
+
+      final codes = (await cached()).map((q) => q.instrument.code).toSet();
+      expect(codes, {'USD', 'GBP'});
+    });
+
+    test('an empty answer never wipes the cache', () async {
+      await PriceCacheLocalDataSource(db).upsertAll([gram.toCompanion()]);
+      when(
+        () => metals.fetchPrices(),
+      ).thenAnswer((_) async => const Success([]));
+
+      await repo.refresh(categories: {QuoteCategory.metals});
+
+      expect((await cached()).single.instrument.code, 'GRAM');
+    });
   });
 }
