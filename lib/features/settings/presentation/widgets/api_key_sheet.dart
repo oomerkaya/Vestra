@@ -59,7 +59,7 @@ class _ApiKeySheetState extends ConsumerState<ApiKeySheet> {
         unawaited(
           ref
               .read(priceRefreshControllerProvider.notifier)
-              .refresh(manual: true),
+              .refreshDue(manual: true),
         );
         navigator.pop();
         messenger.showSnackBar(SnackBar(content: Text(l10n.apiKeySaved)));

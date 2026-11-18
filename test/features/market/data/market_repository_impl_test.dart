@@ -28,6 +28,8 @@ Quote _q(AssetType type, String code, String price, QuoteSource source) =>
       changePercent: d('1.5'),
     );
 
+final Set<QuoteCategory> _all = QuoteCategory.values.toSet();
+
 void main() {
   late AppDatabase db;
   late _Fx fx;
@@ -71,7 +73,10 @@ void main() {
       () => stocks.fetchQuotes(any()),
     ).thenAnswer((_) async => Success([thyao]));
 
-    final report = (await repo.refresh(stockSymbols: {'THYAO'})).valueOrNull!;
+    final report = (await repo.refresh(
+      categories: _all,
+      stockSymbols: {'THYAO'},
+    )).valueOrNull!;
 
     expect(report.updated, 3);
     expect(report.hasFailures, isFalse);
@@ -89,7 +94,10 @@ void main() {
       () => fx.fetchRates(),
     ).thenAnswer((_) async => const Err(AuthFailure(missingKey: true)));
 
-    final report = (await repo.refresh(stockSymbols: {'THYAO'})).valueOrNull!;
+    final report = (await repo.refresh(
+      categories: _all,
+      stockSymbols: {'THYAO'},
+    )).valueOrNull!;
 
     expect(report.usedFxFallback, isTrue);
     expect(report.failures[QuoteCategory.metals], isA<AuthFailure>());
@@ -106,7 +114,10 @@ void main() {
     ).thenAnswer((_) async => const Err(NetworkFailure()));
     when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
 
-    final report = (await repo.refresh(stockSymbols: {})).valueOrNull!;
+    final report = (await repo.refresh(
+      categories: _all,
+      stockSymbols: {},
+    )).valueOrNull!;
 
     expect(report.usedFxFallback, isTrue);
     expect(report.updated, 2);
@@ -117,7 +128,7 @@ void main() {
     when(() => fx.fetchRates()).thenAnswer((_) async => Success([usd]));
     when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
 
-    await repo.refresh(stockSymbols: {});
+    await repo.refresh(categories: _all, stockSymbols: {});
 
     verifyNever(() => stocks.fetchQuotes(any()));
   });
@@ -127,11 +138,11 @@ void main() {
     when(
       () => metals.fetchPrices(),
     ).thenAnswer((_) async => const Success([]));
-    await repo.refresh(stockSymbols: {});
+    await repo.refresh(categories: _all, stockSymbols: {});
 
     final newer = _q(AssetType.currency, 'USD', '43', QuoteSource.burkut);
     when(() => fx.fetchRates()).thenAnswer((_) async => Success([newer]));
-    await repo.refresh(stockSymbols: {});
+    await repo.refresh(categories: _all, stockSymbols: {});
 
     expect((await cached()).single.priceTry, d('43'));
   });
@@ -141,7 +152,7 @@ void main() {
     when(
       () => metals.fetchPrices(),
     ).thenAnswer((_) async => const Success([]));
-    await repo.refresh(stockSymbols: {});
+    await repo.refresh(categories: _all, stockSymbols: {});
 
     when(
       () => fx.fetchRates(),
@@ -152,10 +163,27 @@ void main() {
     when(
       () => metals.fetchPrices(),
     ).thenAnswer((_) async => const Err(NetworkFailure()));
-    final report = (await repo.refresh(stockSymbols: {})).valueOrNull!;
+    final report = (await repo.refresh(
+      categories: _all,
+      stockSymbols: {},
+    )).valueOrNull!;
 
     expect(report.updated, 0);
     expect(report.failures.keys, containsAll([QuoteCategory.fx]));
     expect((await cached()).single.priceTry, d('42.1'));
+  });
+
+  test('only the requested categories are fetched', () async {
+    when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
+
+    final report = (await repo.refresh(
+      categories: {QuoteCategory.metals},
+      stockSymbols: {'THYAO'},
+    )).valueOrNull!;
+
+    expect(report.updated, 1);
+    verifyNever(() => fx.fetchRates());
+    verifyNever(() => fallback.fetchRates());
+    verifyNever(() => stocks.fetchQuotes(any()));
   });
 }

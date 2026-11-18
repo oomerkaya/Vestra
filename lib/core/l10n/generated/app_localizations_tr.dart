@@ -32,7 +32,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get marketEmptyMessage =>
-      'Aşağı çekerek fiyatları güncelleyebilirsin.';
+      'Fiyatlar ilk güncellemeden sonra burada görünür.';
 
   @override
   String get settingsTheme => 'Tema';
@@ -207,7 +207,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsDataNote =>
-      'Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Bürküt lisanslı bir veri dağıtıcısı değildir. Fiyatlar hafta içi 10:00-18:00 arasında, uygulama açıkken 30 dakikada bir güncellenir.';
+      'Döviz ve altın/gümüş fiyatları uygulama açıkken 30 dakikada bir güncellenir. Hisseler yalnızca hafta içi 10:00-18:00 arasında güncellenir ve Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Bürküt lisanslı bir veri dağıtıcısı değildir.';
 
   @override
   String get apiKeySheetTitle => 'Bürküt API anahtarı';
@@ -291,4 +291,43 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get instrumentRUB => 'Rus Rublesi';
+
+  @override
+  String get marketTabFx => 'Döviz';
+
+  @override
+  String get marketTabMetals => 'Madenler';
+
+  @override
+  String get marketTabStocks => 'Hisseler';
+
+  @override
+  String marketNextUpdate(String time) {
+    return 'Sonraki güncelleme $time';
+  }
+
+  @override
+  String get marketNotUpdatedYet => 'Henüz güncellenmedi';
+
+  @override
+  String get marketUpdateRule => '30 dakikada bir güncellenir';
+
+  @override
+  String get marketStocksRule =>
+      'Hafta içi 10:00-18:00 arasında, 30 dakikada bir güncellenir';
+
+  @override
+  String get marketSessionClosed => 'Borsa şu an kapalı';
+
+  @override
+  String marketUpToDate(String time) {
+    return 'Veriler güncel · sonraki güncelleme $time';
+  }
+
+  @override
+  String get marketStocksEmptyTitle => 'Portföyünde hisse yok';
+
+  @override
+  String get marketStocksEmptyMessage =>
+      'Portföye hisse eklediğinde fiyatları burada görünür.';
 }

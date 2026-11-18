@@ -7,7 +7,7 @@
   "portfolioEmptyTitle": "Portföyün boş",
   "portfolioEmptyMessage": "Döviz, altın, gümüş veya hisse ekleyerek portföyünü oluşturmaya başla.",
   "marketEmptyTitle": "Henüz fiyat yok",
-  "marketEmptyMessage": "Aşağı çekerek fiyatları güncelleyebilirsin.",
+  "marketEmptyMessage": "Fiyatlar ilk güncellemeden sonra burada görünür.",
   "settingsTheme": "Tema",
   "themeSystem": "Sistem",
   "themeLight": "Aydınlık",
@@ -84,7 +84,7 @@
     }
   },
   "settingsQuotaExhausted": "Kota doldu",
-  "settingsDataNote": "Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Bürküt lisanslı bir veri dağıtıcısı değildir. Fiyatlar hafta içi 10:00-18:00 arasında, uygulama açıkken 30 dakikada bir güncellenir.",
+  "settingsDataNote": "Döviz ve altın/gümüş fiyatları uygulama açıkken 30 dakikada bir güncellenir. Hisseler yalnızca hafta içi 10:00-18:00 arasında güncellenir ve Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Bürküt lisanslı bir veri dağıtıcısı değildir.",
   "apiKeySheetTitle": "Bürküt API anahtarı",
   "apiKeySheetHelp": "burkutportfoy.com/developer adresinden ücretsiz hesap açıp anahtar oluşturabilirsin (ayda 1.000 istek). Anahtar yalnızca bu cihazda şifreli saklanır.",
   "apiKeyFieldLabel": "API anahtarı",
@@ -111,5 +111,30 @@
   "instrumentPKR": "Pakistan Rupisi",
   "instrumentQAR": "Katar Riyali",
   "instrumentRON": "Rumen Leyi",
-  "instrumentRUB": "Rus Rublesi"
+  "instrumentRUB": "Rus Rublesi",
+  "marketTabFx": "Döviz",
+  "marketTabMetals": "Madenler",
+  "marketTabStocks": "Hisseler",
+  "marketNextUpdate": "Sonraki güncelleme {time}",
+  "@marketNextUpdate": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "marketNotUpdatedYet": "Henüz güncellenmedi",
+  "marketUpdateRule": "30 dakikada bir güncellenir",
+  "marketStocksRule": "Hafta içi 10:00-18:00 arasında, 30 dakikada bir güncellenir",
+  "marketSessionClosed": "Borsa şu an kapalı",
+  "marketUpToDate": "Veriler güncel · sonraki güncelleme {time}",
+  "@marketUpToDate": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "marketStocksEmptyTitle": "Portföyünde hisse yok",
+  "marketStocksEmptyMessage": "Portföye hisse eklediğinde fiyatları burada görünür."
 }

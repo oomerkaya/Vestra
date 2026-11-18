@@ -54,17 +54,55 @@ Bürküt'ün yapay zekâ araçları için yayımladığı REST spesifikasyonu, i
 
 Spesifikasyondaki örnek fiyatlar (USD 38,42 gibi) gösterim amaçlıdır.
 
+## Kategori bazlı yenileme ve sekmeli piyasa ekranı (2026-11-18)
+
+**Kullanıcı geri bildirimi:** Ekranı aşağı çekip her yenilediğinde Bürküt kotası azalıyordu; saat 18:14'te bile hisse isteniyordu. Sebep: pull-to-refresh tüm kuralları atlayıp her seferinde 2-3 istek gönderiyordu.
+
+**Yeni kurallar** ([`refresh_policy.dart`](../lib/features/market/domain/services/refresh_policy.dart), `RefreshPolicy.isDue`):
+
+| Kategori | Ne zaman istenir |
+|---|---|
+| Döviz | Her zaman; son başarılı güncellemeden ≥ 30 dk sonra |
+| Altın/gümüş | Her zaman; son başarılı güncellemeden ≥ 30 dk sonra |
+| Hisse | Yalnızca seans içinde (hafta içi 10:00-18:00, yarım gün 12:30, tatil yok); son başarılı güncellemeden ≥ 30 dk sonra. Portföydeki bir hissenin hiç fiyatı yoksa seans içinde hemen |
+
+- Pull-to-refresh aynı kurallara uyar, yani 30 dk dolmadan istek göndermez. Tek farkı: başarısız bir denemeden sonra beklemeden tekrar deneyebilir. İstek gitmediyse alt bilgide "Veriler güncel · sonraki güncelleme 18:44" ya da "Borsa şu an kapalı" görünür.
+- Otomatik denemeler, başarısız bir denemeden sonra da 30 dk bekler; sunucu hatası her dakika tekrar istek harcamaz. HTTP 429'da backoff (1-30 dk, `Retry-After`) korunuyor.
+- "Önbellek boşsa seans dışında bir kez yenile" kuralı kaldırıldı. Döviz ve maden zaten her saat yenilenebiliyor; hisseler yalnızca seans içinde.
+- Her kategorinin son güncellemesi ayrı hesaplanır: önbellekteki o kategorinin en yeni `fetchedAt` değeri, hisselerde yalnızca portföydeki hisseler. Son deneme zamanı oturum içinde bellekte tutulur.
+
+**Kod değişiklikleri:**
+- `MarketRepository.refresh(categories, stockSymbols)`: yalnızca istenen kategoriler çekilir.
+- `QuoteCategory.of(AssetType)`: türden kategoriye geçiş.
+- `PriceRefreshController.refreshDue({manual})`: istenen kategorileri döndürür. Durum kategori bazlı: `refreshing` kümesi ve `failures` haritası.
+- `RefreshPrices` use case'i kaldırıldı. Yerine `WatchHeldStockSymbols` geldi: portföyde miktarı > 0 olan hisseler, canlı. Hisse sekmesi yalnızca bunları gösterir.
+- Piyasa ekranı: üstte hap biçimli **Döviz / Madenler / Hisseler** sekmeleri (`TabBar` + `TabBarView`, kaydırarak da geçilir). Her sekmenin kendi durum satırı var: son güncelleme, sonraki güncelleme ya da "Borsa şu an kapalı", güncelleme kuralı, kaynak. Bildirim kartları ve listesi de sekmeye özel. Anahtar uyarısı döviz sekmesinde çıkmaz, çünkü döviz anahtarsız da gelir.
+
+| Döviz (aydınlık) | Madenler (aydınlık) | Hisseler, borsa kapalı (karanlık) |
+|---|---|---|
+| ![](images/light_market.png) | ![](images/light_market_metals.png) | ![](images/dark_market_stocks.png) |
+
+**Testler:** `price_refresh_controller_test.dart` (yeni, 9 test) şunları doğrular:
+- 30 dk içinde tekrar çekmek istek göndermez.
+- 30 dk sonra yeniden çekilir.
+- 18:14'te ve hafta sonu yalnızca döviz ve maden istenir.
+- Kategorilerin takvimleri birbirinden bağımsızdır.
+- Hisse yoksa hisse isteği gitmez.
+- Başarısız denemeden sonra otomatik yenileme bekler, elle yenileme dener.
+- Hatalar kategori bazlı tutulur.
+
+`refresh_policy_test.dart` yeni kurallara göre yeniden yazıldı. Repository'ye "yalnızca istenen kategori" testi eklendi.
+
 ## Alınan kararlar
 
 | Karar | Alternatif | Gerekçe |
 |---|---|---|
 | **Bürküt birincil, Frankfurter yalnızca döviz yedeği** | Döviz her zaman Frankfurter'dan | Kullanıcı tercihi. Tek tutarlı, gün içi güncellenen kaynak. Anahtar yoksa ya da kota dolmuşsa döviz yine güncellenir |
-| **Otomatik yenileme 30 dk'da bir** (CLAUDE.md'deki 15 dk yerine) | 15 dk + %90'da durdurma | Kullanıcı tercihi. Yenileme başına en fazla 3 istek gidiyor; 15 dk'da bir ve gün boyu açık kullanımda ayda yaklaşık 2.100 istek eder ve kota aşılır |
+| **Otomatik yenileme 30 dk'da bir** (CLAUDE.md'deki 15 dk yerine; 2026-11-18'den beri kategori bazlı, yukarıya bakın) | 15 dk + %90'da durdurma | Kullanıcı tercihi. Yenileme başına en fazla 3 istek gidiyor; 15 dk'da bir ve gün boyu açık kullanımda ayda yaklaşık 2.100 istek eder ve kota aşılır |
 | Döviz ve altında **alış (`buying`) fiyatı** kullanılır | Satış fiyatı, ortalama | Elindeki varlığı bugün satsan alacağın değer; portföy için temkinli değer |
 | Yenileme sırası döviz → maden → hisse. Anahtar eksik/reddedilmiş ya da kota dolmuşsa kalan Bürküt çağrıları **atlanır** | Her kategoriyi ayrı denemek | Boşa istek (ve kota) harcanmaz |
 | Anahtar yoksa ya da kota doluysa **istek hiç gönderilmez**, kontrol yerelde yapılır | İsteği gönderip 401/429 beklemek | Kota korunur |
 | Kota sayacı uygulamanın kendi tahmini (`app_settings`, aylık). Sunucu "kota doldu" derse o geçerlidir | Sunucudan kota sorgulamak | Böyle bir uç nokta bulunamadı |
-| Önbellek boşsa seans dışında da **bir kez** yenilenir | Seans dışında hiç yenilememek | İlk açılış hafta sonuna denk gelirse ekran boş kalmasın |
 | Kota dolsa da otomatik yenileme durmaz | Tamamen durdurmak | Bürküt'e istek gitmez; döviz ücretsiz yedekten güncellenmeye devam eder |
 | Saat dilimi sabit **UTC+3** | `timezone` paketi | Türkiye 2016'dan beri yaz saati uygulamıyor; paket eklemeye gerek yok |
 | Tatil takvimi `assets/data/market_holidays.json` | Kodda sabit liste | CLAUDE.md kuralı; kod değişmeden güncellenebilir |
@@ -162,7 +200,7 @@ Spesifikasyondaki örnek fiyatlar (USD 38,42 gibi) gösterim amaçlıdır.
 
 ## Testler
 
-Toplam **113 test**, hepsi geçti (Faz 2 sonunda 52; REST spesifikasyonu düzeltmesiyle +10; canlı doğrulamayla +6).
+Toplam **127 test**, hepsi geçti (Faz 2 sonunda 52; REST spesifikasyonu düzeltmesiyle +10; canlı doğrulamayla +6; kategori bazlı yenilemeyle +14).
 
 | Dosya | Kapsam |
 |---|---|
@@ -182,7 +220,7 @@ Toplam **113 test**, hepsi geçti (Faz 2 sonunda 52; REST spesifikasyonu düzelt
 |---|---|
 | `dart format --set-exit-if-changed lib test` | Temiz |
 | `flutter analyze` | No issues found |
-| `flutter test` | 113/113 |
+| `flutter test` | 127/127 |
 | `flutter build apk --debug` | Başarılı |
 | Canlı: `GET api.frankfurter.dev/v1/latest?base=TRY&symbols=...` | Beklenen biçim; USD = 1 / 0,019836 ≈ ₺50,41 |
 | Canlı: `GET api.burkutportfoy.com/api/public/v1/gold` (anahtarsız) | `401 UNAUTHORIZED`; adres ve hata biçimi doğru |

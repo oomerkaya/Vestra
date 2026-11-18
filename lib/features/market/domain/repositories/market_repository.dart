@@ -26,8 +26,12 @@ abstract interface class MarketRepository {
   /// Cached quotes; emits again whenever the cache changes.
   Stream<Result<List<Quote>>> watchQuotes();
 
-  /// Fetches FX, metals and the given stock symbols and stores them.
-  Future<Result<RefreshReport>> refresh({required Set<String> stockSymbols});
+  /// Fetches only the given [categories] and stores them. Stocks are
+  /// fetched for [stockSymbols] (one batched request) and skipped if empty.
+  Future<Result<RefreshReport>> refresh({
+    required Set<QuoteCategory> categories,
+    required Set<String> stockSymbols,
+  });
 
   Future<Result<QuotaUsage>> quotaUsage();
 }

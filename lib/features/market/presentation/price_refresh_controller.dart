@@ -2,54 +2,47 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vestra/core/domain/instrument.dart';
 import 'package:vestra/core/error/failure.dart';
 import 'package:vestra/core/error/result.dart';
 import 'package:vestra/features/market/domain/entities/market_calendar.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/market/domain/repositories/market_repository.dart';
 import 'package:vestra/features/market/domain/services/refresh_policy.dart';
 import 'package:vestra/features/market/market_providers.dart';
 
 @immutable
 class PriceRefreshState {
   const PriceRefreshState({
-    this.isRefreshing = false,
-    this.lastReport,
+    this.refreshing = const {},
+    this.failures = const {},
     this.lastError,
     this.backoffUntil,
-    this.consecutiveFailures = 0,
+    this.rateLimitStrikes = 0,
   });
 
-  final bool isRefreshing;
-  final RefreshReport? lastReport;
+  /// Categories with a request in flight.
+  final Set<QuoteCategory> refreshing;
+
+  /// Latest failure per category; cleared when that category succeeds.
+  final Map<QuoteCategory, Failure> failures;
 
   /// Set when the whole refresh failed (e.g. database error).
   final Failure? lastError;
-  final DateTime? backoffUntil;
-  final int consecutiveFailures;
 
-  PriceRefreshState copyWith({
-    bool? isRefreshing,
-    RefreshReport? lastReport,
-    Failure? Function()? lastError,
-    DateTime? Function()? backoffUntil,
-    int? consecutiveFailures,
-  }) => PriceRefreshState(
-    isRefreshing: isRefreshing ?? this.isRefreshing,
-    lastReport: lastReport ?? this.lastReport,
-    lastError: lastError != null ? lastError() : this.lastError,
-    backoffUntil: backoffUntil != null ? backoffUntil() : this.backoffUntil,
-    consecutiveFailures: consecutiveFailures ?? this.consecutiveFailures,
-  );
+  /// No requests at all before this time (after HTTP 429).
+  final DateTime? backoffUntil;
+  final int rateLimitStrikes;
+
+  bool get isRefreshing => refreshing.isNotEmpty;
 }
 
-/// Drives price updates while the app is in the foreground.
+/// Drives price updates while the app is in the foreground, per category.
 ///
-/// - Checks [RefreshPolicy] every minute and when the app is resumed.
-/// - Does nothing while the app is in the background (no background
-///   service, per CLAUDE.md).
-/// - Manual refresh (pull-to-refresh) ignores the schedule but still
-///   respects backoff.
+/// - Checks [RefreshPolicy.isDue] every minute, when the app is resumed
+///   and on pull-to-refresh. Pull-to-refresh never bypasses the 30 minute
+///   rule or the stock session hours; it only skips the retry wait after a
+///   failed attempt.
+/// - Nothing runs while the app is in the background.
 final priceRefreshControllerProvider =
     NotifierProvider<PriceRefreshController, PriceRefreshState>(
       PriceRefreshController.new,
@@ -61,6 +54,7 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
   Timer? _timer;
   AppLifecycleListener? _lifecycle;
   bool _foreground = true;
+  final Map<QuoteCategory, DateTime> _lastAttempt = {};
 
   /// Clock override for tests.
   @visibleForTesting
@@ -69,16 +63,15 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
   @override
   PriceRefreshState build() {
     if (ref.watch(autoRefreshEnabledProvider)) {
-      _timer = Timer.periodic(_tick, (_) => unawaited(maybeAutoRefresh()));
+      _timer = Timer.periodic(_tick, (_) => unawaited(refreshDue()));
       _lifecycle = AppLifecycleListener(
         onResume: () {
           _foreground = true;
-          unawaited(maybeAutoRefresh());
+          unawaited(refreshDue());
         },
         onHide: () => _foreground = false,
       );
-      // First check right after start-up.
-      unawaited(Future<void>.microtask(maybeAutoRefresh));
+      unawaited(Future<void>.microtask(refreshDue));
     }
     ref.onDispose(() {
       _timer?.cancel();
@@ -87,80 +80,114 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
     return const PriceRefreshState();
   }
 
-  /// Refreshes if the schedule allows it.
-  Future<void> maybeAutoRefresh() async {
-    if (!_foreground || state.isRefreshing) return;
+  /// Fetches every category that is due. With [manual] (pull-to-refresh)
+  /// a failed category may be retried immediately; everything else follows
+  /// the same rules as the automatic refresh. Returns the categories that
+  /// were requested (empty if nothing was due).
+  Future<Set<QuoteCategory>> refreshDue({bool manual = false}) async {
+    if ((!manual && !_foreground) || state.isRefreshing) return const {};
+
     final MarketCalendar calendar;
     final List<Quote> quotes;
+    final Set<String> held;
     try {
       calendar = await ref.read(marketCalendarProvider.future);
       quotes = await ref.read(quotesProvider.future);
+      held = await ref.read(heldStockSymbolsProvider.future);
     } on Object {
-      return;
+      return const {};
     }
-    if (!ref.mounted) return;
+    if (!ref.mounted) return const {};
 
-    final should = RefreshPolicy.shouldAutoRefresh(
-      now: clock(),
-      lastFetchedAt: _latestFetch(quotes),
-      calendar: calendar,
+    final now = clock();
+    final lastSuccess = _lastSuccessByCategory(quotes, held);
+    final cachedStocks = {
+      for (final q in quotes)
+        if (q.instrument.type == AssetType.stock) q.instrument.code,
+    };
+    final due = <QuoteCategory>{
+      for (final category in QuoteCategory.values)
+        if (category != QuoteCategory.stocks || held.isNotEmpty)
+          if (RefreshPolicy.isDue(
+            category: category,
+            now: now,
+            lastSuccess: lastSuccess[category],
+            lastAttempt: _lastAttempt[category],
+            calendar: calendar,
+            manual: manual,
+            hasMissing: held.any((s) => !cachedStocks.contains(s)),
+            backoffUntil: state.backoffUntil,
+          ))
+            category,
+    };
+    if (due.isEmpty) return const {};
+
+    for (final category in due) {
+      _lastAttempt[category] = now;
+    }
+    state = PriceRefreshState(
+      refreshing: due,
+      failures: state.failures,
       backoffUntil: state.backoffUntil,
+      rateLimitStrikes: state.rateLimitStrikes,
     );
-    if (should) await refresh();
-  }
 
-  /// Runs a refresh now. Returns the report, or `null` if skipped/failed.
-  Future<RefreshReport?> refresh({bool manual = false}) async {
-    if (state.isRefreshing) return null;
-    final until = state.backoffUntil;
-    if (until != null && clock().isBefore(until) && !manual) return null;
-
-    state = state.copyWith(isRefreshing: true);
-    final result = await ref.read(refreshPricesProvider)();
-    if (!ref.mounted) return null;
+    final result = await ref
+        .read(marketRepositoryProvider)
+        .refresh(categories: due, stockSymbols: held);
+    if (!ref.mounted) return due;
 
     switch (result) {
       case Success(value: final report):
-        final failures = report.failures.values;
-        final rateLimited = failures.whereType<RateLimitFailure>().firstOrNull;
-        final allNetworkDown =
-            report.updated == 0 && failures.any((f) => f is NetworkFailure);
-        if (rateLimited != null || allNetworkDown) {
-          final count = state.consecutiveFailures + 1;
-          state = state.copyWith(
-            isRefreshing: false,
-            lastReport: report,
-            lastError: () => null,
-            consecutiveFailures: count,
-            backoffUntil: () => clock().add(
-              RefreshPolicy.backoff(
-                count,
-                retryAfter: rateLimited?.retryAfter,
-              ),
-            ),
-          );
-        } else {
-          state = state.copyWith(
-            isRefreshing: false,
-            lastReport: report,
-            lastError: () => null,
-            consecutiveFailures: 0,
-            backoffUntil: () => null,
-          );
-        }
+        final failures = {...state.failures}
+          ..removeWhere((c, _) => due.contains(c))
+          ..addAll(report.failures);
+        final rateLimited = report.failures.values
+            .whereType<RateLimitFailure>()
+            .firstOrNull;
+        final strikes = rateLimited == null ? 0 : state.rateLimitStrikes + 1;
+        state = PriceRefreshState(
+          failures: failures,
+          rateLimitStrikes: strikes,
+          backoffUntil: rateLimited == null
+              ? null
+              : now.add(
+                  RefreshPolicy.backoff(
+                    strikes,
+                    retryAfter: rateLimited.retryAfter,
+                  ),
+                ),
+        );
         ref.invalidate(quotaUsageProvider);
-        return report;
       case Err(:final failure):
-        state = state.copyWith(isRefreshing: false, lastError: () => failure);
-        return null;
+        state = PriceRefreshState(
+          failures: state.failures,
+          lastError: failure,
+          backoffUntil: state.backoffUntil,
+          rateLimitStrikes: state.rateLimitStrikes,
+        );
     }
+    return due;
   }
 
-  static DateTime? _latestFetch(List<Quote> quotes) {
-    DateTime? latest;
+  /// Newest `fetchedAt` per category. For stocks only held symbols count,
+  /// so a sold stock's old price doesn't hide that the others are stale.
+  static Map<QuoteCategory, DateTime> _lastSuccessByCategory(
+    List<Quote> quotes,
+    Set<String> held,
+  ) {
+    final result = <QuoteCategory, DateTime>{};
     for (final q in quotes) {
-      if (latest == null || q.fetchedAt.isAfter(latest)) latest = q.fetchedAt;
+      final category = QuoteCategory.of(q.instrument.type);
+      if (category == QuoteCategory.stocks &&
+          !held.contains(q.instrument.code)) {
+        continue;
+      }
+      final current = result[category];
+      if (current == null || q.fetchedAt.isAfter(current)) {
+        result[category] = q.fetchedAt;
+      }
     }
-    return latest;
+    return result;
   }
 }

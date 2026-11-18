@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vestra/features/market/domain/entities/market_calendar.dart';
+import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/domain/services/refresh_policy.dart';
 
 /// Istanbul wall-clock time expressed as a UTC instant (Istanbul = UTC+3).
@@ -77,51 +78,119 @@ void main() {
     });
   });
 
-  group('shouldAutoRefresh', () {
-    final now = ist(2026, 11, 16, 14);
+  group('isDue', () {
+    // Monday 14:00 Istanbul: session open.
+    final open = ist(2026, 11, 16, 14);
+    // Monday 18:14 Istanbul: session closed.
+    final evening = ist(2026, 11, 16, 18, 14);
+    // Saturday noon.
+    final weekend = ist(2026, 11, 21, 12);
 
-    test('always when nothing is cached, even outside the session', () {
+    bool due(
+      QuoteCategory category, {
+      required DateTime now,
+      Duration? sinceSuccess,
+      Duration? sinceAttempt,
+      bool manual = false,
+      bool hasMissing = false,
+      DateTime? backoffUntil,
+    }) => RefreshPolicy.isDue(
+      category: category,
+      now: now,
+      lastSuccess: sinceSuccess == null ? null : now.subtract(sinceSuccess),
+      lastAttempt: sinceAttempt == null ? null : now.subtract(sinceAttempt),
+      calendar: calendar,
+      manual: manual,
+      hasMissing: hasMissing,
+      backoffUntil: backoffUntil,
+    );
+
+    test('every category waits 30 minutes after a successful update', () {
+      for (final c in QuoteCategory.values) {
+        expect(
+          due(c, now: open, sinceSuccess: const Duration(minutes: 29)),
+          isFalse,
+        );
+        expect(
+          due(c, now: open, sinceSuccess: const Duration(minutes: 30)),
+          isTrue,
+        );
+      }
+    });
+
+    test('manual refresh does NOT bypass the 30 minute rule', () {
+      for (final c in QuoteCategory.values) {
+        expect(
+          due(
+            c,
+            now: open,
+            sinceSuccess: const Duration(minutes: 5),
+            manual: true,
+          ),
+          isFalse,
+        );
+      }
+    });
+
+    test('FX and metals update outside session hours and on weekends', () {
+      for (final now in [evening, weekend]) {
+        expect(due(QuoteCategory.fx, now: now), isTrue);
+        expect(due(QuoteCategory.metals, now: now), isTrue);
+      }
+    });
+
+    test('stocks never outside the session, not even manually', () {
+      for (final now in [evening, weekend, ist(2026, 11, 18, 12)]) {
+        expect(due(QuoteCategory.stocks, now: now), isFalse);
+        expect(
+          due(QuoteCategory.stocks, now: now, manual: true, hasMissing: true),
+          isFalse,
+        );
+      }
+    });
+
+    test('stocks: a held stock without a price is fetched right away', () {
       expect(
-        RefreshPolicy.shouldAutoRefresh(
-          now: ist(2026, 11, 22, 3),
-          lastFetchedAt: null,
-          calendar: calendar,
+        due(
+          QuoteCategory.stocks,
+          now: open,
+          sinceSuccess: const Duration(minutes: 5),
+          hasMissing: true,
         ),
         isTrue,
       );
     });
 
-    test('only after the 30 minute interval', () {
-      bool at(Duration ago) => RefreshPolicy.shouldAutoRefresh(
-        now: now,
-        lastFetchedAt: now.subtract(ago),
-        calendar: calendar,
+    test('after a failed attempt, auto waits 30 min, manual may retry', () {
+      const failedAgo = Duration(minutes: 3);
+      expect(
+        due(QuoteCategory.fx, now: open, sinceAttempt: failedAgo),
+        isFalse,
       );
-      expect(at(const Duration(minutes: 29)), isFalse);
-      expect(at(const Duration(minutes: 30)), isTrue);
+      expect(
+        due(QuoteCategory.fx, now: open, sinceAttempt: failedAgo, manual: true),
+        isTrue,
+      );
     });
 
-    test('never outside the session when a cache exists', () {
+    test('nothing while rate-limit backoff is active, even manually', () {
       expect(
-        RefreshPolicy.shouldAutoRefresh(
-          now: ist(2026, 11, 16, 20),
-          lastFetchedAt: ist(2026, 11, 16, 12),
-          calendar: calendar,
+        due(
+          QuoteCategory.fx,
+          now: open,
+          manual: true,
+          backoffUntil: open.add(const Duration(minutes: 1)),
         ),
         isFalse,
       );
     });
 
-    test('not while backing off', () {
+    test('nextUpdate is 30 minutes after the last success', () {
       expect(
-        RefreshPolicy.shouldAutoRefresh(
-          now: now,
-          lastFetchedAt: null,
-          calendar: calendar,
-          backoffUntil: now.add(const Duration(minutes: 1)),
-        ),
-        isFalse,
+        RefreshPolicy.nextUpdate(DateTime(2026, 11, 16, 18, 14)),
+        DateTime(2026, 11, 16, 18, 44),
       );
+      expect(RefreshPolicy.nextUpdate(null), isNull);
     });
   });
 

@@ -36,4 +36,15 @@ class Quote {
   final DateTime? asOf;
 }
 
-enum QuoteCategory { fx, metals, stocks }
+/// Refresh groups. Each has its own schedule and "last updated" time.
+enum QuoteCategory {
+  fx,
+  metals,
+  stocks;
+
+  static QuoteCategory of(AssetType type) => switch (type) {
+    AssetType.currency => QuoteCategory.fx,
+    AssetType.gold || AssetType.silver => QuoteCategory.metals,
+    AssetType.stock => QuoteCategory.stocks,
+  };
+}

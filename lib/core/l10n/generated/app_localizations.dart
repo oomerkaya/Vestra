@@ -139,7 +139,7 @@ abstract class AppLocalizations {
   /// No description provided for @marketEmptyMessage.
   ///
   /// In tr, this message translates to:
-  /// **'Aşağı çekerek fiyatları güncelleyebilirsin.'**
+  /// **'Fiyatlar ilk güncellemeden sonra burada görünür.'**
   String get marketEmptyMessage;
 
   /// No description provided for @settingsTheme.
@@ -457,7 +457,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsDataNote.
   ///
   /// In tr, this message translates to:
-  /// **'Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Bürküt lisanslı bir veri dağıtıcısı değildir. Fiyatlar hafta içi 10:00-18:00 arasında, uygulama açıkken 30 dakikada bir güncellenir.'**
+  /// **'Döviz ve altın/gümüş fiyatları uygulama açıkken 30 dakikada bir güncellenir. Hisseler yalnızca hafta içi 10:00-18:00 arasında güncellenir ve Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Bürküt lisanslı bir veri dağıtıcısı değildir.'**
   String get settingsDataNote;
 
   /// No description provided for @apiKeySheetTitle.
@@ -621,6 +621,72 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Rus Rublesi'**
   String get instrumentRUB;
+
+  /// No description provided for @marketTabFx.
+  ///
+  /// In tr, this message translates to:
+  /// **'Döviz'**
+  String get marketTabFx;
+
+  /// No description provided for @marketTabMetals.
+  ///
+  /// In tr, this message translates to:
+  /// **'Madenler'**
+  String get marketTabMetals;
+
+  /// No description provided for @marketTabStocks.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hisseler'**
+  String get marketTabStocks;
+
+  /// No description provided for @marketNextUpdate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonraki güncelleme {time}'**
+  String marketNextUpdate(String time);
+
+  /// No description provided for @marketNotUpdatedYet.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz güncellenmedi'**
+  String get marketNotUpdatedYet;
+
+  /// No description provided for @marketUpdateRule.
+  ///
+  /// In tr, this message translates to:
+  /// **'30 dakikada bir güncellenir'**
+  String get marketUpdateRule;
+
+  /// No description provided for @marketStocksRule.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hafta içi 10:00-18:00 arasında, 30 dakikada bir güncellenir'**
+  String get marketStocksRule;
+
+  /// No description provided for @marketSessionClosed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Borsa şu an kapalı'**
+  String get marketSessionClosed;
+
+  /// No description provided for @marketUpToDate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Veriler güncel · sonraki güncelleme {time}'**
+  String marketUpToDate(String time);
+
+  /// No description provided for @marketStocksEmptyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Portföyünde hisse yok'**
+  String get marketStocksEmptyTitle;
+
+  /// No description provided for @marketStocksEmptyMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Portföye hisse eklediğinde fiyatları burada görünür.'**
+  String get marketStocksEmptyMessage;
 }
 
 class _AppLocalizationsDelegate

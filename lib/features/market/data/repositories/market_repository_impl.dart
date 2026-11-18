@@ -13,8 +13,8 @@ import 'package:vestra/features/market/domain/repositories/market_repository.dar
 
 /// Orchestrates providers and the local price cache.
 ///
-/// Order per refresh: FX (primary, then fallback on any failure) ->
-/// metals -> stocks. If the primary reports a missing/rejected key or an
+/// Only the requested categories are fetched. Order: FX (primary, then
+/// fallback on any failure) -> metals -> stocks. If the primary reports a missing/rejected key or an
 /// exhausted quota, the remaining primary calls are skipped so no request
 /// is wasted.
 class MarketRepositoryImpl implements MarketRepository {
@@ -55,6 +55,7 @@ class MarketRepositoryImpl implements MarketRepository {
 
   @override
   Future<Result<RefreshReport>> refresh({
+    required Set<QuoteCategory> categories,
     required Set<String> stockSymbols,
   }) async {
     final quotes = <Quote>[];
@@ -63,22 +64,26 @@ class MarketRepositoryImpl implements MarketRepository {
     Failure? primaryBlocked;
 
     // FX: primary, falling back to the free source on any failure.
-    switch (await _fx.fetchRates()) {
-      case Success(:final value):
-        quotes.addAll(value);
-      case Err(:final failure):
-        if (_blocksPrimary(failure)) primaryBlocked = failure;
-        switch (await _fxFallback.fetchRates()) {
-          case Success(:final value):
-            quotes.addAll(value);
-            usedFallback = true;
-          case Err(failure: final fallbackFailure):
-            failures[QuoteCategory.fx] = fallbackFailure;
-        }
+    if (categories.contains(QuoteCategory.fx)) {
+      switch (await _fx.fetchRates()) {
+        case Success(:final value):
+          quotes.addAll(value);
+        case Err(:final failure):
+          if (_blocksPrimary(failure)) primaryBlocked = failure;
+          switch (await _fxFallback.fetchRates()) {
+            case Success(:final value):
+              quotes.addAll(value);
+              usedFallback = true;
+            case Err(failure: final fallbackFailure):
+              failures[QuoteCategory.fx] = fallbackFailure;
+          }
+      }
     }
 
     // Metals.
-    if (primaryBlocked != null) {
+    if (!categories.contains(QuoteCategory.metals)) {
+      // not requested
+    } else if (primaryBlocked != null) {
       failures[QuoteCategory.metals] = primaryBlocked;
     } else {
       switch (await _metals.fetchPrices()) {
@@ -91,7 +96,7 @@ class MarketRepositoryImpl implements MarketRepository {
     }
 
     // Stocks (only those in the portfolio, one batched request).
-    if (stockSymbols.isNotEmpty) {
+    if (categories.contains(QuoteCategory.stocks) && stockSymbols.isNotEmpty) {
       if (primaryBlocked != null) {
         failures[QuoteCategory.stocks] = primaryBlocked;
       } else {

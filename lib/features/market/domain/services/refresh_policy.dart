@@ -1,21 +1,24 @@
 import 'dart:math' as math;
 
 import 'package:vestra/features/market/domain/entities/market_calendar.dart';
+import 'package:vestra/features/market/domain/entities/quote.dart';
 
-/// When prices are refreshed automatically. Pure and fully testable.
+/// When each price category may be fetched. Pure and fully testable.
 ///
-/// Rules (see CLAUDE.md / docs/faz-3-piyasa-verisi.md):
-/// - Auto refresh only on weekdays 10:00-18:00 Europe/Istanbul, never on
-///   closed days, until 12:30 on half days.
-/// - At most every [autoInterval] (30 min, chosen to protect the
-///   1,000 requests/month Bürküt quota).
-/// - If nothing is cached yet, one refresh is allowed at any time so a
-///   first start on a weekend still shows prices.
-/// - Never while backing off after a rate limit or network failure.
-/// - An exhausted Bürküt quota does not stop refreshes: no Bürküt request
-///   is sent then, and FX still updates from the free fallback.
+/// Rules (CLAUDE.md, docs/faz-3-piyasa-verisi.md "Kategori bazlı
+/// yenileme"):
+/// - Every category is fetched at most every [interval] (30 min) after its
+///   last successful update. Manual refresh (pull-to-refresh) follows the
+///   same rule; it never forces a request.
+/// - FX and metals: any day, any time (while the app is open).
+/// - Stocks: only during the BIST session, weekdays 10:00-18:00
+///   Europe/Istanbul, until 12:30 on half days, never on holidays.
+/// - Exception: a held stock with no cached price at all is fetched as soon
+///   as the session is open, without waiting for the interval.
+/// - After a failed attempt, automatic retries wait [interval] too; a
+///   manual refresh may retry right away (unless rate limited).
 abstract final class RefreshPolicy {
-  static const Duration autoInterval = Duration(minutes: 30);
+  static const Duration interval = Duration(minutes: 30);
   static const Duration maxBackoff = Duration(minutes: 30);
 
   /// Turkey has used UTC+3 all year since 2016 (no DST).
@@ -43,19 +46,38 @@ abstract final class RefreshPolicy {
     return minute >= _openMinute && minute < close;
   }
 
-  static bool shouldAutoRefresh({
+  /// Whether [category] should be fetched now.
+  ///
+  /// [lastSuccess]: newest cached price of that category.
+  /// [lastAttempt]: last request attempt in this app session (success or
+  /// failure). [hasMissing]: a held stock has no cached price (stocks only).
+  static bool isDue({
+    required QuoteCategory category,
     required DateTime now,
-    required DateTime? lastFetchedAt,
+    required DateTime? lastSuccess,
+    required DateTime? lastAttempt,
     required MarketCalendar calendar,
+    bool manual = false,
+    bool hasMissing = false,
     DateTime? backoffUntil,
   }) {
     if (backoffUntil != null && now.isBefore(backoffUntil)) return false;
-    if (lastFetchedAt == null) return true;
-    if (!isSessionOpen(now, calendar)) return false;
-    return now.difference(lastFetchedAt) >= autoInterval;
+    if (category == QuoteCategory.stocks && !isSessionOpen(now, calendar)) {
+      return false;
+    }
+    final attemptCoolingDown =
+        !manual && lastAttempt != null && _since(lastAttempt, now) < interval;
+    if (attemptCoolingDown) return false;
+    if (category == QuoteCategory.stocks && hasMissing) return true;
+    return lastSuccess == null || _since(lastSuccess, now) >= interval;
   }
 
-  /// Exponential backoff: 1, 2, 4, 8, 16, 30, 30 ... minutes.
+  /// Earliest time a category with this [lastSuccess] may update again;
+  /// `null` if it has never been updated.
+  static DateTime? nextUpdate(DateTime? lastSuccess) =>
+      lastSuccess?.add(interval);
+
+  /// Exponential backoff after HTTP 429: 1, 2, 4, 8, 16, 30, 30 … minutes.
   /// A server-provided `Retry-After` wins if it is longer.
   static Duration backoff(int consecutiveFailures, {Duration? retryAfter}) {
     final exponent = math.max(0, math.min(consecutiveFailures - 1, 10));
@@ -64,4 +86,6 @@ abstract final class RefreshPolicy {
     if (retryAfter != null && retryAfter > capped) return retryAfter;
     return capped;
   }
+
+  static Duration _since(DateTime t, DateTime now) => now.difference(t);
 }

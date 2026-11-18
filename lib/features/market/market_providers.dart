@@ -17,7 +17,7 @@ import 'package:vestra/features/market/domain/entities/market_calendar.dart';
 import 'package:vestra/features/market/domain/entities/quota_usage.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/domain/repositories/market_repository.dart';
-import 'package:vestra/features/market/domain/usecases/refresh_prices.dart';
+import 'package:vestra/features/market/domain/usecases/watch_held_stock_symbols.dart';
 import 'package:vestra/features/portfolio/portfolio_providers.dart';
 import 'package:vestra/features/settings/domain/usecases/save_burkut_key.dart';
 import 'package:vestra/features/settings/settings_providers.dart';
@@ -53,11 +53,9 @@ final marketRepositoryProvider = Provider<MarketRepository>((ref) {
   );
 });
 
-final refreshPricesProvider = Provider<RefreshPrices>(
-  (ref) => RefreshPrices(
-    ref.watch(marketRepositoryProvider),
-    ref.watch(portfolioRepositoryProvider),
-  ),
+/// Stock codes held in the portfolio (quantity > 0), live.
+final heldStockSymbolsProvider = StreamProvider<Set<String>>(
+  (ref) => WatchHeldStockSymbols(ref.watch(portfolioRepositoryProvider))(),
 );
 
 /// Cached quotes, live.
