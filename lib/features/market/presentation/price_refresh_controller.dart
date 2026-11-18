@@ -56,6 +56,10 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
   bool _foreground = true;
   final Map<QuoteCategory, DateTime> _lastAttempt = {};
 
+  /// Last attempt to fetch stocks that had no price (separate from the
+  /// regular stock schedule).
+  DateTime? _lastMissingAttempt;
+
   /// Clock override for tests.
   @visibleForTesting
   DateTime Function() clock = DateTime.now;
@@ -72,6 +76,17 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
         onHide: () => _foreground = false,
       );
       unawaited(Future<void>.microtask(refreshDue));
+      // A newly added stock gets its price right away (see
+      // RefreshPolicy.isMissingStocksDue), not on the next tick.
+      ref.listen(heldStockSymbolsProvider, (previous, next) {
+        final before = previous?.value;
+        final after = next.value;
+        if (before != null &&
+            after != null &&
+            after.difference(before).isNotEmpty) {
+          unawaited(refreshDue());
+        }
+      });
     }
     ref.onDispose(() {
       _timer?.cancel();
@@ -115,16 +130,36 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
             lastAttempt: _lastAttempt[category],
             calendar: calendar,
             manual: manual,
-            hasMissing: held.any((s) => !cachedStocks.contains(s)),
             backoffUntil: state.backoffUntil,
           ))
             category,
     };
-    if (due.isEmpty) return const {};
-
     for (final category in due) {
       _lastAttempt[category] = now;
     }
+    // A regular stock request covers missing symbols too.
+    if (due.contains(QuoteCategory.stocks)) _lastMissingAttempt = now;
+
+    // Stocks without any price (e.g. just added): fetch only those, even
+    // outside the session. Other stocks keep their session schedule.
+    var stockSymbols = held;
+    final missing = {
+      for (final s in held)
+        if (!cachedStocks.contains(s)) s,
+    };
+    if (!due.contains(QuoteCategory.stocks) &&
+        missing.isNotEmpty &&
+        RefreshPolicy.isMissingStocksDue(
+          now: now,
+          lastAttempt: _lastMissingAttempt,
+          manual: manual,
+          backoffUntil: state.backoffUntil,
+        )) {
+      due.add(QuoteCategory.stocks);
+      stockSymbols = missing;
+      _lastMissingAttempt = now;
+    }
+    if (due.isEmpty) return const {};
     state = PriceRefreshState(
       refreshing: due,
       failures: state.failures,
@@ -134,7 +169,7 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
 
     final result = await ref
         .read(marketRepositoryProvider)
-        .refresh(categories: due, stockSymbols: held);
+        .refresh(categories: due, stockSymbols: stockSymbols);
     if (!ref.mounted) return due;
 
     switch (result) {
@@ -170,8 +205,11 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
     return due;
   }
 
-  /// Newest `fetchedAt` per category. For stocks only held symbols count,
-  /// so a sold stock's old price doesn't hide that the others are stale.
+  /// When each category was last updated.
+  ///
+  /// FX and metals: newest `fetchedAt` (fetched together). Stocks: the
+  /// **oldest** `fetchedAt` among held stocks, so fetching one newly added
+  /// stock doesn't make the others look fresh; sold stocks are ignored.
   static Map<QuoteCategory, DateTime> _lastSuccessByCategory(
     List<Quote> quotes,
     Set<String> held,
@@ -179,14 +217,15 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
     final result = <QuoteCategory, DateTime>{};
     for (final q in quotes) {
       final category = QuoteCategory.of(q.instrument.type);
-      if (category == QuoteCategory.stocks &&
-          !held.contains(q.instrument.code)) {
-        continue;
-      }
+      final isStock = category == QuoteCategory.stocks;
+      if (isStock && !held.contains(q.instrument.code)) continue;
       final current = result[category];
-      if (current == null || q.fetchedAt.isAfter(current)) {
-        result[category] = q.fetchedAt;
-      }
+      final replace =
+          current == null ||
+          (isStock
+              ? q.fetchedAt.isBefore(current)
+              : q.fetchedAt.isAfter(current));
+      if (replace) result[category] = q.fetchedAt;
     }
     return result;
   }

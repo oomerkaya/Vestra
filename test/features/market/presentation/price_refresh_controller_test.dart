@@ -21,6 +21,8 @@ class _FakeMarket implements MarketRepository {
 
   DateTime Function() clock;
   final List<Set<QuoteCategory>> calls = [];
+  final List<Set<String>> stockCalls = [];
+  final Set<String> unknownSymbols = {};
   final List<Quote> _quotes = [];
   final _controller = StreamController<Result<List<Quote>>>.broadcast();
   Failure? failNext;
@@ -37,6 +39,9 @@ class _FakeMarket implements MarketRepository {
     required Set<String> stockSymbols,
   }) async {
     calls.add(categories);
+    if (categories.contains(QuoteCategory.stocks)) {
+      stockCalls.add(stockSymbols);
+    }
     final failure = failNext;
     if (failure != null) {
       failNext = null;
@@ -54,7 +59,8 @@ class _FakeMarket implements MarketRepository {
       if (categories.contains(QuoteCategory.metals))
         _q(AssetType.gold, 'GRAM', now),
       if (categories.contains(QuoteCategory.stocks))
-        for (final s in stockSymbols) _q(AssetType.stock, s, now),
+        for (final s in stockSymbols)
+          if (!unknownSymbols.contains(s)) _q(AssetType.stock, s, now),
     ];
     _quotes
       ..removeWhere((q) => fresh.any((f) => f.instrument == q.instrument))
@@ -143,6 +149,7 @@ void main() {
   });
 
   test('after 18:00 only FX and metals are fetched, never stocks', () async {
+    await controller().refreshDue(); // 14:00, THYAO gets a price
     now = ist(2026, 11, 16, 18, 14);
 
     final requested = await controller().refreshDue(manual: true);
@@ -151,6 +158,8 @@ void main() {
   });
 
   test('on a weekend FX and metals still update every 30 minutes', () async {
+    await controller().refreshDue(); // Monday 14:00, THYAO gets a price
+    market.calls.clear();
     now = ist(2026, 11, 21, 11);
     await controller().refreshDue();
 
@@ -165,9 +174,13 @@ void main() {
   });
 
   test('categories keep their own schedule', () async {
-    // Evening: FX + metals at 18:14.
-    now = ist(2026, 11, 16, 18, 14);
+    // Session: everything at 14:00. Evening: FX + metals at 18:14.
     await controller().refreshDue();
+    now = ist(2026, 11, 16, 18, 14);
+    expect(await controller().refreshDue(), {
+      QuoteCategory.fx,
+      QuoteCategory.metals,
+    });
 
     // Next morning 10:05: stocks due (session), FX/metals due (>30 min).
     now = ist(2026, 11, 17, 10, 5);
@@ -209,5 +222,63 @@ void main() {
     now = now.add(const Duration(minutes: 1));
     await controller().refreshDue(manual: true);
     expect(container.read(priceRefreshControllerProvider).failures, isEmpty);
+  });
+
+  group('stock added while the session is closed', () {
+    Future<void> holdThyaoFetchedAt(DateTime at) async {
+      now = at;
+      await controller().refreshDue();
+      container.dispose();
+    }
+
+    test('only the new stock is fetched, once', () async {
+      // THYAO priced during the session.
+      await holdThyaoFetchedAt(ist(2026, 11, 16, 14));
+
+      // 21:00: user adds ASELS (no price yet).
+      now = ist(2026, 11, 16, 21);
+      container = build(held: const {'THYAO', 'ASELS'});
+      final requested = await controller().refreshDue();
+
+      expect(requested, contains(QuoteCategory.stocks));
+      expect(market.stockCalls.last, {'ASELS'}, reason: 'THYAO not updated');
+
+      // 21:05: nothing more for stocks (ASELS now has a price).
+      now = ist(2026, 11, 16, 21, 5);
+      expect(
+        await controller().refreshDue(manual: true),
+        isNot(contains(QuoteCategory.stocks)),
+      );
+    });
+
+    test('next session: all held stocks update again', () async {
+      await holdThyaoFetchedAt(ist(2026, 11, 16, 14));
+      now = ist(2026, 11, 16, 21);
+      container = build(held: const {'THYAO', 'ASELS'});
+      await controller().refreshDue();
+
+      // Next morning 10:01: THYAO is old -> regular update for both.
+      now = ist(2026, 11, 17, 10, 1);
+      final requested = await controller().refreshDue();
+
+      expect(requested, contains(QuoteCategory.stocks));
+      expect(market.stockCalls.last, {'THYAO', 'ASELS'});
+    });
+
+    test(
+      'a symbol that returns no price is not retried every minute',
+      () async {
+        now = ist(2026, 11, 16, 21);
+        container.dispose();
+        container = build(held: const {'XXXX'});
+        market.unknownSymbols.add('XXXX');
+
+        await controller().refreshDue();
+        now = now.add(const Duration(minutes: 1));
+        await controller().refreshDue();
+
+        expect(market.stockCalls, hasLength(1));
+      },
+    );
   });
 }

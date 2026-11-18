@@ -73,7 +73,7 @@ Kaynaklar (ayrıntı ve araştırma: `docs/faz-3-piyasa-verisi.md`):
 Güncelleme kuralları (`RefreshPolicy`):
 - Her kategori (döviz, maden, hisse) **ayrı** takip edilir ve son başarılı güncellemesinden en az **30 dakika** sonra istenir. Yalnızca uygulama açıkken; arka plan servisi yok.
 - **Döviz ve madenler**: her gün, her saat (30 dk kuralıyla).
-- **Hisseler**: yalnızca hafta içi 10:00-18:00 (Europe/Istanbul, sabit UTC+3), yarım günlerde 12:30'a kadar, tatillerde hiç. İstisna: portföydeki bir hissenin hiç fiyatı yoksa seans içinde hemen istenir.
+- **Hisseler**: yalnızca hafta içi 10:00-18:00 (Europe/Istanbul, sabit UTC+3), yarım günlerde 12:30'a kadar, tatillerde hiç. İstisna: portföydeki bir hissenin **hiç fiyatı yoksa** (yeni eklendiyse) seans kapalı olsa bile **yalnızca o hisse** için hemen istenir; diğer hisseler seansı bekler. Hisselerde "son güncelleme" tutulan hisselerin en **eski** `fetchedAt` değeridir.
 - **Pull-to-refresh kuralları ATLAMAZ** (30 dk ve seans saati geçerli); yalnızca başarısız bir denemeden sonra beklemeden tekrar denemeye izin verir. Bir şey istenmediyse kullanıcıya "Veriler güncel · sonraki güncelleme HH:mm" / "Borsa şu an kapalı" gösterilir.
 - Tatil/yarım gün takvimi `assets/data/market_holidays.json`'dan okunur.
 - Yalnızca portföyde miktarı > 0 olan hisseler istenir (tek toplu istek). `/forex`, `/gold` ve `/stocks` tüm listeyi tek istekte döner; hisseler istemcide portföye süzülür. Bir kategori = bir istek; en fazla 3 Bürküt isteği.

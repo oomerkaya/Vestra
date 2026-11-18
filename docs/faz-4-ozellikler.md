@@ -108,6 +108,20 @@ Toplam **153 test**, hepsi geçti (Faz 3 sonunda 127, +26).
 | `flutter build apk --debug` | Başarılı |
 | Görsel önizleme (geçici golden test, Inter fontu ile) | Portföy (aydınlık/karanlık), detay, ekleme formu; iki düzeltme yapıldı (hisse başlığı sembol, "Madenler" etiketi) |
 
+## Sonradan yapılan düzeltme: seans kapalıyken eklenen hisse (2026-11-18)
+
+**Kullanıcı geri bildirimi:** Seans kapalıyken eklenen hisse "Fiyat yok" olarak kalıyordu, çünkü hisseler yalnızca seans içinde isteniyordu.
+
+**Yeni kural** (`RefreshPolicy.isMissingStocksDue`):
+- Portföydeki bir hissenin önbellekte **hiç fiyatı yoksa**, seans kapalı olsa bile **yalnızca o hisse** için hemen istek atılır.
+- Hisse eklenir eklenmez tetiklenir; denetleyici `heldStockSymbolsProvider` değişimini dinliyor.
+- Diğer hisseler eskisi gibi yalnızca seans içinde 30 dakikada bir güncellenir.
+- Fiyat gelmeyen bir sembol, otomatik yenilemede 30 dakikada bir denenir; elle yenileme hemen dener.
+- Hisselerin "son güncelleme" zamanı artık tutulan hisselerin en **eski** fiyat zamanı. Yalnızca yeni hisseyi çekmek, diğerlerini taze göstermesin diye.
+- Normal hisse isteği de "eksik hisse" bekleme süresini başlatır. Testte bulundu: başarısız normal istekten hemen sonra eksik hisse yolu tekrar deniyordu.
+
+Testler (157): seans dışında eklenen hissede sadece o sembol isteniyor, 5 dk sonra tekrar istenmiyor; ertesi sabah tüm hisseler birlikte güncelleniyor; fiyat dönmeyen sembol her dakika denenmiyor.
+
 ## Bilinen eksikler / sonraki faza devredilenler
 
 - **ABD borsası:** Finnhub'dan yazılı onay bekleniyor (Faz 3 dokümanı).

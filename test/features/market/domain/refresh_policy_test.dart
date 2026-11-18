@@ -92,7 +92,6 @@ void main() {
       Duration? sinceSuccess,
       Duration? sinceAttempt,
       bool manual = false,
-      bool hasMissing = false,
       DateTime? backoffUntil,
     }) => RefreshPolicy.isDue(
       category: category,
@@ -101,7 +100,6 @@ void main() {
       lastAttempt: sinceAttempt == null ? null : now.subtract(sinceAttempt),
       calendar: calendar,
       manual: manual,
-      hasMissing: hasMissing,
       backoffUntil: backoffUntil,
     );
 
@@ -139,25 +137,43 @@ void main() {
       }
     });
 
-    test('stocks never outside the session, not even manually', () {
+    test('regular stock updates never outside the session, not manually', () {
       for (final now in [evening, weekend, ist(2026, 11, 18, 12)]) {
         expect(due(QuoteCategory.stocks, now: now), isFalse);
+        expect(due(QuoteCategory.stocks, now: now, manual: true), isFalse);
+      }
+    });
+
+    test('stocks without a price: due any time, even outside session', () {
+      for (final now in [open, evening, weekend]) {
         expect(
-          due(QuoteCategory.stocks, now: now, manual: true, hasMissing: true),
-          isFalse,
+          RefreshPolicy.isMissingStocksDue(now: now, lastAttempt: null),
+          isTrue,
         );
       }
     });
 
-    test('stocks: a held stock without a price is fetched right away', () {
+    test('stocks without a price: auto retry waits 30 min after a try', () {
+      final tried = evening.subtract(const Duration(minutes: 5));
       expect(
-        due(
-          QuoteCategory.stocks,
-          now: open,
-          sinceSuccess: const Duration(minutes: 5),
-          hasMissing: true,
+        RefreshPolicy.isMissingStocksDue(now: evening, lastAttempt: tried),
+        isFalse,
+      );
+      expect(
+        RefreshPolicy.isMissingStocksDue(
+          now: evening,
+          lastAttempt: tried,
+          manual: true,
         ),
         isTrue,
+      );
+      expect(
+        RefreshPolicy.isMissingStocksDue(
+          now: evening,
+          lastAttempt: null,
+          backoffUntil: evening.add(const Duration(minutes: 1)),
+        ),
+        isFalse,
       );
     });
 
