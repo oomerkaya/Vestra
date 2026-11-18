@@ -7,8 +7,10 @@ import 'package:vestra/core/domain/instrument.dart';
 /// The spec also lists aliases the server accepts (`GRAM_ALTIN`, `GAU`,
 /// `CEYREK`, `GUMUS`); they are mapped too in case a response uses them.
 ///
-/// Deliberately not mapped: `XAUUSD` (priced in USD), `PLATIN`,
-/// `PALADYUM` (out of scope for now). Unknown symbols are ignored.
+/// `XAUUSD` (troy ounce, priced in USD) is mapped to `ONS`; the repository
+/// converts it to TRY with the USD/TRY rate. `PLATIN` / `PALADYUM` are
+/// listed in Bürküt's spec but were not in the live response (2026-11-18).
+/// Unknown symbols are ignored.
 const Map<String, Instrument> burkutMetalSymbols = {
   'ALTIN': (type: AssetType.gold, code: 'GRAM'),
   'GRAM_ALTIN': (type: AssetType.gold, code: 'GRAM'),
@@ -19,6 +21,7 @@ const Map<String, Instrument> burkutMetalSymbols = {
   'TAM': (type: AssetType.gold, code: 'TAM'),
   'CUMHURIYET': (type: AssetType.gold, code: 'CUMHURIYET'),
   'ATA': (type: AssetType.gold, code: 'ATA'),
+  'XAUUSD': (type: AssetType.gold, code: 'ONS'),
   'GUMTRY': (type: AssetType.silver, code: 'SILVER_GRAM'),
   'GUMUS': (type: AssetType.silver, code: 'SILVER_GRAM'),
 };

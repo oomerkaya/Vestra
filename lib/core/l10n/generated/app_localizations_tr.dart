@@ -524,34 +524,29 @@ class AppLocalizationsTr extends AppLocalizations {
   String get marketSectionAll => 'Tümü';
 
   @override
-  String get marketSectionIndices => 'Endeksler';
-
-  @override
-  String get marketBist30 => 'BIST 30';
-
-  @override
-  String get marketBist100 => 'BIST 100';
-
-  @override
   String get marketNoHoldingsInCategory =>
       'Bu kategoride portföyünde varlık yok.';
-
-  @override
-  String get marketIndexNoPrices =>
-      'Fiyatlar seans açıldığında ilk güncellemeyle gelir.';
-
-  @override
-  String marketIndexValidUntil(String date) {
-    return 'Endeks bileşimi $date tarihine kadar geçerli.';
-  }
-
-  @override
-  String marketIndexOutdated(String date) {
-    return 'Endeks listesi $date tarihli, güncel olmayabilir.';
-  }
 
   @override
   String marketCount(String count) {
     return '$count';
   }
+
+  @override
+  String get marketSearchStocks => 'Hisse ara (sembol veya ad)';
+
+  @override
+  String marketShowMore(String count) {
+    return '$count hisse daha göster';
+  }
+
+  @override
+  String get marketStocksNotLoaded =>
+      'Hisse fiyatları ilk güncellemeyle gelir.';
+
+  @override
+  String get unitOunce => 'ons';
+
+  @override
+  String get instrumentGoldOunce => 'Ons Altın';
 }

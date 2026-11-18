@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vestra/core/domain/instrument.dart';
 import 'package:vestra/core/error/failure.dart';
 import 'package:vestra/core/error/result.dart';
 import 'package:vestra/features/market/domain/entities/market_calendar.dart';
@@ -56,10 +55,6 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
   bool _foreground = true;
   final Map<QuoteCategory, DateTime> _lastAttempt = {};
 
-  /// Last attempt to fetch stocks that had no price (separate from the
-  /// regular stock schedule).
-  DateTime? _lastMissingAttempt;
-
   /// Clock override for tests.
   @visibleForTesting
   DateTime Function() clock = DateTime.now;
@@ -76,17 +71,6 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
         onHide: () => _foreground = false,
       );
       unawaited(Future<void>.microtask(refreshDue));
-      // A newly added stock gets its price right away (see
-      // RefreshPolicy.isMissingStocksDue), not on the next tick.
-      ref.listen(heldStockSymbolsProvider, (previous, next) {
-        final before = previous?.value;
-        final after = next.value;
-        if (before != null &&
-            after != null &&
-            after.difference(before).isNotEmpty) {
-          unawaited(refreshDue());
-        }
-      });
     }
     ref.onDispose(() {
       _timer?.cancel();
@@ -104,22 +88,16 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
 
     final MarketCalendar calendar;
     final List<Quote> quotes;
-    final Set<String> held;
     try {
       calendar = await ref.read(marketCalendarProvider.future);
       quotes = await ref.read(quotesProvider.future);
-      held = await ref.read(heldStockSymbolsProvider.future);
     } on Object {
       return const {};
     }
     if (!ref.mounted) return const {};
 
     final now = clock();
-    final lastSuccess = _lastSuccessByCategory(quotes, held);
-    final cachedStocks = {
-      for (final q in quotes)
-        if (q.instrument.type == AssetType.stock) q.instrument.code,
-    };
+    final lastSuccess = _lastSuccessByCategory(quotes);
     final due = <QuoteCategory>{
       for (final category in QuoteCategory.values)
         if (RefreshPolicy.isDue(
@@ -136,29 +114,6 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
     for (final category in due) {
       _lastAttempt[category] = now;
     }
-    // A regular stock request covers missing symbols too.
-    if (due.contains(QuoteCategory.stocks)) _lastMissingAttempt = now;
-
-    // Regular stock update = whole market in one request (null). Held
-    // stocks without any price (e.g. a new listing missing from the last
-    // market snapshot): fetch only those, even outside the session.
-    Set<String>? stockSymbols;
-    final missing = {
-      for (final s in held)
-        if (!cachedStocks.contains(s)) s,
-    };
-    if (!due.contains(QuoteCategory.stocks) &&
-        missing.isNotEmpty &&
-        RefreshPolicy.isMissingStocksDue(
-          now: now,
-          lastAttempt: _lastMissingAttempt,
-          manual: manual,
-          backoffUntil: state.backoffUntil,
-        )) {
-      due.add(QuoteCategory.stocks);
-      stockSymbols = missing;
-      _lastMissingAttempt = now;
-    }
     if (due.isEmpty) return const {};
     state = PriceRefreshState(
       refreshing: due,
@@ -169,7 +124,7 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
 
     final result = await ref
         .read(marketRepositoryProvider)
-        .refresh(categories: due, stockSymbols: stockSymbols);
+        .refresh(categories: due);
     if (!ref.mounted) return due;
 
     switch (result) {
@@ -205,32 +160,18 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
     return due;
   }
 
-  /// When each category was last updated.
-  ///
-  /// FX and metals: newest `fetchedAt` (fetched together). Stocks: the
-  /// **oldest** `fetchedAt` among held stocks, so fetching one missing
-  /// stock doesn't make the others look fresh; without held stocks, the
-  /// newest market snapshot.
+  /// Newest `fetchedAt` per category (each category is fetched as a
+  /// whole, stocks as the whole market).
   static Map<QuoteCategory, DateTime> _lastSuccessByCategory(
     List<Quote> quotes,
-    Set<String> held,
   ) {
     final result = <QuoteCategory, DateTime>{};
-    DateTime? oldestHeldStock;
     for (final q in quotes) {
       final category = QuoteCategory.of(q.instrument.type);
       final current = result[category];
       if (current == null || q.fetchedAt.isAfter(current)) {
         result[category] = q.fetchedAt;
       }
-      if (category == QuoteCategory.stocks &&
-          held.contains(q.instrument.code) &&
-          (oldestHeldStock == null || q.fetchedAt.isBefore(oldestHeldStock))) {
-        oldestHeldStock = q.fetchedAt;
-      }
-    }
-    if (oldestHeldStock != null) {
-      result[QuoteCategory.stocks] = oldestHeldStock;
     }
     return result;
   }

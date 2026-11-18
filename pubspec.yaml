@@ -49,4 +49,3 @@ flutter:
   assets:
     - assets/fonts/inter/OFL.txt
     - assets/data/market_holidays.json
-    - assets/data/bist_indices.json

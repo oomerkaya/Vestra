@@ -18,6 +18,7 @@ abstract final class InstrumentCatalog {
     (type: AssetType.gold, code: 'TAM'),
     (type: AssetType.gold, code: 'CUMHURIYET'),
     (type: AssetType.gold, code: 'ATA'),
+    (type: AssetType.gold, code: 'ONS'),
     (type: AssetType.silver, code: 'SILVER_GRAM'),
   ];
 

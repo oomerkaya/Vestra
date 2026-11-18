@@ -96,20 +96,18 @@ void main() {
   late _FakeMarket market;
   late ProviderContainer container;
 
-  ProviderContainer build({Set<String> held = const {'THYAO'}}) {
+  ProviderContainer build() {
     // Listeners keep the stream providers alive like the UI does.
     return ProviderContainer(
         overrides: [
           autoRefreshEnabledProvider.overrideWithValue(false),
           marketRepositoryProvider.overrideWithValue(market),
-          heldStockSymbolsProvider.overrideWith((ref) => Stream.value(held)),
           marketCalendarProvider.overrideWith(
             (ref) async => MarketCalendar.empty,
           ),
         ],
       )
       ..listen(quotesProvider, (_, _) {})
-      ..listen(heldStockSymbolsProvider, (_, _) {})
       ..read(priceRefreshControllerProvider.notifier).clock = () => now;
   }
 
@@ -196,19 +194,6 @@ void main() {
     expect(await controller().refreshDue(manual: true), isEmpty);
   });
 
-  test(
-    'no held stocks: the whole market is still fetched in session',
-    () async {
-      container.dispose();
-      container = build(held: const {});
-
-      final requested = await controller().refreshDue(manual: true);
-
-      expect(requested, QuoteCategory.values.toSet());
-      expect(market.stockCalls.single, isNull, reason: 'whole market');
-    },
-  );
-
   test('regular stock update is one whole-market request', () async {
     await controller().refreshDue();
 
@@ -239,79 +224,36 @@ void main() {
     expect(container.read(priceRefreshControllerProvider).failures, isEmpty);
   });
 
-  group('stock added while the session is closed', () {
-    Future<void> marketFetchedAt(DateTime at) async {
-      now = at;
-      await controller().refreshDue();
-      container.dispose();
-    }
-
-    test(
-      'stock in the last market snapshot: price ready, no request',
-      () async {
-        await marketFetchedAt(ist(2026, 11, 16, 14));
-
-        // 21:00: user adds ASELS; its price came with the 14:00 snapshot.
-        now = ist(2026, 11, 16, 21);
-        container = build(held: const {'THYAO', 'ASELS'});
-        final requested = await controller().refreshDue();
-
-        expect(requested, isNot(contains(QuoteCategory.stocks)));
-        expect(market.stockCalls, [null], reason: 'only the 14:00 snapshot');
-      },
-    );
-
-    test('stock missing from the snapshot: only that one is fetched', () async {
-      await marketFetchedAt(ist(2026, 11, 16, 14));
-
-      // A new listing appears after the last snapshot.
-      market.marketSymbols.add('NEWCO');
+  group('first launch outside the session', () {
+    test('the whole market is fetched once, even at night', () async {
       now = ist(2026, 11, 16, 21);
-      container = build(held: const {'THYAO', 'NEWCO'});
+
       final requested = await controller().refreshDue();
 
-      expect(requested, contains(QuoteCategory.stocks));
-      expect(market.stockCalls.last, {'NEWCO'}, reason: 'THYAO not updated');
-
-      // 21:05: nothing more for stocks.
-      now = ist(2026, 11, 16, 21, 5);
-      expect(
-        await controller().refreshDue(manual: true),
-        isNot(contains(QuoteCategory.stocks)),
-      );
+      expect(requested, QuoteCategory.values.toSet());
+      expect(market.stockCalls, [null]);
     });
 
-    test('next session: the whole market updates again', () async {
-      await marketFetchedAt(ist(2026, 11, 16, 14));
-      market.marketSymbols.add('NEWCO');
-      now = ist(2026, 11, 16, 21);
-      container = build(held: const {'THYAO', 'NEWCO'});
+    test('after that, stocks wait for the session', () async {
+      now = ist(2026, 11, 21, 11); // Saturday
       await controller().refreshDue();
 
-      // Next morning 10:01: THYAO is old -> whole-market update.
-      now = ist(2026, 11, 17, 10, 1);
-      final requested = await controller().refreshDue();
+      now = now.add(const Duration(hours: 2));
+      final later = await controller().refreshDue(manual: true);
 
-      expect(requested, contains(QuoteCategory.stocks));
-      expect(market.stockCalls.last, isNull);
+      expect(later, {QuoteCategory.fx, QuoteCategory.metals});
+      expect(market.stockCalls, hasLength(1));
     });
 
-    test(
-      'a symbol that returns no price is not retried every minute',
-      () async {
-        now = ist(2026, 11, 16, 21);
-        container.dispose();
-        container = build(held: const {'XXXX'});
-        market.unknownSymbols.add('XXXX');
+    test('a newly held stock already has a price: no extra request', () async {
+      await controller().refreshDue(); // Monday 14:00 snapshot incl. ASELS
+      now = ist(2026, 11, 16, 21);
 
-        await controller().refreshDue();
-        now = now.add(const Duration(minutes: 1));
-        await controller().refreshDue();
+      final requested = await controller().refreshDue(manual: true);
 
-        expect(market.stockCalls, [
-          {'XXXX'},
-        ]);
-      },
-    );
+      expect(requested, isNot(contains(QuoteCategory.stocks)));
+      final cached = await container.read(quotesProvider.future);
+      expect(cached.any((q) => q.instrument.code == 'ASELS'), isTrue);
+    });
   });
 }

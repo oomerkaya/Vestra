@@ -137,41 +137,31 @@ void main() {
       }
     });
 
-    test('regular stock updates never outside the session, not manually', () {
+    test('stocks never outside the session once fetched, not manually', () {
       for (final now in [evening, weekend, ist(2026, 11, 18, 12)]) {
-        expect(due(QuoteCategory.stocks, now: now), isFalse);
-        expect(due(QuoteCategory.stocks, now: now, manual: true), isFalse);
-      }
-    });
-
-    test('stocks without a price: due any time, even outside session', () {
-      for (final now in [open, evening, weekend]) {
+        const old = Duration(hours: 5);
+        expect(due(QuoteCategory.stocks, now: now, sinceSuccess: old), isFalse);
         expect(
-          RefreshPolicy.isMissingStocksDue(now: now, lastAttempt: null),
-          isTrue,
+          due(QuoteCategory.stocks, now: now, sinceSuccess: old, manual: true),
+          isFalse,
         );
       }
     });
 
-    test('stocks without a price: auto retry waits 30 min after a try', () {
-      final tried = evening.subtract(const Duration(minutes: 5));
+    test('first fetch of any category is allowed any time', () {
+      for (final now in [open, evening, weekend]) {
+        for (final c in QuoteCategory.values) {
+          expect(due(c, now: now), isTrue, reason: '$c at $now');
+        }
+      }
+    });
+
+    test('first fetch still respects a failed attempt (auto)', () {
       expect(
-        RefreshPolicy.isMissingStocksDue(now: evening, lastAttempt: tried),
-        isFalse,
-      );
-      expect(
-        RefreshPolicy.isMissingStocksDue(
-          now: evening,
-          lastAttempt: tried,
-          manual: true,
-        ),
-        isTrue,
-      );
-      expect(
-        RefreshPolicy.isMissingStocksDue(
-          now: evening,
-          lastAttempt: null,
-          backoffUntil: evening.add(const Duration(minutes: 1)),
+        due(
+          QuoteCategory.stocks,
+          now: weekend,
+          sinceAttempt: const Duration(minutes: 3),
         ),
         isFalse,
       );

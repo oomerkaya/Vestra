@@ -1,8 +1,8 @@
 import 'package:vestra/core/domain/instrument.dart';
 import 'package:vestra/core/l10n/l10n.dart';
 
-/// Display name for an instrument; falls back to the provider's name and
-/// finally to the raw code.
+/// Display name for an instrument: localized for currencies/metals, the
+/// ticker for stocks; otherwise the provider's name or the raw code.
 String instrumentName(
   AppLocalizations l10n,
   Instrument instrument, {
@@ -36,9 +36,12 @@ String instrumentName(
     (type: AssetType.gold, code: 'TAM') => l10n.instrumentGoldFull,
     (type: AssetType.gold, code: 'CUMHURIYET') => l10n.instrumentGoldRepublic,
     (type: AssetType.gold, code: 'ATA') => l10n.instrumentGoldAta,
+    (type: AssetType.gold, code: 'ONS') => l10n.instrumentGoldOunce,
     (type: AssetType.silver, code: 'SILVER_GRAM') => l10n.instrumentSilverGram,
     _ => null,
   };
+  // Stocks are shown by ticker; the company name goes in the subtitle.
+  if (instrument.type == AssetType.stock) return instrument.code;
   return known ?? providerName ?? instrument.code;
 }
 
@@ -50,6 +53,7 @@ String instrumentShortLabel(Instrument instrument) => switch (instrument) {
   (type: AssetType.gold, code: 'TAM') => '1',
   (type: AssetType.gold, code: 'CUMHURIYET') => 'CMH',
   (type: AssetType.gold, code: 'ATA') => 'ATA',
+  (type: AssetType.gold, code: 'ONS') => 'ONS',
   (type: AssetType.silver, code: _) => 'AG',
   _ => instrument.code,
 };
@@ -58,7 +62,8 @@ String instrumentShortLabel(Instrument instrument) => switch (instrument) {
 int instrumentOrder(Instrument instrument) {
   const order = [
     'USD', 'EUR', 'GBP', //
-    'GRAM', 'CEYREK', 'YARIM', 'TAM', 'CUMHURIYET', 'ATA', 'SILVER_GRAM',
+    'GRAM', 'CEYREK', 'YARIM', 'TAM', 'CUMHURIYET', 'ATA', 'ONS', //
+    'SILVER_GRAM',
   ];
   final index = order.indexOf(instrument.code);
   return index == -1 ? order.length : index;
@@ -71,6 +76,7 @@ String instrumentSubtitle(AppLocalizations l10n, Instrument instrument) =>
       (type: AssetType.currency, :final code) => code,
       (type: AssetType.gold || AssetType.silver, code: 'GRAM') ||
       (type: AssetType.silver, code: 'SILVER_GRAM') => l10n.unitGram,
+      (type: AssetType.gold, code: 'ONS') => l10n.unitOunce,
       (type: AssetType.gold || AssetType.silver, code: _) => l10n.unitPiece,
       (type: AssetType.stock, code: _) => l10n.exchangeBist,
     };

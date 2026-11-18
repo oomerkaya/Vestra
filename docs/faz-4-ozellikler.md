@@ -108,55 +108,63 @@ Toplam **153 test**, hepsi geçti (Faz 3 sonunda 127, +26).
 | `flutter build apk --debug` | Başarılı |
 | Görsel önizleme (geçici golden test, Inter fontu ile) | Portföy (aydınlık/karanlık), detay, ekleme formu; iki düzeltme yapıldı (hisse başlığı sembol, "Madenler" etiketi) |
 
-## Sonradan yapılan düzeltme: seans kapalıyken eklenen hisse (2026-11-18)
+## Faz 4 sonrası değişiklikler (2026-11-18)
 
-**Kullanıcı geri bildirimi:** Seans kapalıyken eklenen hisse "Fiyat yok" olarak kalıyordu, çünkü hisseler yalnızca seans içinde isteniyordu.
+Kullanıcı geri bildirimleriyle sırayla yapıldı; son durum aşağıda.
 
-**Yeni kural** (`RefreshPolicy.isMissingStocksDue`):
-- Portföydeki bir hissenin önbellekte **hiç fiyatı yoksa**, seans kapalı olsa bile **yalnızca o hisse** için hemen istek atılır.
-- Hisse eklenir eklenmez tetiklenir; denetleyici `heldStockSymbolsProvider` değişimini dinliyor.
-- Diğer hisseler eskisi gibi yalnızca seans içinde 30 dakikada bir güncellenir.
-- Fiyat gelmeyen bir sembol, otomatik yenilemede 30 dakikada bir denenir; elle yenileme hemen dener.
-- Hisselerin "son güncelleme" zamanı artık tutulan hisselerin en **eski** fiyat zamanı. Yalnızca yeni hisseyi çekmek, diğerlerini taze göstermesin diye.
-- Normal hisse isteği de "eksik hisse" bekleme süresini başlatır. Testte bulundu: başarısız normal istekten hemen sonra eksik hisse yolu tekrar deniyordu.
+### 1. Piyasa: "Portföyümde / Tümü" bölümleri
 
-Testler (157): seans dışında eklenen hissede sadece o sembol isteniyor, 5 dk sonra tekrar istenmiyor; ertesi sabah tüm hisseler birlikte güncelleniyor; fiyat dönmeyen sembol her dakika denenmiyor.
+- Her piyasa sekmesinde iki açılır-kapanır bölüm var (`CollapsibleSection`):
+  - **Portföyümde:** O kategoride elde tutulan enstrümanlar ve sayısı.
+  - **Tümü:** Kategorideki her şey.
+- Açık/kapalı durumu sekme değişince korunuyor (`PageStorage`). Portföyde o kategoriden bir şey yoksa "Tümü" açık başlıyor.
+- **İstek sayısı artmadı:**
+  - `/forex` ve `/gold` zaten tüm listeyi veriyordu.
+  - `/stocks` parametresiz tüm piyasayı (634 hisse) yine **tek istekte** döndürüyor. Hisselerde düzenli güncelleme artık tüm piyasa.
+- **Borsa "Tümü":** Arama kutusu var (sembol veya şirket adı, Türkçe büyük harf). Liste 50'şer satır açılıyor ("50 hisse daha göster"). Hisse satırında başlık sembol, alt yazı şirket adı.
 
-## Sonradan eklenen: piyasada "Portföyümde / Tümü" ve BIST 30 / 100 (2026-11-18)
-
-**İstek:** Her piyasa sekmesinde açılıp kapanan iki bölüm olsun: portföydeki enstrümanlar ve tümü. Borsada "tümü" yerine BIST 30 / BIST 100 seçenekleri olsun. Soru: API isteği artar mı?
-
-**Cevap: Artmaz.**
-- `/forex` ve `/gold` zaten tüm listeyi tek istekte getiriyordu.
-- `/stocks` parametresiz çağrılınca tüm piyasayı (634 hisse) yine **tek istekte** döndürüyor, yani portföydekileri istemekle aynı maliyet.
-- Hisselerde düzenli güncelleme artık tüm piyasayı çekiyor. Bunun yan faydası: seans kapalıyken eklenen hissenin fiyatı son seansın anlık görüntüsünden hazır geliyor. Yalnızca anlık görüntüde olmayan bir sembol (ör. yeni halka arz) için tek hisselik istek atılıyor.
-
-**Endeks verisi:** Bürküt'te yok. Kullanıcının anahtarıyla denendi: `/indices` → 404 (kotadan düşmedi), `/stocks?index=XU030` → parametre yok sayıldı, 634 hissenin tamamı döndü (1 istek). Bu yüzden BIST 30 ve BIST 100 üyeleri `assets/data/bist_indices.json` dosyasında tutuluyor:
-- Kaynak: 2026 4. çeyrek dönemi (1 Ekim - 31 Aralık 2026) listesi, Milliyet Uzmanpara'dan 2026-11-18'de alındı.
-- Duyurulan dönem değişiklikleriyle karşılaştırıldı (BIST 30'a TRMET girdi, DSTKF çıktı). BIST 30 ⊂ BIST 100 ve tüm semboller Bürküt piyasa listesinde var.
-- Dönem bitince ekranda "Endeks listesi … tarihli, güncel olmayabilir" uyarısı çıkıyor.
-- Dosya her çeyrek güncellenmeli.
-
-**Arayüz:**
-- `CollapsibleSection`: açılır-kapanır kart. Durumu sekme değişince korunuyor (`PageStorage`).
-- Her sekmede iki bölüm var: **Portföyümde** (sayı ile) ve **Tümü** (Borsa'da **Endeksler**, BIST 30 / BIST 100 seçimiyle). Portföyde o kategoriden bir şey yoksa ikinci bölüm açık başlıyor.
-- Hisse satırlarında alt yazı artık şirket adı (piyasa verisinden geliyor).
-
-| Döviz | Borsa, Endeksler |
+| Döviz | Borsa |
 |---|---|
 | ![](images/market_sections_fx.png) | ![](images/market_sections_borsa.png) |
 
-**Kod:**
-- `StockPriceProvider.fetchQuotes({symbols})`: `null` = tüm piyasa.
-- `MarketRepository.refresh(stockSymbols: null)` aynı şekilde.
-- Denetleyici: düzenli hisse güncellemesi elde hisse olmasa da yapılıyor. Hisselerin "son güncelleme" zamanı, tutulan hisselerin en eskisi; tutulan hisse yoksa en yeni anlık görüntü.
-- Yeni: `BistIndices`, `bistIndicesProvider`, `selectedBistIndexProvider`, `heldInstrumentsProvider`.
+### 2. BIST 30 / BIST 100 denendi ve kaldırıldı
 
-**Testler (164):**
-- Endeks dosyası bütünlüğü: 30 ve 100 tekil sembol, alt küme, sembol biçimi, geçerlilik.
-- Tüm piyasa tek istek.
-- Anlık görüntüde olan yeni hisse için istek gitmiyor; anlık görüntüde olmayan hisse için yalnızca o sembol isteniyor.
-- Ertesi seans yine tüm piyasa güncelleniyor.
+- **Endeks verisi Bürküt'te yok.** Kullanıcının anahtarıyla denendi:
+  - `/indices` → 404.
+  - `/stocks?index=XU030` → parametre yok sayıldı.
+- **Denenen çözüm:** Endeks üyeleri bir JSON dosyasında (2026 4. çeyrek listesi) tutuldu.
+- **Kaldırıldı:** Endeks listesi 3 ayda bir değişiyor ve elle güncelleme gerektiriyor; kullanıcı bu güncellik sorunu nedeniyle istemedi. Dosya, entity, provider'lar ve testleri kaldırıldı; yerine Borsa'da "Tümü" bölümü geldi.
+
+### 3. Seans kapalıyken eklenen hisse
+
+- **İlk sorun:** Hisseler yalnızca seans içinde çekildiği için seans kapalıyken eklenen hisse "Fiyat yok" kalıyordu.
+- **Geçici çözüm:** Önce "fiyatı olmayan hisse için tek istek" kuralı eklendi.
+- **Son çözüm:** Hisseler tüm piyasa olarak çekildiğinden yeni eklenen hissenin fiyatı son anlık görüntüde zaten var, ayrı istek gerekmiyor. Bu yüzden ayrı istek kuralı (`isMissingStocksDue`, `WatchHeldStockSymbols`) **kaldırıldı**.
+- **Tek kural:** Bir kategori **hiç çekilmemişse** (boş önbellek) seans fark etmeksizin hemen bir kez çekilir. Uygulama ilk kez gece ya da hafta sonu açılsa da hisse fiyatları gelir. Sonrasında hisseler yalnızca seans içinde 30 dakikada bir güncellenir.
+- **Kalıcı düzeltme:** Ara adımda testler bir açık yakaladı: başarısız normal istekten hemen sonra tekrar deneniyordu. Bu düzeltme kalıcı; otomatik yeniden deneme 30 dakika bekliyor.
+
+### 4. Ons altın
+
+- Bürküt'ün canlı `/gold` listesindeki 8 sembolün hepsi artık var: gram, çeyrek, yarım, tam, cumhuriyet, ata, **ons** ve gram gümüş.
+- **Ons** (`XAUUSD`) USD/ons olarak geliyor:
+  - Sağlayıcı, ons fiyatını `Quote.currency = 'USD'` ile işaretliyor.
+  - Repository bunu aynı yenilemedeki ya da önbellekteki USD/TRY kuruyla **TL'ye çevirip** saklıyor; kur yoksa atlanıyor.
+  - Önbellekte ve uygulamanın geri kalanında yalnızca TL fiyat var.
+- Değişim yüzdesi USD bazlı ons değişimi; TL bazlı değişimden kur hareketi kadar farklı olabilir.
+- Belgede adı geçen `PLATIN` ve `PALADYUM` canlı cevapta yoktu.
+
+### 5. Portföy: dağılım açılır-kapanır
+
+"Dağılım" bölümü artık `CollapsibleSection` içinde (`AllocationChart`).
+
+### Testler
+
+161 test. Kapsananlar:
+- İlk çekmenin her saatte izinli olması.
+- Sonrasında hisselerin seansı beklemesi.
+- Ons'un aynı yenilemedeki ya da önbellekteki kurla TL'ye çevrilmesi, kur yoksa atlanması.
+- Gerçek `/gold` cevabından 8 enstrüman çıkması.
+- Yeni tutulan hisse için ek istek gitmemesi.
 
 ## Bilinen eksikler / sonraki faza devredilenler
 

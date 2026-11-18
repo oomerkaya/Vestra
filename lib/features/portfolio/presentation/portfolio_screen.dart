@@ -6,6 +6,7 @@ import 'package:vestra/core/l10n/l10n.dart';
 import 'package:vestra/core/router/app_routes.dart';
 import 'package:vestra/core/theme/app_tokens.dart';
 import 'package:vestra/core/widgets/app_card.dart';
+import 'package:vestra/core/widgets/collapsible_section.dart';
 import 'package:vestra/core/widgets/empty_state.dart';
 import 'package:vestra/core/widgets/section_header.dart';
 import 'package:vestra/features/portfolio/domain/entities/portfolio_summary.dart';
@@ -40,10 +41,14 @@ class PortfolioScreen extends ConsumerWidget {
         children: [
           PortfolioSummaryCard(summary: summary),
           if (summary.totalValue > Decimal.zero) ...[
-            SectionHeader(l10n.portfolioAllocation),
-            AllocationCard(
-              valueByCategory: summary.valueByCategory,
-              total: summary.totalValue,
+            const SizedBox(height: AppSpacing.lg),
+            CollapsibleSection(
+              title: l10n.portfolioAllocation,
+              storageKey: 'portfolio-allocation',
+              child: AllocationChart(
+                valueByCategory: summary.valueByCategory,
+                total: summary.totalValue,
+              ),
             ),
           ],
           SectionHeader(l10n.portfolioHoldings),

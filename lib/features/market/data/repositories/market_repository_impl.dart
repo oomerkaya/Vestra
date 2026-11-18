@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:vestra/core/domain/instrument.dart';
 import 'package:vestra/core/error/failure.dart';
 import 'package:vestra/core/error/result.dart';
 import 'package:vestra/core/utils/app_logger.dart';
@@ -112,8 +113,9 @@ class MarketRepositoryImpl implements MarketRepository {
     }
 
     try {
-      if (quotes.isNotEmpty) {
-        await _cache.upsertAll([for (final q in quotes) q.toCompanion()]);
+      final stored = await _toTry(quotes);
+      if (stored.isNotEmpty) {
+        await _cache.upsertAll([for (final q in stored) q.toCompanion()]);
       }
     } on Object catch (error, stackTrace) {
       AppLogger.error('cache write', error: error, stackTrace: stackTrace);
@@ -127,6 +129,22 @@ class MarketRepositoryImpl implements MarketRepository {
         usedFxFallback: usedFallback,
       ),
     );
+  }
+
+  /// Converts non-TRY quotes (ounce gold in USD) with the USD/TRY rate from
+  /// this refresh, or the cached one. Without any rate they are dropped.
+  Future<List<Quote>> _toTry(List<Quote> quotes) async {
+    if (quotes.every((q) => q.currency == 'TRY')) return quotes;
+    const usd = (type: AssetType.currency, code: 'USD');
+    var rate = quotes.where((q) => q.instrument == usd).firstOrNull?.priceTry;
+    rate ??= (await _cache.find(usd.type.name, usd.code))?.priceTry;
+    return [
+      for (final q in quotes)
+        if (q.currency == 'TRY')
+          q
+        else if (q.currency == 'USD' && rate != null)
+          q.inTry(rate),
+    ];
   }
 
   @override

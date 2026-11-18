@@ -10,7 +10,6 @@ import 'package:vestra/core/widgets/app_card.dart';
 import 'package:vestra/core/widgets/collapsible_section.dart';
 import 'package:vestra/core/widgets/empty_state.dart';
 import 'package:vestra/core/widgets/messages.dart';
-import 'package:vestra/features/market/domain/entities/bist_indices.dart';
 import 'package:vestra/features/market/domain/entities/market_calendar.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/domain/services/refresh_policy.dart';
@@ -92,7 +91,7 @@ class MarketCategoryTab extends ConsumerWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             if (isStocks)
-              _IndexSection(quotes: quotes, initiallyExpanded: mine.isEmpty)
+              _AllStocksSection(quotes: quotes, initiallyExpanded: mine.isEmpty)
             else
               CollapsibleSection(
                 title: l10n.marketSectionAll,
@@ -389,37 +388,46 @@ class _Hint extends StatelessWidget {
   );
 }
 
-/// BIST 30 / BIST 100 list with a selector. Constituents come from the
-/// bundled `bist_indices.json`; prices from the cached market snapshot.
-class _IndexSection extends ConsumerWidget {
-  const _IndexSection({required this.quotes, required this.initiallyExpanded});
+/// Every BIST stock from the last market snapshot, with search. Rendered
+/// in pages of 50 so 600+ rows don't build at once.
+class _AllStocksSection extends StatefulWidget {
+  const _AllStocksSection({
+    required this.quotes,
+    required this.initiallyExpanded,
+  });
 
   final List<Quote> quotes;
   final bool initiallyExpanded;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  State<_AllStocksSection> createState() => _AllStocksSectionState();
+}
+
+class _AllStocksSectionState extends State<_AllStocksSection> {
+  static const int _pageSize = 50;
+
+  String _query = '';
+  int _visible = _pageSize;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final indices = ref.watch(bistIndicesProvider).value ?? BistIndices.empty;
-    final selected = ref.watch(selectedBistIndexProvider);
-    final members = selected == BistIndex.bist30
-        ? indices.bist30
-        : indices.bist100;
-    final listed = [
-      for (final q in quotes)
-        if (members.contains(q.instrument.code)) q,
-    ];
-    final until = indices.validUntil;
-    final date =
-        '${until.day.toString().padLeft(2, '0')}.'
-        '${until.month.toString().padLeft(2, '0')}.${until.year}';
+    final matches = _query.isEmpty
+        ? widget.quotes
+        : [
+            for (final q in widget.quotes)
+              if (q.instrument.code.startsWith(_query) ||
+                  turkishUpperCase(q.name ?? '').contains(_query))
+                q,
+          ];
+    final shown = matches.take(_visible).toList();
+    final remaining = matches.length - shown.length;
 
     return CollapsibleSection(
-      title: l10n.marketSectionIndices,
-      trailing: listed.length.toString(),
-      initiallyExpanded: initiallyExpanded,
-      storageKey: 'market-stocks-indices',
+      title: l10n.marketSectionAll,
+      trailing: widget.quotes.length.toString(),
+      initiallyExpanded: widget.initiallyExpanded,
+      storageKey: 'market-stocks-all',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -430,39 +438,37 @@ class _IndexSection extends ConsumerWidget {
               AppSpacing.lg,
               AppSpacing.xs,
             ),
-            child: Wrap(
-              spacing: AppSpacing.sm,
-              children: [
-                for (final (index, label) in [
-                  (BistIndex.bist30, l10n.marketBist30),
-                  (BistIndex.bist100, l10n.marketBist100),
-                ])
-                  ChoiceChip(
-                    label: Text(label),
-                    selected: selected == index,
-                    showCheckmark: false,
-                    onSelected: (_) => ref
-                        .read(selectedBistIndexProvider.notifier)
-                        .select(index),
+            child: TextField(
+              textCapitalization: TextCapitalization.characters,
+              decoration: InputDecoration(
+                hintText: l10n.marketSearchStocks,
+                prefixIcon: const Icon(Icons.search_rounded),
+                isDense: true,
+              ),
+              onChanged: (v) => setState(() {
+                _query = turkishUpperCase(v.trim());
+                _visible = _pageSize;
+              }),
+            ),
+          ),
+          if (widget.quotes.isEmpty)
+            _Hint(l10n.marketStocksNotLoaded)
+          else if (matches.isEmpty)
+            _Hint(l10n.pickerNoResults)
+          else
+            _QuoteList(quotes: shown),
+          if (remaining > 0)
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: TextButton(
+                onPressed: () => setState(() => _visible += _pageSize),
+                child: Text(
+                  l10n.marketShowMore(
+                    (remaining < _pageSize ? remaining : _pageSize).toString(),
                   ),
-              ],
+                ),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-            child: Text(
-              indices.isOutdated(DateTime.now())
-                  ? l10n.marketIndexOutdated(date)
-                  : l10n.marketIndexValidUntil(date),
-              style: theme.textTheme.bodySmall,
-            ),
-          ),
-          if (listed.isEmpty)
-            _Hint(l10n.marketIndexNoPrices)
-          else ...[
-            const SizedBox(height: AppSpacing.xs),
-            _QuoteList(quotes: listed),
-          ],
         ],
       ),
     );

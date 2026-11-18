@@ -1048,53 +1048,47 @@ abstract class AppLocalizations {
   /// **'Tümü'**
   String get marketSectionAll;
 
-  /// No description provided for @marketSectionIndices.
-  ///
-  /// In tr, this message translates to:
-  /// **'Endeksler'**
-  String get marketSectionIndices;
-
-  /// No description provided for @marketBist30.
-  ///
-  /// In tr, this message translates to:
-  /// **'BIST 30'**
-  String get marketBist30;
-
-  /// No description provided for @marketBist100.
-  ///
-  /// In tr, this message translates to:
-  /// **'BIST 100'**
-  String get marketBist100;
-
   /// No description provided for @marketNoHoldingsInCategory.
   ///
   /// In tr, this message translates to:
   /// **'Bu kategoride portföyünde varlık yok.'**
   String get marketNoHoldingsInCategory;
 
-  /// No description provided for @marketIndexNoPrices.
-  ///
-  /// In tr, this message translates to:
-  /// **'Fiyatlar seans açıldığında ilk güncellemeyle gelir.'**
-  String get marketIndexNoPrices;
-
-  /// No description provided for @marketIndexValidUntil.
-  ///
-  /// In tr, this message translates to:
-  /// **'Endeks bileşimi {date} tarihine kadar geçerli.'**
-  String marketIndexValidUntil(String date);
-
-  /// No description provided for @marketIndexOutdated.
-  ///
-  /// In tr, this message translates to:
-  /// **'Endeks listesi {date} tarihli, güncel olmayabilir.'**
-  String marketIndexOutdated(String date);
-
   /// No description provided for @marketCount.
   ///
   /// In tr, this message translates to:
   /// **'{count}'**
   String marketCount(String count);
+
+  /// No description provided for @marketSearchStocks.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hisse ara (sembol veya ad)'**
+  String get marketSearchStocks;
+
+  /// No description provided for @marketShowMore.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} hisse daha göster'**
+  String marketShowMore(String count);
+
+  /// No description provided for @marketStocksNotLoaded.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hisse fiyatları ilk güncellemeyle gelir.'**
+  String get marketStocksNotLoaded;
+
+  /// No description provided for @unitOunce.
+  ///
+  /// In tr, this message translates to:
+  /// **'ons'**
+  String get unitOunce;
+
+  /// No description provided for @instrumentGoldOunce.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ons Altın'**
+  String get instrumentGoldOunce;
 }
 
 class _AppLocalizationsDelegate

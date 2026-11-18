@@ -64,7 +64,7 @@ Spesifikasyondaki örnek fiyatlar (USD 38,42 gibi) gösterim amaçlıdır.
 |---|---|
 | Döviz | Her zaman; son başarılı güncellemeden ≥ 30 dk sonra |
 | Altın/gümüş | Her zaman; son başarılı güncellemeden ≥ 30 dk sonra |
-| Hisse | Yalnızca seans içinde (hafta içi 10:00-18:00, yarım gün 12:30, tatil yok); son başarılı güncellemeden ≥ 30 dk sonra. İstisna (2026-11-18, Faz 4 sonrası): portföydeki bir hissenin **hiç fiyatı yoksa** seans kapalı olsa bile yalnızca o hisse hemen istenir (`RefreshPolicy.isMissingStocksDue`) |
+| Hisse | Yalnızca seans içinde (hafta içi 10:00-18:00, yarım gün 12:30, tatil yok); son başarılı güncellemeden ≥ 30 dk sonra. Tüm piyasa tek istekle (Faz 4 sonrası). Hiç hisse verisi yoksa seans dışında da bir kez çekilir |
 
 - Pull-to-refresh aynı kurallara uyar, yani 30 dk dolmadan istek göndermez. Tek farkı: başarısız bir denemeden sonra beklemeden tekrar deneyebilir. İstek gitmediyse alt bilgide "Veriler güncel · sonraki güncelleme 18:44" ya da "Borsa şu an kapalı" görünür.
 - Otomatik denemeler, başarısız bir denemeden sonra da 30 dk bekler; sunucu hatası her dakika tekrar istek harcamaz. HTTP 429'da backoff (1-30 dk, `Retry-After`) korunuyor.

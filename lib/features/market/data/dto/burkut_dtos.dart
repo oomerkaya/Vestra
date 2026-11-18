@@ -85,6 +85,9 @@ class BurkutPriceDto {
     final u = unit?.toUpperCase();
     return u == null || u.startsWith('TL') || u.startsWith('TRY');
   }
+
+  /// Priced in US dollars (e.g. `USD/Ons`).
+  bool get isUsd => unit?.toUpperCase().startsWith('USD') ?? false;
 }
 
 /// Parsed list plus the monthly quota the server reports in

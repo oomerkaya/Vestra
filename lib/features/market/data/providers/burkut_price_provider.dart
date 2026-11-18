@@ -53,9 +53,11 @@ class BurkutPriceProvider
     'gold',
     (key) async => [
       for (final dto in await _items(_remote.getGold(key)))
-        if (dto.isTry)
-          if (burkutMetalSymbols[dto.symbol] case final instrument?)
-            _quote(instrument, dto),
+        if (burkutMetalSymbols[dto.symbol] case final instrument?)
+          if (dto.isTry)
+            _quote(instrument, dto)
+          else if (dto.isUsd)
+            _quote(instrument, dto, currency: 'USD'),
     ],
   );
 
@@ -138,7 +140,11 @@ class BurkutPriceProvider
     return response.items;
   }
 
-  Quote _quote(Instrument instrument, BurkutPriceDto dto) => Quote(
+  Quote _quote(
+    Instrument instrument,
+    BurkutPriceDto dto, {
+    String currency = 'TRY',
+  }) => Quote(
     instrument: instrument,
     priceTry: dto.price,
     source: QuoteSource.burkut,
@@ -146,5 +152,6 @@ class BurkutPriceProvider
     name: dto.name,
     changePercent: dto.changePercent,
     asOf: dto.updatedAt,
+    currency: currency,
   );
 }

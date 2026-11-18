@@ -4,14 +4,14 @@ import 'package:vestra/core/l10n/l10n.dart';
 import 'package:vestra/core/theme/app_tokens.dart';
 import 'package:vestra/core/theme/app_typography.dart';
 import 'package:vestra/core/utils/formatters.dart';
-import 'package:vestra/core/widgets/app_card.dart';
 import 'package:vestra/core/widgets/donut_chart.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/portfolio/presentation/portfolio_labels.dart';
 
-/// Donut + legend: share of each category in the total value.
-class AllocationCard extends StatelessWidget {
-  const AllocationCard({
+/// Donut + legend: share of each category in the total value. Content
+/// only; the portfolio screen puts it in a collapsible section.
+class AllocationChart extends StatelessWidget {
+  const AllocationChart({
     required this.valueByCategory,
     required this.total,
     super.key,
@@ -39,7 +39,7 @@ class AllocationCard extends StatelessWidget {
         ),
     };
 
-    return AppCard(
+    return Padding(
       padding: const EdgeInsets.all(AppSpacing.xl),
       child: Row(
         children: [

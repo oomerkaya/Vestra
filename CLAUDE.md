@@ -73,11 +73,12 @@ Kaynaklar (ayrıntı ve araştırma: `docs/faz-3-piyasa-verisi.md`):
 Güncelleme kuralları (`RefreshPolicy`):
 - Her kategori (döviz, maden, hisse) **ayrı** takip edilir ve son başarılı güncellemesinden en az **30 dakika** sonra istenir. Yalnızca uygulama açıkken; arka plan servisi yok.
 - **Döviz ve madenler**: her gün, her saat (30 dk kuralıyla).
-- **Hisseler**: yalnızca hafta içi 10:00-18:00 (Europe/Istanbul, sabit UTC+3), yarım günlerde 12:30'a kadar, tatillerde hiç. İstisna: portföydeki bir hissenin **hiç fiyatı yoksa** (yeni eklendiyse) seans kapalı olsa bile **yalnızca o hisse** için hemen istenir; diğer hisseler seansı bekler. Hisselerde "son güncelleme" tutulan hisselerin en **eski** `fetchedAt` değeridir.
+- **Hisseler**: yalnızca hafta içi 10:00-18:00 (Europe/Istanbul, sabit UTC+3), yarım günlerde 12:30'a kadar, tatillerde hiç. Hisseler her zaman **tüm BIST piyasası** olarak tek istekle çekilir; portföye eklenen hissenin fiyatı son anlık görüntüden hazırdır, ayrıca istek atılmaz.
+- **İlk çekme**: bir kategori hiç çekilmemişse (önbellek boş) seans/saat fark etmeksizin hemen bir kez çekilir; uygulama ilk kez seans dışında açılsa da hisse fiyatları gelir.
 - **Pull-to-refresh kuralları ATLAMAZ** (30 dk ve seans saati geçerli); yalnızca başarısız bir denemeden sonra beklemeden tekrar denemeye izin verir. Bir şey istenmediyse kullanıcıya "Veriler güncel · sonraki güncelleme HH:mm" / "Borsa şu an kapalı" gösterilir.
 - Tatil/yarım gün takvimi `assets/data/market_holidays.json`'dan okunur.
-- Hisselerde düzenli güncelleme **tüm BIST piyasası** (634 hisse, ~280 KB) tek istektir; portföydekileri istemekle aynı maliyet. `/forex`, `/gold`, `/stocks` hepsi tek istekte tüm listeyi döner. Bir kategori = bir istek; en fazla 3 Bürküt isteği.
-- BIST 30 / BIST 100 üyeleri `assets/data/bist_indices.json`'dan okunur (Bürküt'te endeks verisi yok; `/indices` 404, `?index=` yok sayılıyor). Borsa İstanbul endeksleri 3 ayda bir (Ocak/Nisan/Temmuz/Ekim) değiştirir; dosya her dönem güncellenmeli, `test/features/market/domain/bist_indices_test.dart` bütünlüğü kontrol eder.
+- `/forex`, `/gold`, `/stocks` hepsi tek istekte tüm listeyi döner (634 hisse, ~280 KB). Bir kategori = bir istek; en fazla 3 Bürküt isteği. Endeks (BIST 30/100) verisi Bürküt'te yok ve elle tutulan listeler eskidiği için kullanılmıyor.
+- Ons altın (`XAUUSD`) USD gelir; repository aynı yenilemedeki ya da önbellekteki USD/TRY ile TL'ye çevirip saklar (kur yoksa atlanır). Önbellekte yalnızca TL fiyat bulunur.
 - Anahtar yoksa ya da kota doluysa Bürküt'e istek **gönderilmez**. Uygulama aylık istek sayacı tutar (`app_settings` → `burkut_quota`).
 - 429 dakikalık limit → exponential backoff (1-30 dk, `Retry-After` öncelikli). 429 aylık kota → o ay Bürküt'e istek yok.
 - Çekilen fiyatlar `price_cache`'e yazılır; internet yoksa son bilinen değer ve "son güncelleme" zamanı gösterilir.
