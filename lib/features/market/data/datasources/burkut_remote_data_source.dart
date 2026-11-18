@@ -12,6 +12,7 @@ class BurkutRemoteDataSource {
 
   static const String baseUrl = 'https://api.burkutportfoy.com/api/public/v1';
   static const String quotaHeader = 'x-quota-remaining';
+  static const String quotaLimitHeader = 'x-quota-limit';
 
   final Dio _dio;
 
@@ -19,9 +20,9 @@ class BurkutRemoteDataSource {
 
   Future<BurkutResponse> getGold(String apiKey) => _get('/gold', apiKey);
 
-  /// The REST spec says `/stocks` returns the whole market (560+ stocks)
-  /// for one request; `symbols` is sent as a hint (supported by the SDK)
-  /// and the result is filtered to [symbols] either way.
+  /// One request for all [symbols]. The live API honours `?symbols=`
+  /// (verified 2026-11-18); without it `/stocks` returns the whole market
+  /// (560+ stocks), so the result is also filtered here as a safeguard.
   Future<BurkutResponse> getStocks(String apiKey, List<String> symbols) async {
     final wanted = {for (final s in symbols) s.toUpperCase()};
     final response = await _get(
@@ -35,6 +36,7 @@ class BurkutRemoteDataSource {
           if (wanted.contains(dto.symbol)) dto,
       ],
       quotaRemaining: response.quotaRemaining,
+      quotaLimit: response.quotaLimit,
     );
   }
 
@@ -53,9 +55,11 @@ class BurkutRemoteDataSource {
         for (final json in unwrapList(response.data))
           ?BurkutPriceDto.fromJson(json),
       ],
-      quotaRemaining: int.tryParse(
-        response.headers.value(quotaHeader)?.trim() ?? '',
-      ),
+      quotaRemaining: _intHeader(response, quotaHeader),
+      quotaLimit: _intHeader(response, quotaLimitHeader),
     );
   }
+
+  static int? _intHeader(Response<Object?> response, String name) =>
+      int.tryParse(response.headers.value(name)?.trim() ?? '');
 }

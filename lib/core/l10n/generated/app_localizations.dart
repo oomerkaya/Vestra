@@ -561,6 +561,66 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Ata Altın'**
   String get instrumentGoldAta;
+
+  /// No description provided for @instrumentAED.
+  ///
+  /// In tr, this message translates to:
+  /// **'BAE Dirhemi'**
+  String get instrumentAED;
+
+  /// No description provided for @instrumentAZN.
+  ///
+  /// In tr, this message translates to:
+  /// **'Azerbaycan Manatı'**
+  String get instrumentAZN;
+
+  /// No description provided for @instrumentCNY.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çin Yuanı'**
+  String get instrumentCNY;
+
+  /// No description provided for @instrumentKRW.
+  ///
+  /// In tr, this message translates to:
+  /// **'Güney Kore Wonu'**
+  String get instrumentKRW;
+
+  /// No description provided for @instrumentKWD.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kuveyt Dinarı'**
+  String get instrumentKWD;
+
+  /// No description provided for @instrumentKZT.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kazakistan Tengesi'**
+  String get instrumentKZT;
+
+  /// No description provided for @instrumentPKR.
+  ///
+  /// In tr, this message translates to:
+  /// **'Pakistan Rupisi'**
+  String get instrumentPKR;
+
+  /// No description provided for @instrumentQAR.
+  ///
+  /// In tr, this message translates to:
+  /// **'Katar Riyali'**
+  String get instrumentQAR;
+
+  /// No description provided for @instrumentRON.
+  ///
+  /// In tr, this message translates to:
+  /// **'Rumen Leyi'**
+  String get instrumentRON;
+
+  /// No description provided for @instrumentRUB.
+  ///
+  /// In tr, this message translates to:
+  /// **'Rus Rublesi'**
+  String get instrumentRUB;
 }
 
 class _AppLocalizationsDelegate

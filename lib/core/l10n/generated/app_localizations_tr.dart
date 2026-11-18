@@ -261,4 +261,34 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get instrumentGoldAta => 'Ata Altın';
+
+  @override
+  String get instrumentAED => 'BAE Dirhemi';
+
+  @override
+  String get instrumentAZN => 'Azerbaycan Manatı';
+
+  @override
+  String get instrumentCNY => 'Çin Yuanı';
+
+  @override
+  String get instrumentKRW => 'Güney Kore Wonu';
+
+  @override
+  String get instrumentKWD => 'Kuveyt Dinarı';
+
+  @override
+  String get instrumentKZT => 'Kazakistan Tengesi';
+
+  @override
+  String get instrumentPKR => 'Pakistan Rupisi';
+
+  @override
+  String get instrumentQAR => 'Katar Riyali';
+
+  @override
+  String get instrumentRON => 'Rumen Leyi';
+
+  @override
+  String get instrumentRUB => 'Rus Rublesi';
 }

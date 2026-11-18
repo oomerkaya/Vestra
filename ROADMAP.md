@@ -31,7 +31,7 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 - [x] Ayarlar ekranı: API anahtarı gir, doğrula, güvenli sakla; aylık kota göstergesi
 - [x] Polling zamanlayıcı (seans saatleri, tatil takvimi, backoff, 30 dk) + testler
 - [x] Cache ve offline davranışı (şema v2 migration)
-- [ ] Gerçek Bürküt anahtarıyla sembol/alan doğrulaması (docs/faz-3 "Doğrulanacaklar")
+- [x] Gerçek Bürküt anahtarıyla sembol/alan doğrulaması (docs/faz-3 "Canlı doğrulama")
 
 ## Faz 4: Özellikler (dikey dilimler)
 - [ ] Varlık ekleme/düzenleme/silme

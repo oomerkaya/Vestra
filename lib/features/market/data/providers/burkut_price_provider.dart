@@ -117,7 +117,9 @@ class BurkutPriceProvider
   Future<List<BurkutPriceDto>> _items(Future<BurkutResponse> call) async {
     final response = await call;
     final remaining = response.quotaRemaining;
-    if (remaining != null) await _quota.syncRemaining(remaining);
+    if (remaining != null) {
+      await _quota.syncRemaining(remaining, limit: response.quotaLimit);
+    }
     return response.items;
   }
 

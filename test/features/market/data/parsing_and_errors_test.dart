@@ -73,6 +73,20 @@ void main() {
       expect(parse({'selling': 4}), isNull, reason: 'no usable price');
     });
 
+    test('price: live /forex fields buyRate, rate, currentPrice', () {
+      expect(
+        parse({'buyRate': 1, 'rate': 2, 'currentPrice': 3})!.price,
+        d('1'),
+      );
+      expect(parse({'rate': 2, 'currentPrice': 3})!.price, d('2'));
+      expect(parse({'currentPrice': 3})!.price, d('3'));
+    });
+
+    test('price: zero values are treated as missing', () {
+      expect(parse({'buying': 0, 'price': 5})!.price, d('5'));
+      expect(parse({'buying': 0, 'close': 0}), isNull);
+    });
+
     test('change: changePercent, dailyChangePct or change_rate', () {
       expect(
         parse({'price': 1, 'changePercent': 2.44})!.changePercent,

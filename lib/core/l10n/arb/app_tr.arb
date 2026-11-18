@@ -101,5 +101,15 @@
   "unitGram": "gram",
   "unitPiece": "adet",
   "exchangeBist": "Borsa İstanbul",
-  "instrumentGoldAta": "Ata Altın"
+  "instrumentGoldAta": "Ata Altın",
+  "instrumentAED": "BAE Dirhemi",
+  "instrumentAZN": "Azerbaycan Manatı",
+  "instrumentCNY": "Çin Yuanı",
+  "instrumentKRW": "Güney Kore Wonu",
+  "instrumentKWD": "Kuveyt Dinarı",
+  "instrumentKZT": "Kazakistan Tengesi",
+  "instrumentPKR": "Pakistan Rupisi",
+  "instrumentQAR": "Katar Riyali",
+  "instrumentRON": "Rumen Leyi",
+  "instrumentRUB": "Rus Rublesi"
 }

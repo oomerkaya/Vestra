@@ -25,8 +25,16 @@ const Map<String, Instrument> burkutMetalSymbols = {
 
 final RegExp _currencyCode = RegExp(r'^[A-Z]{3}$');
 
-/// ISO 4217 codes for metals; these come from `/gold`, not as currencies.
-const Set<String> _notCurrencies = {'TRY', 'XAU', 'XAG', 'XPT', 'XPD'};
+/// ISO 4217 codes that are not holdable currencies: metals (they come
+/// from `/gold`) and XDR (IMF special drawing rights, listed by `/forex`).
+const Set<String> _notCurrencies = {
+  'TRY',
+  'XAU',
+  'XAG',
+  'XPT',
+  'XPD',
+  'XDR',
+};
 
 /// `/forex` symbols are ISO 4217 codes (e.g. `USD`). The spec says
 /// `USDTRY` / `USD/TRY` are accepted as input, so those forms are

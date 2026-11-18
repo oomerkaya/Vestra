@@ -1,6 +1,6 @@
 # Faz 3: Piyasa verisi
 
-**Durum:** Kod bitti; **gerçek API anahtarıyla doğrulama bekliyor** (aşağıda "Doğrulanacaklar") · **Tarih:** 2026-11-17
+**Durum:** Bitti; gerçek API anahtarıyla canlı doğrulandı (2026-11-18, aşağıda "Canlı doğrulama") · **Tarih:** 2026-11-17
 
 ## Özet
 
@@ -162,10 +162,11 @@ Spesifikasyondaki örnek fiyatlar (USD 38,42 gibi) gösterim amaçlıdır.
 
 ## Testler
 
-Toplam **107 test**, hepsi geçti (Faz 2 sonunda 52; REST spesifikasyonu düzeltmesiyle +10).
+Toplam **113 test**, hepsi geçti (Faz 2 sonunda 52; REST spesifikasyonu düzeltmesiyle +10; canlı doğrulamayla +6).
 
 | Dosya | Kapsam |
 |---|---|
+| `test/features/market/data/burkut_live_fixtures_test.dart` | Gerçek Bürküt yanıtlarıyla (fixture): 21 döviz (XDR hariç) `buyRate`'ten, 7 TL maden (XAUUSD hariç) `buying`'den, hisse fiyat/değişim, kota başlıklarıyla sayaç eşitleme |
 | `test/features/market/data/burkut_remote_data_source_test.dart` | Sahte HTTP adaptörüyle: `X-API-Key` gönderimi, `X-Quota-Remaining` okuma, `{data:[]}` zarfı, `/stocks` tüm piyasa yanıtının portföy hisselerine süzülmesi |
 | `test/features/market/domain/refresh_policy_test.dart` | Seans saatleri, İstanbul saati, hafta sonu, tatil, yarım gün, 30 dk aralık, önbellek boşken yenileme, backoff dizisi ve `Retry-After`, takvim JSON'u |
 | `test/features/market/data/parsing_and_errors_test.dart` | Decimal/tarih/liste okuma, DTO'lar, `DioException` → `Failure` (ağ, 401/403, kota, limit + `Retry-After`, 5xx) |
@@ -181,18 +182,26 @@ Toplam **107 test**, hepsi geçti (Faz 2 sonunda 52; REST spesifikasyonu düzelt
 |---|---|
 | `dart format --set-exit-if-changed lib test` | Temiz |
 | `flutter analyze` | No issues found |
-| `flutter test` | 107/107 |
+| `flutter test` | 113/113 |
 | `flutter build apk --debug` | Başarılı |
 | Canlı: `GET api.frankfurter.dev/v1/latest?base=TRY&symbols=...` | Beklenen biçim; USD = 1 / 0,019836 ≈ ₺50,41 |
 | Canlı: `GET api.burkutportfoy.com/api/public/v1/gold` (anahtarsız) | `401 UNAUTHORIZED`; adres ve hata biçimi doğru |
 
-## Doğrulanacaklar (gerçek anahtarla, Faz 4'ten önce)
+## Canlı doğrulama (2026-11-18, kullanıcının anahtarıyla)
 
-REST spesifikasyonu çoğu soruyu yanıtladı: semboller, alan adları, yüzde biçimi (`2.44` = %2,44) ve zaman biçimi (ISO 8601). Gerçek anahtarla bakılacaklar:
+Anahtar, proje dışındaki bir dosyadan (`%USERPROFILE%\.vestra\burkut_key`) okundu; ekrana, loga veya repoya yazılmadı. 3 istek atıldı (`/forex`, `/gold`, `/stocks?symbols=THYAO,ASELS`); üçü de `200 OK`.
 
-1. Canlı yanıt SDK biçiminde mi, spesifikasyon biçiminde mi? İkisi de destekleniyor; hangisi olduğu kayda geçirilecek.
-2. `X-Quota-Remaining` başlığı gerçekten geliyor mu?
-3. `/stocks?symbols=` parametresi yok sayılıyor mu, yoksa sonucu süzüyor mu? İki durumda da çalışıyor.
+| Konu | Gerçek davranış | Sonuç |
+|---|---|---|
+| Zarf | `{"data": [...]}` | Destekleniyordu |
+| **`/forex` alanları** | `buyRate`, `sellRate`, `rate`, `currentPrice`, `dailyChangePct`, `dailyChangePercent`, `updatedAt`. **`buying` ve `price` yok** | **Ne SDK ne REST spesifikasyonu doğruydu.** Düzeltilmeseydi döviz yine boş gelecekti. Fiyat sırasına `buyRate`, `rate`, `currentPrice` eklendi |
+| `/forex` sembolleri | 22 adet: AED, AUD, AZN, CAD, CHF, CNY, DKK, EUR, GBP, JPY, KRW, KWD, KZT, NOK, PKR, QAR, RON, RUB, SAR, SEK, USD, XDR | `XDR` (IMF özel çekme hakkı) atlanıyor. Yeni 10 para birimine Türkçe ad eklendi |
+| `/gold` | `buying`, `selling`, `price`, `currentPrice`, `dailyChangePct`, `unit`. Semboller: `ALTIN, ATA, CEYREK_YENI, CUMHURIYET, GUMTRY, TAM, XAUUSD, YARIM` | REST spesifikasyonuyla uyumlu; eşleme doğru. `close`, `high`, `low` alanları `0` geliyor; sıfır fiyat artık "yok" sayılıyor |
+| `/stocks?symbols=` | Parametre **dikkate alınıyor**; yalnızca 2 hisse döndü. Alanlar `price`, `currentPrice`, `changePercent`, `dailyChangePct` | Destekleniyordu |
+| Kota başlıkları | `X-Quota-Limit: 1000`, `X-Quota-Remaining`, `X-Quota-Reset: 1796083200` (= 2026-12-01 00:00 UTC), `X-Ratelimit-Limit: 10`, `X-Ratelimit-Remaining` | Kalan ve limit okunup sayaca yazılıyor (ücretli plan da doğru görünür). Sıfırlama takvim ayı başı UTC; uygulamanın ay mantığıyla uyumlu |
+| Karakter kodlaması | Geçerli UTF-8 ("Gram Altın") | Sorun yok |
+
+Bu yanıtlar `test/fixtures/burkut/` altına kaydedildi; içinde anahtar olmadığı kontrol edildi. `test/features/market/data/burkut_live_fixtures_test.dart` gerçek yanıtları uçtan uca (HTTP → DTO → `Quote`) test ediyor. Bürküt biçim değiştirirse bu dosyalar yenilenir ve hangi alanın bozulduğu testte görünür.
 
 ## Bilinen eksikler / sonraki faza devredilenler
 

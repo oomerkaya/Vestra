@@ -42,15 +42,19 @@ class QuotaLocalDataSource {
     ),
   );
 
-  /// Aligns the counter with the server's `X-Quota-Remaining` header,
-  /// which is authoritative (the server knows its own reset date).
-  Future<QuotaUsage> syncRemaining(int remaining) => _update(
-    (u) => QuotaUsage(
-      period: u.period,
-      used: (u.limit - remaining).clamp(0, u.limit),
-      limit: u.limit,
-      exhaustedByServer: remaining <= 0,
-    ),
+  /// Aligns the counter with the server's `X-Quota-Remaining` and
+  /// `X-Quota-Limit` headers, which are authoritative (the server knows the
+  /// user's plan and its own reset date).
+  Future<QuotaUsage> syncRemaining(int remaining, {int? limit}) => _update(
+    (u) {
+      final effectiveLimit = limit != null && limit > 0 ? limit : u.limit;
+      return QuotaUsage(
+        period: u.period,
+        used: (effectiveLimit - remaining).clamp(0, effectiveLimit),
+        limit: effectiveLimit,
+        exhaustedByServer: remaining <= 0,
+      );
+    },
   );
 
   Future<QuotaUsage> markExhausted() => _update(
