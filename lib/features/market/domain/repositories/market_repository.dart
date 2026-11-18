@@ -35,4 +35,8 @@ abstract interface class MarketRepository {
   });
 
   Future<Result<QuotaUsage>> quotaUsage();
+
+  /// When the whole BIST market was last fetched successfully; `null` if
+  /// never (then stocks are fetched even outside the session).
+  Future<DateTime?> stocksSnapshotAt();
 }

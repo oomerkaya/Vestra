@@ -74,11 +74,11 @@ Güncelleme kuralları (`RefreshPolicy`):
 - Her kategori (döviz, maden, hisse) **ayrı** takip edilir ve son başarılı güncellemesinden en az **30 dakika** sonra istenir. Yalnızca uygulama açıkken; arka plan servisi yok.
 - **Döviz ve madenler**: her gün, her saat (30 dk kuralıyla).
 - **Hisseler**: yalnızca hafta içi 10:00-18:00 (Europe/Istanbul, sabit UTC+3), yarım günlerde 12:30'a kadar, tatillerde hiç. Hisseler her zaman **tüm BIST piyasası** olarak tek istekle çekilir; portföye eklenen hissenin fiyatı son anlık görüntüden hazırdır, ayrıca istek atılmaz.
-- **İlk çekme**: bir kategori hiç çekilmemişse (önbellek boş) seans/saat fark etmeksizin hemen bir kez çekilir; uygulama ilk kez seans dışında açılsa da hisse fiyatları gelir.
+- **İlk çekme**: bir kategori hiç çekilmemişse seans/saat fark etmeksizin hemen bir kez çekilir. Hisselerde "çekildi" sayılması için **tüm piyasa** anlık görüntüsü gerekir; zamanı `app_settings` → `stocks_snapshot_at`'te tutulur (eski sürümlerin sadece portföy hisselerini içeren önbelleği sayılmaz).
 - **Pull-to-refresh kuralları ATLAMAZ** (30 dk ve seans saati geçerli); yalnızca başarısız bir denemeden sonra beklemeden tekrar denemeye izin verir. Bir şey istenmediyse kullanıcıya "Veriler güncel · sonraki güncelleme HH:mm" / "Borsa şu an kapalı" gösterilir.
 - Tatil/yarım gün takvimi `assets/data/market_holidays.json`'dan okunur.
 - `/forex`, `/gold`, `/stocks` hepsi tek istekte tüm listeyi döner (634 hisse, ~280 KB). Bir kategori = bir istek; en fazla 3 Bürküt isteği. Endeks (BIST 30/100) verisi Bürküt'te yok ve elle tutulan listeler eskidiği için kullanılmıyor.
-- Ons altın (`XAUUSD`) USD gelir; repository aynı yenilemedeki ya da önbellekteki USD/TRY ile TL'ye çevirip saklar (kur yoksa atlanır). Önbellekte yalnızca TL fiyat bulunur.
+- Madenler: gram, çeyrek, yarım, tam, cumhuriyet, ata altın ve gram gümüş (hepsi TL). Ons altın (`XAUUSD`, USD) kullanıcı isteğiyle **kullanılmıyor**.
 - Anahtar yoksa ya da kota doluysa Bürküt'e istek **gönderilmez**. Uygulama aylık istek sayacı tutar (`app_settings` → `burkut_quota`).
 - 429 dakikalık limit → exponential backoff (1-30 dk, `Retry-After` öncelikli). 429 aylık kota → o ay Bürküt'e istek yok.
 - Çekilen fiyatlar `price_cache`'e yazılır; internet yoksa son bilinen değer ve "son güncelleme" zamanı gösterilir.

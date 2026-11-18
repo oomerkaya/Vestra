@@ -45,7 +45,6 @@ String assetSubtitle(AppLocalizations l10n, Asset asset) =>
 String quantityUnit(AppLocalizations l10n, Instrument instrument) =>
     switch (instrument) {
       (type: AssetType.currency, :final code) => code,
-      (type: AssetType.gold, code: 'ONS') => l10n.unitOunce,
       (type: AssetType.gold, code: 'GRAM') ||
       (type: AssetType.silver, code: _) => l10n.unitGram,
       (type: AssetType.gold || AssetType.stock, code: _) => l10n.unitPiece,

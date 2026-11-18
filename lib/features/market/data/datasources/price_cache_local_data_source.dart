@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart';
 import 'package:vestra/core/database/app_database.dart';
 
 class PriceCacheLocalDataSource {
@@ -7,10 +6,6 @@ class PriceCacheLocalDataSource {
   final AppDatabase _db;
 
   Stream<List<PriceCacheRow>> watchAll() => _db.select(_db.priceCache).watch();
-
-  Future<PriceCacheRow?> find(String type, String code) => (_db.select(
-    _db.priceCache,
-  )..where((p) => p.type.equals(type) & p.code.equals(code))).getSingleOrNull();
 
   /// Inserts or replaces rows by `(type, code)` in one transaction.
   Future<void> upsertAll(List<PriceCacheCompanion> rows) => _db.batch(

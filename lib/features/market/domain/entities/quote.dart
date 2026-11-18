@@ -17,7 +17,6 @@ class Quote {
     this.name,
     this.changePercent,
     this.asOf,
-    this.currency = 'TRY',
   });
 
   final Instrument instrument;
@@ -35,21 +34,6 @@ class Quote {
 
   /// Provider's own timestamp for the price, if given.
   final DateTime? asOf;
-
-  /// Currency of [priceTry] as delivered by a provider. Only `TRY` is ever
-  /// cached: the repository converts other currencies (ounce gold in USD)
-  /// before storing, so everything outside the data layer is TRY.
-  final String currency;
-
-  Quote inTry(Decimal rate) => Quote(
-    instrument: instrument,
-    priceTry: (priceTry * rate).round(scale: 4),
-    source: source,
-    fetchedAt: fetchedAt,
-    name: name,
-    changePercent: changePercent,
-    asOf: asOf,
-  );
 }
 
 /// Refresh groups. Each has its own schedule and "last updated" time.

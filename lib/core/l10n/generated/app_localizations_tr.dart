@@ -543,10 +543,4 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get marketStocksNotLoaded =>
       'Hisse fiyatları ilk güncellemeyle gelir.';
-
-  @override
-  String get unitOunce => 'ons';
-
-  @override
-  String get instrumentGoldOunce => 'Ons Altın';
 }

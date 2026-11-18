@@ -21,6 +21,7 @@ class _FakeMarket implements MarketRepository {
 
   DateTime Function() clock;
   final List<Set<QuoteCategory>> calls = [];
+  DateTime? snapshotAt;
 
   /// Symbols per stock request; `null` = whole market.
   final List<Set<String>?> stockCalls = [];
@@ -70,9 +71,15 @@ class _FakeMarket implements MarketRepository {
     _quotes
       ..removeWhere((q) => fresh.any((f) => f.instrument == q.instrument))
       ..addAll(fresh);
+    if (categories.contains(QuoteCategory.stocks) && stockSymbols == null) {
+      snapshotAt = now;
+    }
     _controller.add(Success(List.of(_quotes)));
     return Success(RefreshReport(updated: fresh.length, failures: const {}));
   }
+
+  @override
+  Future<DateTime?> stocksSnapshotAt() async => snapshotAt;
 
   @override
   Future<Result<QuotaUsage>> quotaUsage() async => const Success(
@@ -256,4 +263,26 @@ void main() {
       expect(cached.any((q) => q.instrument.code == 'ASELS'), isTrue);
     });
   });
+
+  test(
+    'old cache with held stocks only: whole market fetched at night',
+    () async {
+      // An older app version cached only THYAO, never a full snapshot.
+      market.marketSymbols.remove('ASELS');
+      now = ist(2026, 11, 16, 14);
+      await market.refresh(
+        categories: {QuoteCategory.stocks},
+        stockSymbols: {'THYAO'},
+      );
+      market
+        ..stockCalls.clear()
+        ..marketSymbols.add('ASELS');
+
+      now = ist(2026, 11, 16, 21);
+      final requested = await controller().refreshDue();
+
+      expect(requested, contains(QuoteCategory.stocks));
+      expect(market.stockCalls, [null], reason: 'whole market');
+    },
+  );
 }

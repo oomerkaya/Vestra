@@ -8,6 +8,7 @@ import 'package:vestra/core/network/dio_factory.dart';
 import 'package:vestra/core/utils/app_logger.dart';
 import 'package:vestra/features/market/data/datasources/burkut_remote_data_source.dart';
 import 'package:vestra/features/market/data/datasources/frankfurter_remote_data_source.dart';
+import 'package:vestra/features/market/data/datasources/market_meta_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/price_cache_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/quota_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/stock_listing_local_data_source.dart';
@@ -52,6 +53,7 @@ final marketRepositoryProvider = Provider<MarketRepository>((ref) {
     stocks: burkut,
     cache: PriceCacheLocalDataSource(ref.watch(appDatabaseProvider)),
     quota: ref.watch(quotaLocalDataSourceProvider),
+    meta: MarketMetaLocalDataSource(ref.watch(appDatabaseProvider)),
   );
 });
 

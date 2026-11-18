@@ -1077,18 +1077,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Hisse fiyatları ilk güncellemeyle gelir.'**
   String get marketStocksNotLoaded;
-
-  /// No description provided for @unitOunce.
-  ///
-  /// In tr, this message translates to:
-  /// **'ons'**
-  String get unitOunce;
-
-  /// No description provided for @instrumentGoldOunce.
-  ///
-  /// In tr, this message translates to:
-  /// **'Ons Altın'**
-  String get instrumentGoldOunce;
 }
 
 class _AppLocalizationsDelegate

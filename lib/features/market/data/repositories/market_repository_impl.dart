@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:vestra/core/domain/instrument.dart';
 import 'package:vestra/core/error/failure.dart';
 import 'package:vestra/core/error/result.dart';
 import 'package:vestra/core/utils/app_logger.dart';
+import 'package:vestra/features/market/data/datasources/market_meta_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/price_cache_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/quota_local_data_source.dart';
 import 'package:vestra/features/market/data/mappers/quote_mappers.dart';
@@ -26,7 +26,9 @@ class MarketRepositoryImpl implements MarketRepository {
     required this._stocks,
     required this._cache,
     required this._quota,
-  });
+    required this._meta,
+    DateTime Function()? clock,
+  }) : _clock = clock ?? DateTime.now;
 
   final FxRateProvider _fx;
   final FxRateProvider _fxFallback;
@@ -34,6 +36,8 @@ class MarketRepositoryImpl implements MarketRepository {
   final StockPriceProvider _stocks;
   final PriceCacheLocalDataSource _cache;
   final QuotaLocalDataSource _quota;
+  final MarketMetaLocalDataSource _meta;
+  final DateTime Function() _clock;
 
   @override
   Stream<Result<List<Quote>>> watchQuotes() => _cache
@@ -63,6 +67,7 @@ class MarketRepositoryImpl implements MarketRepository {
     final failures = <QuoteCategory, Failure>{};
     var usedFallback = false;
     Failure? primaryBlocked;
+    var wholeMarket = false;
 
     // FX: primary, falling back to the free source on any failure.
     if (categories.contains(QuoteCategory.fx)) {
@@ -106,6 +111,7 @@ class MarketRepositoryImpl implements MarketRepository {
         switch (await _stocks.fetchQuotes(symbols: symbols)) {
           case Success(:final value):
             quotes.addAll(value);
+            if (symbols == null && value.isNotEmpty) wholeMarket = true;
           case Err(:final failure):
             failures[QuoteCategory.stocks] = failure;
         }
@@ -113,10 +119,10 @@ class MarketRepositoryImpl implements MarketRepository {
     }
 
     try {
-      final stored = await _toTry(quotes);
-      if (stored.isNotEmpty) {
-        await _cache.upsertAll([for (final q in stored) q.toCompanion()]);
+      if (quotes.isNotEmpty) {
+        await _cache.upsertAll([for (final q in quotes) q.toCompanion()]);
       }
+      if (wholeMarket) await _meta.setStocksSnapshotAt(_clock());
     } on Object catch (error, stackTrace) {
       AppLogger.error('cache write', error: error, stackTrace: stackTrace);
       return Err(StorageFailure(error.toString()));
@@ -131,20 +137,13 @@ class MarketRepositoryImpl implements MarketRepository {
     );
   }
 
-  /// Converts non-TRY quotes (ounce gold in USD) with the USD/TRY rate from
-  /// this refresh, or the cached one. Without any rate they are dropped.
-  Future<List<Quote>> _toTry(List<Quote> quotes) async {
-    if (quotes.every((q) => q.currency == 'TRY')) return quotes;
-    const usd = (type: AssetType.currency, code: 'USD');
-    var rate = quotes.where((q) => q.instrument == usd).firstOrNull?.priceTry;
-    rate ??= (await _cache.find(usd.type.name, usd.code))?.priceTry;
-    return [
-      for (final q in quotes)
-        if (q.currency == 'TRY')
-          q
-        else if (q.currency == 'USD' && rate != null)
-          q.inTry(rate),
-    ];
+  @override
+  Future<DateTime?> stocksSnapshotAt() async {
+    try {
+      return await _meta.stocksSnapshotAt();
+    } on Object {
+      return null;
+    }
   }
 
   @override

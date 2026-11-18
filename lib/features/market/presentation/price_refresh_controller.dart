@@ -96,8 +96,14 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
     }
     if (!ref.mounted) return const {};
 
+    final repository = ref.read(marketRepositoryProvider);
+    final stocksSnapshot = await repository.stocksSnapshotAt();
+    if (!ref.mounted) return const {};
+
     final now = clock();
-    final lastSuccess = _lastSuccessByCategory(quotes);
+    final lastSuccess = _lastSuccessByCategory(quotes)
+      // Stocks count as fetched only after a whole-market snapshot.
+      ..[QuoteCategory.stocks] = stocksSnapshot;
     final due = <QuoteCategory>{
       for (final category in QuoteCategory.values)
         if (RefreshPolicy.isDue(
@@ -122,9 +128,7 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
       rateLimitStrikes: state.rateLimitStrikes,
     );
 
-    final result = await ref
-        .read(marketRepositoryProvider)
-        .refresh(categories: due);
+    final result = await repository.refresh(categories: due);
     if (!ref.mounted) return due;
 
     switch (result) {
@@ -161,11 +165,11 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
   }
 
   /// Newest `fetchedAt` per category (each category is fetched as a
-  /// whole, stocks as the whole market).
-  static Map<QuoteCategory, DateTime> _lastSuccessByCategory(
+  /// whole). Stocks are overridden by the whole-market snapshot time.
+  static Map<QuoteCategory, DateTime?> _lastSuccessByCategory(
     List<Quote> quotes,
   ) {
-    final result = <QuoteCategory, DateTime>{};
+    final result = <QuoteCategory, DateTime?>{};
     for (final q in quotes) {
       final category = QuoteCategory.of(q.instrument.type);
       final current = result[category];

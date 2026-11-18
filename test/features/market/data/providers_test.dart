@@ -109,7 +109,7 @@ void main() {
     });
 
     test(
-      'gold: spec symbols, buying price, ounce kept in USD',
+      'gold: spec symbols, buying price, USD-priced items skipped',
       () async {
         when(() => remote.getGold(any())).thenAnswer(
           (_) async => _response([
@@ -141,7 +141,6 @@ void main() {
 
         expect(quotes.map((q) => q.instrument), [
           (type: AssetType.gold, code: 'GRAM'),
-          (type: AssetType.gold, code: 'ONS'),
           (type: AssetType.gold, code: 'CEYREK'),
           (type: AssetType.gold, code: 'YARIM'),
           (type: AssetType.gold, code: 'TAM'),
@@ -150,9 +149,6 @@ void main() {
           (type: AssetType.silver, code: 'SILVER_GRAM'),
         ]);
         expect(quotes.first.priceTry, d('3178.2'), reason: 'buying, not price');
-        final ons = quotes.firstWhere((q) => q.instrument.code == 'ONS');
-        expect(ons.currency, 'USD', reason: 'converted by the repository');
-        expect(quotes.first.currency, 'TRY');
         expect(quotes.first.changePercent, d('0.62'));
       },
     );

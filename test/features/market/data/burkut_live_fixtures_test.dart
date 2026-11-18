@@ -86,12 +86,11 @@ void main() {
     },
   );
 
-  test('/gold: 8 instruments incl. ounce (USD), buying used', () async {
+  test('/gold: 7 TRY instruments, XAUUSD skipped, buying used', () async {
     final quotes = byCode((await provider.fetchPrices()).valueOrNull!);
 
     expect(quotes.keys.toSet(), {
       'GRAM',
-      'ONS',
       'ATA',
       'CEYREK',
       'CUMHURIYET',

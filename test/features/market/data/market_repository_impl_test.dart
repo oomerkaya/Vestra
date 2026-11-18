@@ -4,6 +4,7 @@ import 'package:vestra/core/database/app_database.dart';
 import 'package:vestra/core/domain/instrument.dart';
 import 'package:vestra/core/error/failure.dart';
 import 'package:vestra/core/error/result.dart';
+import 'package:vestra/features/market/data/datasources/market_meta_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/price_cache_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/quota_local_data_source.dart';
 import 'package:vestra/features/market/data/repositories/market_repository_impl.dart';
@@ -37,6 +38,7 @@ void main() {
   late _Metals metals;
   late _Stocks stocks;
   late MarketRepositoryImpl repo;
+  final now = DateTime.utc(2026, 11, 18, 12);
 
   final usd = _q(AssetType.currency, 'USD', '42.1', QuoteSource.burkut);
   final usdEcb = _q(AssetType.currency, 'USD', '42', QuoteSource.frankfurter);
@@ -56,6 +58,8 @@ void main() {
       stocks: stocks,
       cache: PriceCacheLocalDataSource(db),
       quota: QuotaLocalDataSource(db),
+      meta: MarketMetaLocalDataSource(db),
+      clock: () => now,
     );
     when(
       () => fallback.fetchRates(),
@@ -199,56 +203,29 @@ void main() {
     verify(() => stocks.fetchQuotes()).called(1);
   });
 
-  group('ounce gold (USD) is stored in TRY', () {
-    final onsUsd = Quote(
-      instrument: (type: AssetType.gold, code: 'ONS'),
-      priceTry: d('2500'),
-      source: QuoteSource.burkut,
-      fetchedAt: DateTime(2026, 11, 18),
-      currency: 'USD',
+  test('a whole-market stock fetch records the snapshot time', () async {
+    when(() => fx.fetchRates()).thenAnswer((_) async => Success([usd]));
+    when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
+    when(
+      () => stocks.fetchQuotes(symbols: any(named: 'symbols')),
+    ).thenAnswer((_) async => Success([thyao]));
+
+    expect(await repo.stocksSnapshotAt(), isNull);
+    await repo.refresh(categories: {QuoteCategory.stocks});
+
+    expect(await repo.stocksSnapshotAt(), now);
+  });
+
+  test('fetching only some symbols does not count as a snapshot', () async {
+    when(
+      () => stocks.fetchQuotes(symbols: any(named: 'symbols')),
+    ).thenAnswer((_) async => Success([thyao]));
+
+    await repo.refresh(
+      categories: {QuoteCategory.stocks},
+      stockSymbols: {'THYAO'},
     );
 
-    test('with the USD rate from the same refresh', () async {
-      when(() => fx.fetchRates()).thenAnswer((_) async => Success([usd]));
-      when(
-        () => metals.fetchPrices(),
-      ).thenAnswer((_) async => Success([onsUsd]));
-
-      await repo.refresh(categories: _all, stockSymbols: const {});
-
-      final ons = (await cached()).firstWhere(
-        (q) => q.instrument.code == 'ONS',
-      );
-      expect(ons.priceTry, d('105250')); // 2500 x 42.1
-      expect(ons.currency, 'TRY');
-    });
-
-    test('with the cached USD rate when FX is not refreshed', () async {
-      when(() => fx.fetchRates()).thenAnswer((_) async => Success([usd]));
-      when(
-        () => metals.fetchPrices(),
-      ).thenAnswer((_) async => const Success([]));
-      await repo.refresh(categories: _all, stockSymbols: const {});
-      when(
-        () => metals.fetchPrices(),
-      ).thenAnswer((_) async => Success([onsUsd]));
-
-      await repo.refresh(categories: {QuoteCategory.metals});
-
-      final ons = (await cached()).firstWhere(
-        (q) => q.instrument.code == 'ONS',
-      );
-      expect(ons.priceTry, d('105250'));
-    });
-
-    test('dropped when no USD rate is known', () async {
-      when(
-        () => metals.fetchPrices(),
-      ).thenAnswer((_) async => Success([onsUsd]));
-
-      await repo.refresh(categories: {QuoteCategory.metals});
-
-      expect(await cached(), isEmpty);
-    });
+    expect(await repo.stocksSnapshotAt(), isNull);
   });
 }

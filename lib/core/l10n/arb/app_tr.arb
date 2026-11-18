@@ -256,7 +256,5 @@
       }
     }
   },
-  "marketStocksNotLoaded": "Hisse fiyatları ilk güncellemeyle gelir.",
-  "unitOunce": "ons",
-  "instrumentGoldOunce": "Ons Altın"
+  "marketStocksNotLoaded": "Hisse fiyatları ilk güncellemeyle gelir."
 }

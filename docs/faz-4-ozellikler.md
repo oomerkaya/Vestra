@@ -143,15 +143,19 @@ Kullanıcı geri bildirimleriyle sırayla yapıldı; son durum aşağıda.
 - **Tek kural:** Bir kategori **hiç çekilmemişse** (boş önbellek) seans fark etmeksizin hemen bir kez çekilir. Uygulama ilk kez gece ya da hafta sonu açılsa da hisse fiyatları gelir. Sonrasında hisseler yalnızca seans içinde 30 dakikada bir güncellenir.
 - **Kalıcı düzeltme:** Ara adımda testler bir açık yakaladı: başarısız normal istekten hemen sonra tekrar deneniyordu. Bu düzeltme kalıcı; otomatik yeniden deneme 30 dakika bekliyor.
 
-### 4. Ons altın
+### 4. Ons altın eklendi, sonra kaldırıldı
 
-- Bürküt'ün canlı `/gold` listesindeki 8 sembolün hepsi artık var: gram, çeyrek, yarım, tam, cumhuriyet, ata, **ons** ve gram gümüş.
-- **Ons** (`XAUUSD`) USD/ons olarak geliyor:
-  - Sağlayıcı, ons fiyatını `Quote.currency = 'USD'` ile işaretliyor.
-  - Repository bunu aynı yenilemedeki ya da önbellekteki USD/TRY kuruyla **TL'ye çevirip** saklıyor; kur yoksa atlanıyor.
-  - Önbellekte ve uygulamanın geri kalanında yalnızca TL fiyat var.
-- Değişim yüzdesi USD bazlı ons değişimi; TL bazlı değişimden kur hareketi kadar farklı olabilir.
-- Belgede adı geçen `PLATIN` ve `PALADYUM` canlı cevapta yoktu.
+- Bürküt'ün canlı `/gold` listesindeki ons altın (`XAUUSD`, USD/ons) bir süre USD/TRY ile TL'ye çevrilerek eklendi.
+- Kullanıcı istemediği için **kaldırıldı**; çevirme kodu da silindi.
+- Madenler: gram, çeyrek, yarım, tam, cumhuriyet, ata altın ve gram gümüş.
+
+### 4b. "Tümü"de yalnızca portföy hisseleri görünmesi (düzeltildi)
+
+- **Sorun:** Telefonun önbelleğinde eski sürümün çektiği, yalnızca portföydeki hisseler vardı. Denetleyici bu yüzden "hisse verisi var" sayıyor ve tüm piyasayı ancak sonraki seansta çekiyordu; o zamana kadar "Tümü" listesinde sadece portföy hisseleri görünüyordu.
+- **Çözüm:** Tüm piyasanın en son başarıyla çekildiği zaman ayrıca tutuluyor (`app_settings` → `stocks_snapshot_at`, `MarketRepository.stocksSnapshotAt`). Hisseler için "son güncelleme" artık bu değer. Değer hiç yoksa tüm piyasa seans kapalı olsa bile hemen bir kez çekiliyor.
+- **Testler:** Tüm piyasa çekilince zaman kaydediliyor; yalnızca bazı semboller çekilince kaydedilmiyor; eski önbellekle gece açılışta tüm piyasa çekiliyor.
+
+**Not (geliştirme sırasında görülen hata):** Bir asset dosyası silindikten sonra Android Studio'da Hot Reload/Restart "Could not update files on device: PathNotFoundException … bist_indices.json" hatası verdi. Bu kod hatası değil: çalışan oturum silinen dosyayı göndermeye çalışıyor. Asset ekleyip silen değişikliklerden sonra uygulama Stop → Run ile yeniden başlatılmalı.
 
 ### 5. Portföy: dağılım açılır-kapanır
 
