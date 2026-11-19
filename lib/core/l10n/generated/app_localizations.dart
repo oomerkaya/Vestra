@@ -1507,6 +1507,150 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Özet için önceki günlerin değeri gerekiyor; uygulamayı yarın açtığında burada olacak.'**
   String get summaryEmpty;
+
+  /// No description provided for @goalsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefler'**
+  String get goalsTitle;
+
+  /// No description provided for @goalsEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir birikim hedefi koy: örneğin 100 gram altın ya da 25.000 \$ portföy.'**
+  String get goalsEmpty;
+
+  /// No description provided for @goalsAdd.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedef ekle'**
+  String get goalsAdd;
+
+  /// No description provided for @goalsReached.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ulaşıldı'**
+  String get goalsReached;
+
+  /// No description provided for @goalsNoRate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kur bilgisi gelince hesaplanacak'**
+  String get goalsNoRate;
+
+  /// No description provided for @goalsNewTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni hedef'**
+  String get goalsNewTitle;
+
+  /// No description provided for @goalsEditTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefi düzenle'**
+  String get goalsEditTitle;
+
+  /// No description provided for @goalsDelete.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefi sil'**
+  String get goalsDelete;
+
+  /// No description provided for @goalsFieldTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedef adı'**
+  String get goalsFieldTitle;
+
+  /// No description provided for @goalsFieldTitleHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ev için birikim'**
+  String get goalsFieldTitleHint;
+
+  /// No description provided for @goalsKindValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'Portföy değeri'**
+  String get goalsKindValue;
+
+  /// No description provided for @goalsKindQuantity.
+  ///
+  /// In tr, this message translates to:
+  /// **'Varlık miktarı'**
+  String get goalsKindQuantity;
+
+  /// No description provided for @goalsPickInstrument.
+  ///
+  /// In tr, this message translates to:
+  /// **'Varlık seç'**
+  String get goalsPickInstrument;
+
+  /// No description provided for @goalsFieldAmount.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedef tutar'**
+  String get goalsFieldAmount;
+
+  /// No description provided for @goalsFieldQuantity.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedef miktar'**
+  String get goalsFieldQuantity;
+
+  /// No description provided for @goalsDefaultTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'{name} hedefi'**
+  String goalsDefaultTitle(String name);
+
+  /// No description provided for @goalsErrorTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefe bir ad ver'**
+  String get goalsErrorTitle;
+
+  /// No description provided for @goalsErrorTarget.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıfırdan büyük bir değer gir'**
+  String get goalsErrorTarget;
+
+  /// No description provided for @goalsErrorInstrument.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir varlık seç'**
+  String get goalsErrorInstrument;
+
+  /// No description provided for @goalsSaved.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedef kaydedildi'**
+  String get goalsSaved;
+
+  /// No description provided for @goalsSaveFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedef kaydedilemedi'**
+  String get goalsSaveFailed;
+
+  /// No description provided for @goalsDeleteTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedef silinsin mi?'**
+  String get goalsDeleteTitle;
+
+  /// No description provided for @goalsDeleteMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'\"{title}\" hedefi silinecek.'**
+  String goalsDeleteMessage(String title);
+
+  /// No description provided for @goalsDeleted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedef silindi'**
+  String get goalsDeleted;
 }
 
 class _AppLocalizationsDelegate

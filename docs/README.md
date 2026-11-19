@@ -13,6 +13,7 @@ Her faz bitiminde o fazda **ne yapıldığı, neden yapıldığı ve nasıl doğ
 | 3 - Piyasa verisi | [faz-3-piyasa-verisi.md](faz-3-piyasa-verisi.md) | Bitti (canlı doğrulandı) |
 | 4 - Özellikler | [faz-4-ozellikler.md](faz-4-ozellikler.md) | Bitti |
 | 5 - Cila ve yayın | [faz-5-cila.md](faz-5-cila.md) | Bitti (APK yayını sonra) |
+| 6 - Kişisel analiz | [faz-6-kisisel-analiz.md](faz-6-kisisel-analiz.md) | Bitti |
 
 ## Taslak öneriler
 

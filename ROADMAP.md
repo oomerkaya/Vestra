@@ -57,3 +57,11 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 - [x] README (Türkçe) ve MIT LICENSE; "resmi Bürküt uygulaması değildir" notu README başında
 - [ ] Repo linkini Bürküt'e (Samet) ilet (e-posta taslağı hazır; gönderim kullanıcıda)
 - [ ] GitHub Releases ile APK (sonra)
+
+## Faz 6: Kişisel analiz (kotasız)
+- [x] Toplamlar ₺ / $ / € (güncel kurla)
+- [x] Gizlilik modu
+- [x] Değer geçmişi grafiği (cihazda günlük kayıt, şema v4)
+- [x] Haftalık / aylık özet (piyasa etkisi, alım/satım, en çok yükselen/düşen)
+- [x] Birikim hedefleri
+- [ ] Sonra düşünülebilir: enflasyona karşı reel getiri, temettü/bedelsiz, ana ekran widget'ı, uygulama kilidi

@@ -780,4 +780,81 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get summaryEmpty =>
       'Özet için önceki günlerin değeri gerekiyor; uygulamayı yarın açtığında burada olacak.';
+
+  @override
+  String get goalsTitle => 'Hedefler';
+
+  @override
+  String get goalsEmpty =>
+      'Bir birikim hedefi koy: örneğin 100 gram altın ya da 25.000 \$ portföy.';
+
+  @override
+  String get goalsAdd => 'Hedef ekle';
+
+  @override
+  String get goalsReached => 'Ulaşıldı';
+
+  @override
+  String get goalsNoRate => 'Kur bilgisi gelince hesaplanacak';
+
+  @override
+  String get goalsNewTitle => 'Yeni hedef';
+
+  @override
+  String get goalsEditTitle => 'Hedefi düzenle';
+
+  @override
+  String get goalsDelete => 'Hedefi sil';
+
+  @override
+  String get goalsFieldTitle => 'Hedef adı';
+
+  @override
+  String get goalsFieldTitleHint => 'Ev için birikim';
+
+  @override
+  String get goalsKindValue => 'Portföy değeri';
+
+  @override
+  String get goalsKindQuantity => 'Varlık miktarı';
+
+  @override
+  String get goalsPickInstrument => 'Varlık seç';
+
+  @override
+  String get goalsFieldAmount => 'Hedef tutar';
+
+  @override
+  String get goalsFieldQuantity => 'Hedef miktar';
+
+  @override
+  String goalsDefaultTitle(String name) {
+    return '$name hedefi';
+  }
+
+  @override
+  String get goalsErrorTitle => 'Hedefe bir ad ver';
+
+  @override
+  String get goalsErrorTarget => 'Sıfırdan büyük bir değer gir';
+
+  @override
+  String get goalsErrorInstrument => 'Bir varlık seç';
+
+  @override
+  String get goalsSaved => 'Hedef kaydedildi';
+
+  @override
+  String get goalsSaveFailed => 'Hedef kaydedilemedi';
+
+  @override
+  String get goalsDeleteTitle => 'Hedef silinsin mi?';
+
+  @override
+  String goalsDeleteMessage(String title) {
+    return '\"$title\" hedefi silinecek.';
+  }
+
+  @override
+  String get goalsDeleted => 'Hedef silindi';
 }

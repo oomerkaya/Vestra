@@ -62,6 +62,8 @@ Sade fintech tarzı, Inter yazı tipi. Ayrıntı: `docs/tasarim-sistemi.md`.
 - Arayüzde **Bürküt adı yalnızca Ayarlar → API anahtarı bölümünde** geçer (anahtarın nereden alınacağı ve "resmi Bürküt uygulaması değildir" notu). Diğer yerlerde kaynak adı yazılmaz; gecikme için yalnızca "Veriler gecikmelidir". Metinler kısa ve öz.
 - Kullanıcıdan sayı alırken `parseDecimalInput` (Türkçe `12,5` / `1.250,75`) ve `formatDecimalInput` kullan.
 - Liste satırlarının sağındaki tutar + değişim çipi `TrailingFigures` içinde olur (büyük yazıda taşmasın). `test/accessibility_test.dart` (1,8× yazı, dokunma alanı, etiket, WCAG kontrast) her zaman geçmeli; ikincil metin rengi `#636A77`'den açık olamaz.
+- Kişisel tutarlar `AmountDisplay.of(context)` (`money`, `signedMoney`, `private`) ya da `MoneyText` ile gösterilir; böylece seçili para birimi (₺/$/€, güncel kurla) ve gizlilik modu her yerde geçerli olur. Maliyet/işlem fiyatları `convert: false` (TL). Piyasa fiyatları bunlardan geçmez.
+- Değer geçmişi ve özet, cihazdaki günlük kayıtlardan (`portfolio_snapshots`, `asset_snapshots`, şema v4) gelir; hiç istek atmaz. Kayıt `SnapshotRecorder` ile, gün başına tek satır (İstanbul günü).
 - Veritabanı okunamazsa ekran `ErrorState` gösterir; ağ hatası bu ekranı açmaz (son fiyatlar kalır).
 - Yedek dosyası (`BackupCodec`, biçim 1) yalnızca varlık ve işlemleri içerir; API anahtarı ve fiyatlar asla girmez. Biçim değişirse `format` artırılır ve eski biçim okunmaya devam eder.
 - Widget testlerinde Drift akışları kapanırken zamanlayıcı bırakır; testin sonunda uygulamayı kaldır (`pumpWidget(SizedBox())` + `pump(1 sn)`).

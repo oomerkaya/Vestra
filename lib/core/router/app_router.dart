@@ -7,6 +7,7 @@ import 'package:capira/features/portfolio/portfolio_providers.dart';
 import 'package:capira/features/portfolio/presentation/portfolio_screen.dart';
 import 'package:capira/features/portfolio/presentation/screens/asset_detail_screen.dart';
 import 'package:capira/features/portfolio/presentation/screens/edit_transaction_route.dart';
+import 'package:capira/features/portfolio/presentation/screens/goal_form_screen.dart';
 import 'package:capira/features/portfolio/presentation/screens/kap_screen.dart';
 import 'package:capira/features/portfolio/presentation/screens/transaction_form_screen.dart';
 import 'package:capira/features/settings/presentation/settings_screen.dart';
@@ -43,6 +44,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     path: 'kap',
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (context, state) => const KapScreen(),
+                  ),
+                  GoRoute(
+                    path: 'goal',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => const GoalFormScreen(),
+                    routes: [
+                      GoRoute(
+                        path: ':goalId',
+                        parentNavigatorKey: _rootNavigatorKey,
+                        builder: (context, state) => GoalFormScreen(
+                          goalId: int.parse(state.pathParameters['goalId']!),
+                        ),
+                      ),
+                    ],
                   ),
                   GoRoute(
                     path: 'asset/:assetId',

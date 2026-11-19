@@ -147,17 +147,22 @@ class _Line extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
       child: Row(
         children: [
-          Expanded(child: Text(label, style: theme.textTheme.bodyMedium)),
-          Flexible(
-            child:
-                trailing ??
-                Text(
-                  value ?? '',
-                  textAlign: TextAlign.end,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+          Text(label, style: theme.textTheme.bodyMedium),
+          const SizedBox(width: AppSpacing.md),
+          // The figure gets all the remaining room, right-aligned.
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child:
+                  trailing ??
+                  Text(
+                    value ?? '',
+                    textAlign: TextAlign.end,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
+            ),
           ),
         ],
       ),

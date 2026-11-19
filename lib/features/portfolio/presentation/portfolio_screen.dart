@@ -12,6 +12,7 @@ import 'package:capira/features/market/market_providers.dart';
 import 'package:capira/features/portfolio/domain/entities/portfolio_summary.dart';
 import 'package:capira/features/portfolio/portfolio_providers.dart';
 import 'package:capira/features/portfolio/presentation/widgets/allocation_card.dart';
+import 'package:capira/features/portfolio/presentation/widgets/goals_section.dart';
 import 'package:capira/features/portfolio/presentation/widgets/holding_tile.dart';
 import 'package:capira/features/portfolio/presentation/widgets/period_summary_section.dart';
 import 'package:capira/features/portfolio/presentation/widgets/portfolio_summary_card.dart';
@@ -104,6 +105,10 @@ class PortfolioScreen extends ConsumerWidget {
             onCurrencyChanged: (c) =>
                 unawaited(ref.read(displayCurrencyProvider.notifier).select(c)),
           ),
+          if (!summary.isEmpty) ...[
+            const SizedBox(height: AppSpacing.lg),
+            const GoalsSection(),
+          ],
           SectionHeader(l10n.portfolioHoldings),
           if (summary.isEmpty)
             AppCard(

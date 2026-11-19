@@ -10,6 +10,9 @@ abstract final class AppRoutes {
 
   static const addTransaction = '/portfolio/add';
   static const kap = '/portfolio/kap';
+  static const newGoal = '/portfolio/goal';
+
+  static String editGoal(int goalId) => '/portfolio/goal/$goalId';
   static const assetDetailPattern = '/portfolio/asset/:assetId';
   static const editTransactionPattern =
       '/portfolio/asset/:assetId/transaction/:transactionId';

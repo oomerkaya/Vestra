@@ -80,3 +80,10 @@ String transactionFailureMessage(AppLocalizations l10n, Failure failure) =>
       },
       _ => failureMessage(l10n, failure),
     };
+
+IconData categoryIcon(QuoteCategory category) => switch (category) {
+  QuoteCategory.fx => Icons.currency_exchange_rounded,
+  QuoteCategory.metals => Icons.diamond_outlined,
+  QuoteCategory.stocks => Icons.candlestick_chart_outlined,
+  QuoteCategory.funds => Icons.pie_chart_outline_rounded,
+};

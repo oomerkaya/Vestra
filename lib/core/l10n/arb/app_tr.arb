@@ -381,5 +381,43 @@
       }
     }
   },
-  "summaryEmpty": "Özet için önceki günlerin değeri gerekiyor; uygulamayı yarın açtığında burada olacak."
+  "summaryEmpty": "Özet için önceki günlerin değeri gerekiyor; uygulamayı yarın açtığında burada olacak.",
+  "goalsTitle": "Hedefler",
+  "goalsEmpty": "Bir birikim hedefi koy: örneğin 100 gram altın ya da 25.000 $ portföy.",
+  "goalsAdd": "Hedef ekle",
+  "goalsReached": "Ulaşıldı",
+  "goalsNoRate": "Kur bilgisi gelince hesaplanacak",
+  "goalsNewTitle": "Yeni hedef",
+  "goalsEditTitle": "Hedefi düzenle",
+  "goalsDelete": "Hedefi sil",
+  "goalsFieldTitle": "Hedef adı",
+  "goalsFieldTitleHint": "Ev için birikim",
+  "goalsKindValue": "Portföy değeri",
+  "goalsKindQuantity": "Varlık miktarı",
+  "goalsPickInstrument": "Varlık seç",
+  "goalsFieldAmount": "Hedef tutar",
+  "goalsFieldQuantity": "Hedef miktar",
+  "goalsDefaultTitle": "{name} hedefi",
+  "@goalsDefaultTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "goalsErrorTitle": "Hedefe bir ad ver",
+  "goalsErrorTarget": "Sıfırdan büyük bir değer gir",
+  "goalsErrorInstrument": "Bir varlık seç",
+  "goalsSaved": "Hedef kaydedildi",
+  "goalsSaveFailed": "Hedef kaydedilemedi",
+  "goalsDeleteTitle": "Hedef silinsin mi?",
+  "goalsDeleteMessage": "\"{title}\" hedefi silinecek.",
+  "@goalsDeleteMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "goalsDeleted": "Hedef silindi"
 }

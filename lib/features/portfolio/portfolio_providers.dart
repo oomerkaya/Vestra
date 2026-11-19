@@ -9,21 +9,26 @@ import 'package:capira/features/market/domain/services/disclosure_policy.dart';
 import 'package:capira/features/market/market_providers.dart';
 import 'package:capira/features/portfolio/data/datasources/portfolio_local_data_source.dart';
 import 'package:capira/features/portfolio/data/repositories/backup_repository_impl.dart';
+import 'package:capira/features/portfolio/data/repositories/goal_repository_impl.dart';
 import 'package:capira/features/portfolio/data/repositories/portfolio_repository_impl.dart';
 import 'package:capira/features/portfolio/data/repositories/snapshot_repository_impl.dart';
 import 'package:capira/features/portfolio/domain/entities/asset_transaction.dart';
+import 'package:capira/features/portfolio/domain/entities/goal.dart';
 import 'package:capira/features/portfolio/domain/entities/holding.dart';
 import 'package:capira/features/portfolio/domain/entities/portfolio_snapshot.dart';
 import 'package:capira/features/portfolio/domain/entities/portfolio_summary.dart';
 import 'package:capira/features/portfolio/domain/repositories/backup_repository.dart';
+import 'package:capira/features/portfolio/domain/repositories/goal_repository.dart';
 import 'package:capira/features/portfolio/domain/repositories/portfolio_repository.dart';
 import 'package:capira/features/portfolio/domain/repositories/snapshot_repository.dart';
+import 'package:capira/features/portfolio/domain/services/goal_calculator.dart';
 import 'package:capira/features/portfolio/domain/services/period_summary_calculator.dart';
 import 'package:capira/features/portfolio/domain/services/portfolio_valuator.dart';
 import 'package:capira/features/portfolio/domain/usecases/add_transaction.dart';
 import 'package:capira/features/portfolio/domain/usecases/backup_use_cases.dart';
 import 'package:capira/features/portfolio/domain/usecases/delete_asset.dart';
 import 'package:capira/features/portfolio/domain/usecases/delete_transaction.dart';
+import 'package:capira/features/portfolio/domain/usecases/goal_use_cases.dart';
 import 'package:capira/features/portfolio/domain/usecases/snapshot_use_cases.dart';
 import 'package:capira/features/portfolio/domain/usecases/update_transaction.dart';
 import 'package:capira/features/portfolio/domain/usecases/watch_asset_transactions.dart';
@@ -271,4 +276,54 @@ periodSummaryProvider = FutureProvider.family<PeriodSummary?, SummaryPeriod>((
     current: current,
     transactions: transactions,
   );
+});
+
+final goalRepositoryProvider = Provider<GoalRepository>(
+  (ref) => GoalRepositoryImpl(ref.watch(appDatabaseProvider)),
+);
+
+final saveGoalProvider = Provider<SaveGoal>(
+  (ref) => SaveGoal(ref.watch(goalRepositoryProvider)),
+);
+
+final deleteGoalProvider = Provider<DeleteGoal>(
+  (ref) => DeleteGoal(ref.watch(goalRepositoryProvider)),
+);
+
+/// Every savings goal, live.
+final goalsProvider = StreamProvider<List<Goal>>(
+  (ref) => ref
+      .watch(goalRepositoryProvider)
+      .watchGoals()
+      .map(
+        (result) => switch (result) {
+          Success(:final value) => value,
+          Err(:final failure) => throw failure,
+        },
+      ),
+);
+
+/// Each goal with its progress (`null` progress: currency rate unknown).
+final goalProgressProvider = Provider<List<(Goal, GoalProgress?)>>((ref) {
+  final goals = ref.watch(goalsProvider).value ?? const <Goal>[];
+  final summary = ref.watch(portfolioSummaryProvider).value;
+  final quotes = ref.watch(quotesProvider).value ?? const <Quote>[];
+  Decimal? rate(String code) => quotes
+      .where((q) => q.instrument == (type: AssetType.currency, code: code))
+      .firstOrNull
+      ?.priceTry;
+  return [
+    for (final g in goals)
+      (
+        g,
+        summary == null
+            ? null
+            : GoalCalculator.progress(
+                g,
+                summary,
+                usdTry: rate('USD'),
+                eurTry: rate('EUR'),
+              ),
+      ),
+  ];
 });
