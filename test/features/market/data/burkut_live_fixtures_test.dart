@@ -24,10 +24,8 @@ class _FixtureAdapter implements HttpClientAdapter {
     Stream<Uint8List>? requestStream,
     Future<void>? cancelFuture,
   ) async {
-    final feed =
-        options.path == '/kap' &&
-        !options.queryParameters.containsKey('symbol');
-    final name = options.path.replaceAll('/', '') + (feed ? '_feed' : '');
+    final path = options.path == '/kap' ? '/kap_feed' : options.path;
+    final name = path.replaceAll('/', '');
     final body = File('test/fixtures/burkut/$name.json').readAsStringSync();
     return ResponseBody.fromString(
       body,
@@ -119,37 +117,26 @@ void main() {
     expect(quotes['ASELS']!.priceTry, d('343.75'));
   });
 
-  test('/kap: paged envelope, KAP link from short_description', () async {
-    final items = (await provider.fetchDisclosures('THYAO')).valueOrNull!;
-
-    expect(items, hasLength(5));
-    expect(items.every((d) => d.symbol == 'THYAO'), isTrue);
-    final first = items.first;
-    expect(first.title, 'Şirket Genel Bilgi Formu');
-    expect(first.summary, isNull, reason: 'empty summary');
-    expect(first.headline, 'Şirket Genel Bilgi Formu');
-    expect(first.url, 'https://www.kap.org.tr/tr/Bildirim/1697886');
-    expect(first.id, '4028328da17e515d01a1a08d91c55908:THYAO');
-    expect(first.publishedAt, DateTime.utc(2026, 11, 13, 7, 58));
-    expect(items[1].headline, 'Ekim 2026 Trafik Sonuçları');
-    expect(items[1].title, 'Özel Durum Açıklaması (Genel)');
-  });
-
   test(
     '/kap feed: all companies, multi-symbol split, notices skipped',
     () async {
-      final page = (await provider.fetchDisclosureFeed()).valueOrNull!;
+      final items = (await provider.fetchDisclosureFeed()).valueOrNull!;
 
-      expect(page.isLast, isFalse);
-      expect(page.items.every((d) => d.symbol.isNotEmpty), isTrue);
-      expect(page.items.any((d) => d.symbol.contains(',')), isFalse);
-      // "GARAN, TGB" appears under both companies.
-      final garan = page.items.where((d) => d.symbol == 'GARAN').toList();
-      final tgb = page.items.where((d) => d.symbol == 'TGB').toList();
+      expect(items.every((d) => d.symbol.isNotEmpty), isTrue);
+      expect(items.any((d) => d.symbol.contains(',')), isFalse);
+      // "GARAN, TGB" appears under both companies, ids unique per company.
+      final garan = items.where((d) => d.symbol == 'GARAN').toList();
+      final tgb = items.where((d) => d.symbol == 'TGB').toList();
       expect(garan, isNotEmpty);
       expect(tgb.length, garan.length);
-      // The oldest item overall is a market-wide notice without a symbol.
-      expect(page.oldest, DateTime.utc(2026, 11, 19, 15, 30, 45));
+      expect(items.map((d) => d.id).toSet(), hasLength(items.length));
+      expect(
+        items.every(
+          (d) => d.url == null || d.url!.startsWith('https://www.kap.org.tr/'),
+        ),
+        isTrue,
+      );
+      expect(items.first.publishedAt, DateTime.utc(2026, 11, 19, 17, 22, 16));
     },
   );
 

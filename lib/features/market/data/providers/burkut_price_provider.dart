@@ -98,30 +98,11 @@ class BurkutPriceProvider
   );
 
   @override
-  Future<Result<List<KapDisclosure>>> fetchDisclosures(
-    String symbol, {
-    int limit = 5,
-  }) => _call('kap', (key) async {
-    final response = await _remote.getKap(key, symbol, size: limit);
-    await _syncQuota(response.quotaRemaining, response.quotaLimit);
-    return [
-      for (final dto in response.items)
-        for (final d in dto.toEntities())
-          // The symbol filter is honoured by the API; keep it as a
-          // safeguard.
-          if (d.symbol == symbol.toUpperCase()) d,
-    ];
-  });
-
-  @override
-  Future<Result<DisclosureFeedPage>> fetchDisclosureFeed({int page = 0}) =>
+  Future<Result<List<KapDisclosure>>> fetchDisclosureFeed() =>
       _call('kap feed', (key) async {
-        final response = await _remote.getKapFeed(key, page: page);
+        final response = await _remote.getKapFeed(key);
         await _syncQuota(response.quotaRemaining, response.quotaLimit);
-        return DisclosureFeedPage(
-          items: [for (final dto in response.items) ...dto.toEntities()],
-          isLast: response.isLastPage,
-        );
+        return [for (final dto in response.items) ...dto.toEntities()];
       });
 
   /// Validates a key with one cheap request (counts against the quota).

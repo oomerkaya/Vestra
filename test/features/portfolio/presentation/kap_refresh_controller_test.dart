@@ -1,55 +1,33 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/core/domain/instrument.dart';
 import 'package:vestra/core/error/failure.dart';
 import 'package:vestra/core/error/result.dart';
 import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
 import 'package:vestra/features/market/domain/entities/quota_usage.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/domain/repositories/disclosure_repository.dart';
 import 'package:vestra/features/market/market_providers.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset.dart';
-import 'package:vestra/features/portfolio/domain/entities/holding.dart';
-import 'package:vestra/features/portfolio/portfolio_providers.dart';
 import 'package:vestra/features/portfolio/presentation/kap_refresh_controller.dart';
 
-import '../../../helpers/fixtures.dart';
-
-/// Records every request; "fetches" at the test clock.
+/// Counts feed requests; "fetches" at the test clock.
 class _FakeKap implements DisclosureRepository {
   _FakeKap(this.clock);
 
   final DateTime Function() clock;
-  final Map<String, DateTime> fetched = {};
   DateTime? feedAt;
-  final List<String> calls = [];
-  Set<String>? kept;
-  Set<String>? feedHeld;
+  int feeds = 0;
+  int prunes = 0;
   Failure? failWith;
 
   @override
-  Stream<Result<List<KapDisclosure>>> watchAll() =>
+  Stream<Result<List<KapDisclosure>>> watchForSymbols(Set<String> symbols) =>
       Stream.value(const Success([]));
-
-  @override
-  Future<DateTime?> lastFetchedAt(String symbol) async => fetched[symbol];
 
   @override
   Future<DateTime?> lastFeedAt() async => feedAt;
 
   @override
-  Future<Result<int>> refresh(String symbol) async {
-    calls.add(symbol);
-    final f = failWith;
-    if (f != null) return Err(f);
-    fetched[symbol] = clock();
-    return const Success(1);
-  }
-
-  @override
-  Future<Result<int>> refreshFeed(Set<String> held) async {
-    calls.add('feed');
-    feedHeld = held;
+  Future<Result<int>> refreshFeed() async {
+    feeds++;
     final f = failWith;
     if (f != null) return Err(f);
     feedAt = clock();
@@ -57,8 +35,8 @@ class _FakeKap implements DisclosureRepository {
   }
 
   @override
-  Future<Result<void>> keepOnly(Set<String> symbols) async {
-    kept = symbols;
+  Future<Result<void>> prune() async {
+    prunes++;
     return const Success(null);
   }
 
@@ -73,43 +51,11 @@ class _FakeKap implements DisclosureRepository {
 DateTime ist(int y, int m, int d, int h, [int min = 0]) =>
     DateTime.utc(y, m, d, h, min).subtract(const Duration(hours: 3));
 
-Holding _holding(int id, AssetType type, String code, String qty) => Holding(
-  asset: Asset(id: id, type: type, code: code, name: code),
-  quantity: d(qty),
-  transactionCount: 1,
-);
-
-Quote _quote(AssetType type, String code, String price) => Quote(
-  instrument: (type: type, code: code),
-  priceTry: d(price),
-  source: QuoteSource.burkut,
-  fetchedAt: DateTime.utc(2026, 11, 19),
-);
-
 void main() {
   late DateTime now;
   late _FakeKap kap;
   late int used;
   late ProviderContainer container;
-
-  // Values: G 6000, F 5000, E 4000, D 3000, C 2000, B 1000, A unpriced;
-  // USD is not a stock.
-  final holdings = [
-    _holding(1, AssetType.stock, 'A', '10'),
-    _holding(2, AssetType.stock, 'B', '10'),
-    _holding(3, AssetType.stock, 'C', '20'),
-    _holding(4, AssetType.stock, 'D', '30'),
-    _holding(5, AssetType.stock, 'E', '40'),
-    _holding(6, AssetType.stock, 'F', '50'),
-    _holding(7, AssetType.stock, 'G', '60'),
-    _holding(8, AssetType.currency, 'USD', '1000'),
-  ];
-  final quotes = [
-    for (final c in ['B', 'C', 'D', 'E', 'F', 'G'])
-      _quote(AssetType.stock, c, '100'),
-    _quote(AssetType.currency, 'USD', '42'),
-  ];
-  const allHeld = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
 
   setUp(() {
     now = ist(2026, 11, 19, 9);
@@ -120,8 +66,6 @@ void main() {
             overrides: [
               autoRefreshEnabledProvider.overrideWithValue(false),
               disclosureRepositoryProvider.overrideWithValue(kap),
-              holdingsProvider.overrideWith((ref) => Stream.value(holdings)),
-              quotesProvider.overrideWith((ref) => Stream.value(quotes)),
               quotaUsageProvider.overrideWith(
                 (ref) async =>
                     QuotaUsage(period: '2026-11', used: used, limit: 1000),
@@ -137,82 +81,42 @@ void main() {
   KapRefreshController controller() =>
       container.read(kapRefreshControllerProvider.notifier);
 
-  void setUsed(int value) {
-    used = value;
-    container.invalidate(quotaUsageProvider);
-  }
-
-  test('first day: history for the top 5, then one feed for all', () async {
-    final started = await controller().refreshAuto();
-
-    expect(kap.calls, ['G', 'F', 'E', 'D', 'C', 'feed']);
-    expect(started, 6);
-    expect(kap.feedHeld, allHeld, reason: 'feed covers every held stock');
-    expect(kap.kept, allHeld);
-  });
-
-  test('later days: only the feed, one request', () async {
-    await controller().refreshAuto();
-    kap.calls.clear();
+  test('one feed request a day, from 08:00', () async {
+    expect(await controller().refreshDue(), isTrue);
 
     now = ist(2026, 11, 19, 17);
-    expect(await controller().refreshAuto(), 0, reason: 'same day');
-
+    expect(await controller().refreshDue(), isFalse, reason: 'same day');
     now = ist(2026, 11, 20, 7, 59);
-    expect(await controller().refreshAuto(), 0, reason: 'before 08:00');
-
+    expect(await controller().refreshDue(), isFalse, reason: 'too early');
     now = ist(2026, 11, 20, 8);
-    expect(await controller().refreshAuto(), 1);
-    expect(kap.calls, ['feed']);
+    expect(await controller().refreshDue(), isTrue);
+
+    expect(kap.feeds, 2);
+    expect(kap.prunes, greaterThanOrEqualTo(4), reason: 'old ones dropped');
   });
 
-  test('a stock that enters the top 5 gets its history once', () async {
-    await controller().refreshAuto();
-    kap.calls.clear();
-    kap.fetched.remove('C'); // e.g. C was bought later
+  test('first launch fetches right away, even at night', () async {
+    now = ist(2026, 11, 19, 2);
 
-    now = ist(2026, 11, 19, 12);
-    await controller().refreshAuto();
-
-    expect(kap.calls, ['C']);
+    expect(await controller().refreshDue(), isTrue);
   });
 
-  test('nothing automatic once half of the quota is used', () async {
-    setUsed(500);
+  test('nothing once half of the quota is used', () async {
+    used = 500;
+    container.invalidate(quotaUsageProvider);
 
-    expect(await controller().refreshAuto(), 0);
-    expect(kap.calls, isEmpty);
+    expect(await controller().refreshDue(), isFalse);
+    expect(kap.feeds, 0);
   });
 
-  group('detail screen', () {
-    test('no request while automatic fetching runs', () async {
-      expect(await controller().ensureFresh('A'), isFalse);
-      expect(kap.calls, isEmpty);
-    });
+  test('a failure waits an hour before the next try', () async {
+    kap.failWith = const NetworkFailure();
+    await controller().refreshDue();
 
-    test('after half the quota: fetches once a day', () async {
-      setUsed(600);
-
-      expect(await controller().ensureFresh('a'), isTrue);
-      expect(await controller().ensureFresh('A'), isFalse);
-      expect(kap.calls, ['A']);
-    });
-
-    test('after half the quota: nothing if the feed ran today', () async {
-      await controller().refreshAuto();
-      kap.calls.clear();
-      setUsed(600);
-
-      expect(await controller().ensureFresh('A'), isFalse);
-      expect(kap.calls, isEmpty);
-    });
-  });
-
-  test('stops after a missing key instead of trying every stock', () async {
-    kap.failWith = const AuthFailure(missingKey: true);
-
-    await controller().refreshAuto();
-
-    expect(kap.calls, ['G']);
+    now = now.add(const Duration(minutes: 30));
+    expect(await controller().refreshDue(), isFalse);
+    now = now.add(const Duration(minutes: 30));
+    expect(await controller().refreshDue(), isTrue);
+    expect(kap.feeds, 2);
   });
 }

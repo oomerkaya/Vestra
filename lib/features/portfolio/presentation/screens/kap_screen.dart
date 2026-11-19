@@ -6,14 +6,15 @@ import 'package:vestra/core/l10n/l10n.dart';
 import 'package:vestra/core/theme/app_tokens.dart';
 import 'package:vestra/core/widgets/app_card.dart';
 import 'package:vestra/core/widgets/empty_state.dart';
+import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
 import 'package:vestra/features/market/presentation/widgets/kap_disclosure_tile.dart';
 import 'package:vestra/features/portfolio/portfolio_providers.dart';
 import 'package:vestra/features/portfolio/presentation/kap_refresh_controller.dart';
 import 'package:vestra/features/portfolio/presentation/widgets/kap_sections.dart';
 
 /// All stored KAP disclosures of held stocks (last 30 days), newest first,
-/// with a filter per stock. Opening it clears the badge on the portfolio
-/// screen.
+/// with a filter per stock. Reads storage only. Opening it clears the
+/// badge on the portfolio screen.
 class KapScreen extends ConsumerStatefulWidget {
   const KapScreen({super.key});
 
@@ -38,8 +39,9 @@ class _KapScreenState extends ConsumerState<KapScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final all = ref.watch(heldDisclosuresProvider);
-    final busy = ref.watch(kapRefreshControllerProvider).isBusy;
+    final all =
+        ref.watch(heldDisclosuresProvider).value ?? const <KapDisclosure>[];
+    final busy = ref.watch(kapRefreshControllerProvider);
     final symbols = {for (final d in all) d.symbol}.toList()..sort();
     final selected = symbols.contains(_symbol) ? _symbol : null;
     final shown = [

@@ -16,7 +16,6 @@ import 'package:vestra/features/market/data/providers/burkut_price_provider.dart
 import 'package:vestra/features/market/data/repositories/disclosure_repository_impl.dart';
 import 'package:vestra/features/market/data/repositories/market_repository_impl.dart';
 import 'package:vestra/features/market/data/repositories/stock_directory_repository_impl.dart';
-import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
 import 'package:vestra/features/market/domain/entities/market_calendar.dart';
 import 'package:vestra/features/market/domain/entities/quota_usage.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
@@ -122,19 +121,6 @@ final disclosureRepositoryProvider = Provider<DisclosureRepository>(
     provider: ref.watch(burkutPriceProviderProvider),
     local: KapDisclosureLocalDataSource(ref.watch(appDatabaseProvider)),
   ),
-);
-
-/// Stored KAP disclosures of held stocks, newest first, live.
-final kapDisclosuresProvider = StreamProvider<List<KapDisclosure>>(
-  (ref) => ref
-      .watch(disclosureRepositoryProvider)
-      .watchAll()
-      .map(
-        (result) => switch (result) {
-          Success(:final value) => value,
-          Err(:final failure) => throw failure,
-        },
-      ),
 );
 
 /// When the disclosure list was last opened (`null` = never), live.

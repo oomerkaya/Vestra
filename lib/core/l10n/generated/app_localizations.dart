@@ -1111,25 +1111,19 @@ abstract class AppLocalizations {
   /// No description provided for @kapAssetSectionTitle.
   ///
   /// In tr, this message translates to:
-  /// **'KAP bildirimleri'**
+  /// **'Yakın zamanda yapılan KAP bildirimleri'**
   String get kapAssetSectionTitle;
 
   /// No description provided for @kapNone.
   ///
   /// In tr, this message translates to:
-  /// **'Son 30 günde bu hisse için bildirim yok.'**
+  /// **'Son 30 günde kayıtlı bildirim yok.'**
   String get kapNone;
-
-  /// No description provided for @kapLoading.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bildirimler yükleniyor…'**
-  String get kapLoading;
 
   /// No description provided for @kapAssetFooter.
   ///
   /// In tr, this message translates to:
-  /// **'Kaynak: KAP, Bürküt üzerinden. Günde bir kez güncellenir.'**
+  /// **'Kaynak: KAP, Bürküt üzerinden. Günde bir kez çekilen son 30 günün kayıtlarından gösterilir; uygulamanın açılmadığı günler eksik olabilir.'**
   String get kapAssetFooter;
 
   /// No description provided for @kapOpenOnKap.
@@ -1171,13 +1165,13 @@ abstract class AppLocalizations {
   /// No description provided for @kapEmptyMessage.
   ///
   /// In tr, this message translates to:
-  /// **'Portföyündeki hisselerin KAP bildirimleri günde bir kez, 08:00\'den sonra otomatik güncellenir.'**
+  /// **'KAP bildirimleri uygulama açıkken günde bir kez, 08:00\'den sonra güncellenir ve 30 gün saklanır.'**
   String get kapEmptyMessage;
 
   /// No description provided for @kapScreenFooter.
   ///
   /// In tr, this message translates to:
-  /// **'Kaynak: KAP, Bürküt üzerinden. Yalnızca portföydeki hisseler, son 30 gün. Günde bir kez tek istekle güncellenir. Aylık kotanın yarısı dolunca otomatik güncelleme durur; o zaman bildirimler hisse detayı açılınca güncellenir.'**
+  /// **'Kaynak: KAP, Bürküt üzerinden. Yalnızca portföydeki hisseler, son 30 gün. Uygulama açıkken günde bir kez tek istekle güncellenir; açılmayan günler eksik olabilir. Aylık kotanın yarısı dolunca güncelleme durur.'**
   String get kapScreenFooter;
 
   /// No description provided for @kapNewBadge.

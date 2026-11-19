@@ -45,7 +45,7 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 - [x] TEFAS fonları (günde bir güncelleme)
 - [x] Güncelleme aralığı 30 dk → 60 dk (kota)
 - [x] Fonlar yalnızca seans içinde
-- [x] KAP bildirimleri: günlük tek istekli genel akış + ilk 5 hisse için ilk geçmiş; ayrı sayfa (`docs/oneri-kap-bildirimleri.md`)
+- [x] KAP bildirimleri: günde tek istek (genel akış), her şey 30 gün saklanır, ekranlar yalnızca kayıttan okur; ayrı sayfa (`docs/oneri-kap-bildirimleri.md`)
 - [x] Arayüz: şirket adı, detayda fiyat/değişim, son güncelleme, anahtar kartı, dağılım Tür/Varlık, KAP etiketi
 - [ ] Kullanıcının belirteceği diğer güncellemeler ve genel kontroller
 - [ ] Ardından Faz 5

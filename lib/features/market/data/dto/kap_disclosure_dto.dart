@@ -1,8 +1,7 @@
 import 'package:vestra/features/market/data/dto/json_parsing.dart';
 
 /// One item from `/kap`. Verified against the live API on 2026-11-19
-/// (`test/fixtures/burkut/kap.json` for THYAO, `kap_feed.json` for the
-/// general feed):
+/// (`test/fixtures/burkut/kap_feed.json`):
 /// - Envelope: `{"data": {"content": [...], "totalElements", "last", ...}}`.
 /// - Item: `id`, `symbol`, `title`, `summary` (often empty),
 ///   `short_description` (contains the link to the original disclosure:
@@ -71,33 +70,20 @@ class KapDisclosureDto {
   /// Accepts the paged `{"data": {"content": [...]}}` envelope, as well as
   /// `{"data": [...]}` or a bare list.
   static List<KapDisclosureDto> listFrom(Object? payload) {
-    final paged = _page(payload)?['content'];
+    final data = payload is Map<String, dynamic> ? payload['data'] : null;
+    final paged = data is Map<String, dynamic> ? data['content'] : null;
     return [
       for (final json in unwrapList(paged ?? payload))
         ?KapDisclosureDto.fromJson(json),
     ];
   }
-
-  /// `data.last` of a paged response; `true` when unknown.
-  static bool isLastPage(Object? payload) => _page(payload)?['last'] != false;
-
-  static Map<String, dynamic>? _page(Object? payload) {
-    final data = payload is Map<String, dynamic> ? payload['data'] : null;
-    return data is Map<String, dynamic> ? data : null;
-  }
 }
 
-/// A `/kap` response with paging info and the quota headers.
+/// A `/kap` response with the quota headers.
 class BurkutKapResponse {
-  const BurkutKapResponse(
-    this.items, {
-    this.isLastPage = true,
-    this.quotaRemaining,
-    this.quotaLimit,
-  });
+  const BurkutKapResponse(this.items, {this.quotaRemaining, this.quotaLimit});
 
   final List<KapDisclosureDto> items;
-  final bool isLastPage;
   final int? quotaRemaining;
   final int? quotaLimit;
 }

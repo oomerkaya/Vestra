@@ -113,14 +113,20 @@ final heldStockSymbolsProvider = Provider<Set<String>>(
   },
 );
 
-/// Stored KAP disclosures of held stocks, newest first.
-final heldDisclosuresProvider = Provider<List<KapDisclosure>>((ref) {
+/// Stored KAP disclosures of held stocks (last 30 days), newest first,
+/// live. Read from storage only; never sends a request.
+final heldDisclosuresProvider = StreamProvider<List<KapDisclosure>>((ref) {
   final held = ref.watch(heldStockSymbolsProvider);
-  return [
-    for (final d
-        in ref.watch(kapDisclosuresProvider).value ?? const <KapDisclosure>[])
-      if (held.contains(d.symbol)) d,
-  ];
+  if (held.isEmpty) return Stream.value(const []);
+  return ref
+      .watch(disclosureRepositoryProvider)
+      .watchForSymbols(held)
+      .map(
+        (result) => switch (result) {
+          Success(:final value) => value,
+          Err(:final failure) => throw failure,
+        },
+      );
 });
 
 /// Disclosures published since the list was last opened (the last 7 days
@@ -129,8 +135,7 @@ final kapUnseenCountProvider = Provider<int>((ref) {
   final seenAt =
       ref.watch(kapSeenAtProvider).value ??
       DateTime.now().subtract(const Duration(days: 7));
-  return ref
-      .watch(heldDisclosuresProvider)
+  return (ref.watch(heldDisclosuresProvider).value ?? const <KapDisclosure>[])
       .where((d) => d.publishedAt.isAfter(seenAt))
       .length;
 });
@@ -139,7 +144,8 @@ final kapUnseenCountProvider = Provider<int>((ref) {
 final newDisclosureSymbolsProvider = Provider<Set<String>>((ref) {
   final since = DateTime.now().subtract(DisclosurePolicy.newWindow);
   return {
-    for (final d in ref.watch(heldDisclosuresProvider))
+    for (final d
+        in ref.watch(heldDisclosuresProvider).value ?? const <KapDisclosure>[])
       if (d.publishedAt.isAfter(since)) d.symbol,
   };
 });

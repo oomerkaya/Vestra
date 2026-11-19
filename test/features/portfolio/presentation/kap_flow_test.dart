@@ -59,7 +59,7 @@ void main() {
             changePercent: d('0.47'),
           ).toCompanion(),
         ]);
-        await KapDisclosureLocalDataSource(db).upsertAll(
+        await KapDisclosureLocalDataSource(db).storeFeed(
           [
             KapDisclosure(
               id: '1:THYAO',

@@ -558,17 +558,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get marketFundsNotLoaded => 'Fon listesi ilk güncellemeyle gelir.';
 
   @override
-  String get kapAssetSectionTitle => 'KAP bildirimleri';
+  String get kapAssetSectionTitle => 'Yakın zamanda yapılan KAP bildirimleri';
 
   @override
-  String get kapNone => 'Son 30 günde bu hisse için bildirim yok.';
-
-  @override
-  String get kapLoading => 'Bildirimler yükleniyor…';
+  String get kapNone => 'Son 30 günde kayıtlı bildirim yok.';
 
   @override
   String get kapAssetFooter =>
-      'Kaynak: KAP, Bürküt üzerinden. Günde bir kez güncellenir.';
+      'Kaynak: KAP, Bürküt üzerinden. Günde bir kez çekilen son 30 günün kayıtlarından gösterilir; uygulamanın açılmadığı günler eksik olabilir.';
 
   @override
   String get kapOpenOnKap => 'Bildirimi KAP\'ta aç';
@@ -590,11 +587,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get kapEmptyMessage =>
-      'Portföyündeki hisselerin KAP bildirimleri günde bir kez, 08:00\'den sonra otomatik güncellenir.';
+      'KAP bildirimleri uygulama açıkken günde bir kez, 08:00\'den sonra güncellenir ve 30 gün saklanır.';
 
   @override
   String get kapScreenFooter =>
-      'Kaynak: KAP, Bürküt üzerinden. Yalnızca portföydeki hisseler, son 30 gün. Günde bir kez tek istekle güncellenir. Aylık kotanın yarısı dolunca otomatik güncelleme durur; o zaman bildirimler hisse detayı açılınca güncellenir.';
+      'Kaynak: KAP, Bürküt üzerinden. Yalnızca portföydeki hisseler, son 30 gün. Uygulama açıkken günde bir kez tek istekle güncellenir; açılmayan günler eksik olabilir. Aylık kotanın yarısı dolunca güncelleme durur.';
 
   @override
   String get kapNewBadge => 'KAP';

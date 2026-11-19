@@ -10,51 +10,26 @@ import 'package:vestra/features/market/domain/providers/price_providers.dart';
 import '../../../helpers/test_database.dart';
 
 class _FakeProvider implements DisclosureProvider {
-  final Map<String, List<KapDisclosure>> bySymbol = {};
-
-  /// Feed pages, page 0 = newest.
-  final List<DisclosureFeedPage> pages = [];
-  final List<String> calls = [];
+  List<KapDisclosure> feed = [];
+  int calls = 0;
   Failure? fail;
-  int? failOnPage;
 
   @override
-  Future<Result<List<KapDisclosure>>> fetchDisclosures(
-    String symbol, {
-    int limit = 5,
-  }) async {
-    calls.add(symbol);
+  Future<Result<List<KapDisclosure>>> fetchDisclosureFeed() async {
+    calls++;
     final f = fail;
-    if (f != null) return Err(f);
-    return Success((bySymbol[symbol] ?? const []).take(limit).toList());
-  }
-
-  @override
-  Future<Result<DisclosureFeedPage>> fetchDisclosureFeed({
-    int page = 0,
-  }) async {
-    calls.add('feed:$page');
-    if (page == failOnPage) return const Err(NetworkFailure());
-    return Success(
-      page < pages.length
-          ? pages[page]
-          : const DisclosureFeedPage(items: [], isLast: true),
-    );
+    return f != null ? Err(f) : Success(feed);
   }
 }
 
-KapDisclosure _d(String id, String symbol, DateTime at, {String? url}) =>
-    KapDisclosure(
-      id: '$id:$symbol',
-      symbol: symbol,
-      title: 'Özel Durum Açıklaması (Genel)',
-      summary: 'Konu $id',
-      url: url,
-      publishedAt: at,
-    );
-
-DisclosureFeedPage _page(List<KapDisclosure> items) =>
-    DisclosureFeedPage(items: items, isLast: false);
+KapDisclosure _d(String id, String symbol, DateTime at) => KapDisclosure(
+  id: '$id:$symbol',
+  symbol: symbol,
+  title: 'Özel Durum Açıklaması (Genel)',
+  summary: 'Konu $id',
+  url: 'https://www.kap.org.tr/tr/Bildirim/$id',
+  publishedAt: at,
+);
 
 void main() {
   late AppDatabase db;
@@ -74,131 +49,63 @@ void main() {
   });
   tearDown(() => db.close());
 
-  Future<List<KapDisclosure>> stored() async =>
-      (await repository.watchAll().first).valueOrNull!;
+  Future<List<KapDisclosure>> stored(Set<String> symbols) async =>
+      (await repository.watchForSymbols(symbols).first).valueOrNull!;
 
-  /// Records a previous feed read at [at] (empty feed, one request).
-  Future<void> previousFeedAt(DateTime at) async {
-    final saved = now;
-    now = at;
-    await repository.refreshFeed({'X'});
-    now = saved;
-    provider.calls.clear();
-  }
+  test('one request stores every company, not only held ones', () async {
+    provider.feed = [
+      _d('a', 'THYAO', DateTime.utc(2026, 11, 19, 8)),
+      _d('b', 'GARAN', DateTime.utc(2026, 11, 19, 7)),
+      _d('b', 'TGB', DateTime.utc(2026, 11, 19, 7)),
+    ];
 
-  group('single stock', () {
-    test('stores the disclosures and the fetch time', () async {
-      provider.bySymbol['THYAO'] = [
-        _d(
-          '1',
-          'THYAO',
-          DateTime.utc(2026, 11, 13),
-          url: 'https://www.kap.org.tr/x',
-        ),
-        _d('2', 'THYAO', DateTime.utc(2026, 11, 9)),
-      ];
+    final result = await repository.refreshFeed();
 
-      final result = await repository.refresh('thyao');
-
-      expect(result.valueOrNull, 2);
-      expect(provider.calls, ['THYAO']);
-      expect((await stored()).map((d) => d.id), ['1:THYAO', '2:THYAO']);
-      expect((await stored()).first.url, 'https://www.kap.org.tr/x');
-      expect(await repository.lastFetchedAt('THYAO'), now);
-      expect(await repository.lastFeedAt(), isNull);
-    });
-
-    test('a failure keeps stored data and the fetch time', () async {
-      provider.bySymbol['THYAO'] = [
-        _d('1', 'THYAO', DateTime.utc(2026, 11, 13)),
-      ];
-      await repository.refresh('THYAO');
-      provider.fail = const NetworkFailure();
-      final first = now;
-      now = now.add(const Duration(days: 1));
-
-      expect(await repository.refresh('THYAO'), isA<Err<int>>());
-      expect(await stored(), hasLength(1));
-      expect(await repository.lastFetchedAt('THYAO'), first);
-    });
+    expect(result.valueOrNull, 3);
+    expect(provider.calls, 1);
+    expect(await repository.lastFeedAt(), now);
+    // A stock bought later shows what was stored before.
+    expect((await stored({'GARAN'})).single.id, 'b:GARAN');
+    expect((await stored({'thyao', 'TGB'})).map((d) => d.symbol), [
+      'THYAO',
+      'TGB',
+    ]);
   });
 
-  group('feed', () {
-    test('first read: one page, only held stocks kept', () async {
-      provider.pages.add(
-        _page([
-          _d('a', 'THYAO', DateTime.utc(2026, 11, 19, 8)),
-          _d('b', 'GARAN', DateTime.utc(2026, 11, 19, 7)),
-          _d('b', 'TGB', DateTime.utc(2026, 11, 19, 7)),
-          _d('c', 'ASELS', DateTime.utc(2026, 11, 18, 9)),
-        ]),
-      );
+  test('daily feeds add up; the same disclosure is stored once', () async {
+    provider.feed = [_d('1', 'THYAO', DateTime.utc(2026, 11, 18, 10))];
+    await repository.refreshFeed();
+    provider.feed = [
+      _d('2', 'THYAO', DateTime.utc(2026, 11, 19, 8)),
+      _d('1', 'THYAO', DateTime.utc(2026, 11, 18, 10)),
+    ];
+    await repository.refreshFeed();
 
-      final result = await repository.refreshFeed({'THYAO', 'TGB'});
-
-      expect(result.valueOrNull, 2);
-      expect(provider.calls, ['feed:0'], reason: 'one request');
-      expect((await stored()).map((d) => d.symbol), ['THYAO', 'TGB']);
-      expect(await repository.lastFeedAt(), now);
-    });
-
-    test('reads older pages until the previous read is covered', () async {
-      await previousFeedAt(DateTime.utc(2026, 11, 17, 12));
-      provider.pages.addAll([
-        _page([_d('1', 'THYAO', DateTime.utc(2026, 11, 18, 10))]),
-        _page([_d('2', 'THYAO', DateTime.utc(2026, 11, 17, 8))]),
-        _page([_d('3', 'THYAO', DateTime.utc(2026, 11, 16))]),
-      ]);
-
-      await repository.refreshFeed({'THYAO'});
-
-      expect(provider.calls, ['feed:0', 'feed:1']);
-      expect((await stored()).map((d) => d.id), ['1:THYAO', '2:THYAO']);
-    });
-
-    test('never more than 3 pages', () async {
-      await previousFeedAt(DateTime.utc(2026, 11));
-      for (var i = 0; i < 5; i++) {
-        provider.pages.add(
-          _page([_d('$i', 'THYAO', DateTime.utc(2026, 11, 18 - i))]),
-        );
-      }
-
-      await repository.refreshFeed({'THYAO'});
-
-      expect(provider.calls, ['feed:0', 'feed:1', 'feed:2']);
-    });
-
-    test('a failed page keeps earlier pages but not the feed time', () async {
-      final previous = DateTime.utc(2026, 11, 17, 12);
-      await previousFeedAt(previous);
-      provider
-        ..pages.add(_page([_d('1', 'THYAO', DateTime.utc(2026, 11, 18))]))
-        ..failOnPage = 1;
-
-      final result = await repository.refreshFeed({'THYAO'});
-
-      expect(result, isA<Err<int>>());
-      expect(await stored(), hasLength(1));
-      expect(await repository.lastFeedAt(), previous);
-    });
+    expect((await stored({'THYAO'})).map((d) => d.id), ['2:THYAO', '1:THYAO']);
   });
 
-  test('keepOnly drops sold stocks and disclosures over 30 days', () async {
-    provider.bySymbol
-      ..['THYAO'] = [
-        _d('new', 'THYAO', DateTime.utc(2026, 11, 13)),
-        _d('old', 'THYAO', DateTime.utc(2026, 10, 10)),
-      ]
-      ..['ASELS'] = [_d('a', 'ASELS', DateTime.utc(2026, 11, 12))];
-    await repository.refresh('THYAO');
-    await repository.refresh('ASELS');
+  test('a failure keeps stored data and the last feed time', () async {
+    provider.feed = [_d('1', 'THYAO', DateTime.utc(2026, 11, 18))];
+    await repository.refreshFeed();
+    final first = now;
+    now = now.add(const Duration(days: 1));
+    provider.fail = const NetworkFailure();
 
-    await repository.keepOnly({'THYAO'});
+    expect(await repository.refreshFeed(), isA<Err<int>>());
+    expect(await stored({'THYAO'}), hasLength(1));
+    expect(await repository.lastFeedAt(), first);
+  });
 
-    expect((await stored()).map((d) => d.id), ['new:THYAO']);
-    expect(await repository.lastFetchedAt('ASELS'), isNull);
-    expect(await repository.lastFetchedAt('THYAO'), isNotNull);
+  test('prune deletes disclosures older than 30 days', () async {
+    provider.feed = [
+      _d('new', 'THYAO', DateTime.utc(2026, 11, 2)),
+      _d('old', 'THYAO', DateTime.utc(2026, 10, 19)),
+    ];
+    await repository.refreshFeed();
+
+    await repository.prune();
+
+    expect((await stored({'THYAO'})).map((d) => d.id), ['new:THYAO']);
   });
 
   test('seen time is stored and watched', () async {

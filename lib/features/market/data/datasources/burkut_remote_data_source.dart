@@ -53,31 +53,20 @@ class BurkutRemoteDataSource {
   /// stock search list, not for prices.
   Future<BurkutResponse> getAllStocks(String apiKey) => _get('/stocks', apiKey);
 
-  /// Latest [size] KAP disclosures of one stock. One request per stock:
-  /// `?symbol=A,B` returns nothing (verified 2026-11-19).
-  Future<BurkutKapResponse> getKap(
-    String apiKey,
-    String symbol, {
-    int size = 5,
-  }) => _kap(apiKey, {'symbol': symbol.toUpperCase(), 'size': '$size'});
-
   /// Largest page the API serves (`size=1000` still returns 500).
   static const int kapFeedPageSize = 500;
 
-  /// One page of the general KAP feed, all companies, newest first. On
-  /// 2026-11-19 one page (~190 KB) covered the last ~29 hours (~250
-  /// disclosures per weekday).
-  Future<BurkutKapResponse> getKapFeed(String apiKey, {int page = 0}) =>
-      _kap(apiKey, {'size': '$kapFeedPageSize', 'page': '$page'});
-
-  Future<BurkutKapResponse> _kap(
-    String apiKey,
-    Map<String, String> query,
-  ) async {
-    final response = await _raw('/kap', apiKey, query: query);
+  /// The latest KAP disclosures of every company, newest first, in one
+  /// request. On 2026-11-19 this (~190 KB) covered the last ~29 hours
+  /// (~250 disclosures per weekday).
+  Future<BurkutKapResponse> getKapFeed(String apiKey) async {
+    final response = await _raw(
+      '/kap',
+      apiKey,
+      query: {'size': '$kapFeedPageSize'},
+    );
     return BurkutKapResponse(
       KapDisclosureDto.listFrom(response.data),
-      isLastPage: KapDisclosureDto.isLastPage(response.data),
       quotaRemaining: _intHeader(response, quotaHeader),
       quotaLimit: _intHeader(response, quotaLimitHeader),
     );

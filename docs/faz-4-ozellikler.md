@@ -259,9 +259,29 @@ Kullanıcı geri bildirimleriyle sırayla yapıldı; son durum aşağıda.
 
 **Testler:** `kap_flow_test.dart` (rozet ve sayfa, detay fiyatı, anahtar kartı, dağılım geçişi), depo testleri (akış sayfalama, 3 sayfa sınırı, yarım kalan akış), denetleyici testleri (ilk gün 5+1, sonraki günler 1, %50 kota, detay ekranı), politika testleri, akış fixture testi.
 
+### 11. KAP son karar: günde tek istek, her şey 30 gün, ekranlar yalnızca kayıttan (2026-11-19)
+
+**Sorun:** Kullanıcı yeni bir hisse ekledi; KAP'ta bildirimi olduğu hâlde "bildirim yok" görünüyordu. Sebep: günlük akış o gün eklemeden önce çekilmişti ve yalnızca o anki portföy hisselerinin bildirimleri saklanıyordu; hisse ilk 5'te değildi (geçmiş çekilmiyordu) ve kota %50'nin altındayken detay ekranı istek atmıyordu.
+
+**Değerlendirilen seçenekler (kullanıcıyla):** her hisse için ilk geçmiş (hisse başına 1 istek), ilk kurulumda 30 günü sayfa sayfa doldurma (~15-20 istek), açılmayan günler için eski sayfalar, `workmanager` ile arka planda günlük çekme, akşam ikinci akış. Hepsi kullanıcı tarafından reddedildi; sadelik ve kota öncelikli.
+
+**Karar (kullanıcı):**
+- Her gün **tek istekle** tüm KAP bildirimleri (genel akış, 500 ≈ 29 saat), 08:00'den sonra, uygulama açıkken.
+- Gelen **her şey 30 gün** saklanır (portföyde olmayan şirketler dahil). Yeni eklenen hisse, uygulamanın daha önce biriktirdiği bildirimleriyle hemen görünür.
+- Hisse detayı **hiç istek atmaz**; kayıtlardan "Yakın zamanda yapılan KAP bildirimleri" olarak gösterir. KAP sayfası da yalnızca kayıttan.
+- Arka plan yok; uygulamanın açılmadığı günler boşluk kalabilir (bilinçli kabul).
+- Kotanın yarısı kullanılınca akış durur (önceki karar korunuyor).
+- **Maliyet:** ayda en fazla ~30 istek. **Yer:** 30 günde ~6.000-7.500 kayıt, ~3-5 MB.
+
+**Kaldırılanlar:** hisse bazında `/kap?symbol=` isteği (`getKap`, `fetchDisclosures`, `refresh(symbol)`, `kap_fetched_at:*` anahtarları; eski anahtarlar `prune` ile siliniyor), ilk 5 hisse geçmişi, akış sayfalama (`DisclosureFeedPage`, `needsOlderPage`), detay ekranında istek (`ensureFresh`), `autoSymbols`. `test/fixtures/burkut/kap.json` silindi; `kap_feed.json` kaldı.
+
+**Değişenler:** `DisclosureRepository` (`watchForSymbols`, `refreshFeed`, `prune`), `KapDisclosureLocalDataSource` (`storeFeed`, `prune`), `KapRefreshController` (tek iş: günlük akış; durum = istek sürüyor mu), `heldDisclosuresProvider` artık veritabanından yalnızca tutulan hisseleri izleyen `StreamProvider`, `AssetKapSection` istek atmıyor, metinler.
+
+**Testler:** 188 (hisse bazlı istek testleri kaldırıldı). Politika, depo (tüm şirketler saklanıyor, sonradan alınan hisse eski kaydı görüyor, tekrar eden bildirim tek satır, 30 gün temizliği), denetleyici (günde bir, 08:00, %50 kota, hata sonrası 1 saat), akış fixture testi, akış ekran testleri.
+
 ### Testler
 
-202 test. Kapsananlar:
+188 test. Kapsananlar:
 - İlk çekmenin her saatte izinli olması.
 - Sonrasında hisselerin seansı beklemesi.
 - Ons'un aynı yenilemedeki ya da önbellekteki kurla TL'ye çevrilmesi, kur yoksa atlanması.
