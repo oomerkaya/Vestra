@@ -284,7 +284,7 @@ Kullanıcı geri bildirimleriyle sırayla yapıldı; son durum aşağıda.
 - **KAP kota eşiği kaldırıldı:** günde 1 istek olduğu için %50 kuralına gerek yok; akış yalnızca kota dolunca durur (`DisclosurePolicy.allowed`).
 - **Dağılım** bölümü varsayılan olarak kapalı (`initiallyExpanded: false`); açılıp kapanma durumu sekme değişiminde korunuyor.
 - Hisse detayındaki başlık **"Son KAP bildirimleri"**.
-- **Bürküt adı arayüzden kaldırıldı;** yalnızca Ayarlar → Veri kaynağı'ndaki API anahtarı bölümünde kaldı: "API anahtarını burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Vestra resmi bir Bürküt uygulaması değildir." (Bürküt'ün 2. şartı README/repo açıklaması için; uygulama içinde de bir cümle olarak tutuldu.) Borsa sekmesindeki not "Veriler gecikmelidir". Lisanslı dağıtıcı ve güncelleme kuralları uzun notu ayarlardan çıkarıldı (kurallar piyasa sekmelerinde zaten yazıyor). Eski "döviz yedek kaynaktan geliyor" metni (Frankfurter kalıntısı) düzeltildi.
+- **Bürküt adı arayüzden kaldırıldı;** yalnızca Ayarlar → Veri kaynağı'ndaki API anahtarı bölümünde kaldı: "API anahtarını burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Vestra resmi bir Bürküt uygulaması değildir." (Bürküt'ün 2. şartı README/repo açıklaması için; uygulama içinde de bir cümle olarak tutuldu.) Döviz, Madenler ve Borsa sekmelerinde not "Veriler gecikmelidir"; Fonlar'da yok (günde tek fiyat). Lisanslı dağıtıcı ve güncelleme kuralları uzun notu ayarlardan çıkarıldı (kurallar piyasa sekmelerinde zaten yazıyor). Eski "döviz yedek kaynaktan geliyor" metni (Frankfurter kalıntısı) düzeltildi.
 - Diğer metinler kısaltıldı (anahtar penceresi, KAP sayfası ve detay alt notları, anahtar uyarıları).
 
 ### Testler

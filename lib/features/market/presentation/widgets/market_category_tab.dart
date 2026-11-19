@@ -238,7 +238,9 @@ class _StatusCard extends StatelessWidget {
         QuoteCategory.funds => l10n.marketFundsRule,
         _ => l10n.marketUpdateRule,
       },
-      if (quotes.isNotEmpty && isStocks) l10n.marketDataDelayed,
+      // Funds have one price per day (NAV), so "delayed" does not apply.
+      if (quotes.isNotEmpty && category != QuoteCategory.funds)
+        l10n.marketDataDelayed,
     ];
 
     return Padding(
