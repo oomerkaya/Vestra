@@ -7,13 +7,11 @@ import 'package:vestra/core/error/result.dart';
 import 'package:vestra/core/network/dio_factory.dart';
 import 'package:vestra/core/utils/app_logger.dart';
 import 'package:vestra/features/market/data/datasources/burkut_remote_data_source.dart';
-import 'package:vestra/features/market/data/datasources/frankfurter_remote_data_source.dart';
 import 'package:vestra/features/market/data/datasources/market_meta_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/price_cache_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/quota_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/stock_listing_local_data_source.dart';
 import 'package:vestra/features/market/data/providers/burkut_price_provider.dart';
-import 'package:vestra/features/market/data/providers/frankfurter_fx_provider.dart';
 import 'package:vestra/features/market/data/repositories/market_repository_impl.dart';
 import 'package:vestra/features/market/data/repositories/stock_directory_repository_impl.dart';
 import 'package:vestra/features/market/domain/entities/market_calendar.dart';
@@ -44,13 +42,9 @@ final marketRepositoryProvider = Provider<MarketRepository>((ref) {
   final burkut = ref.watch(burkutPriceProviderProvider);
   return MarketRepositoryImpl(
     fx: burkut,
-    fxFallback: FrankfurterFxProvider(
-      FrankfurterRemoteDataSource(
-        createDio(baseUrl: FrankfurterRemoteDataSource.baseUrl),
-      ),
-    ),
     metals: burkut,
     stocks: burkut,
+    funds: burkut,
     cache: PriceCacheLocalDataSource(ref.watch(appDatabaseProvider)),
     quota: ref.watch(quotaLocalDataSourceProvider),
     meta: MarketMetaLocalDataSource(ref.watch(appDatabaseProvider)),

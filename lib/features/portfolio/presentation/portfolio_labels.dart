@@ -16,18 +16,20 @@ String categoryLabel(AppLocalizations l10n, QuoteCategory category) =>
       QuoteCategory.fx => l10n.categoryFx,
       QuoteCategory.metals => l10n.marketTabMetals,
       QuoteCategory.stocks => l10n.categoryStocks,
+      QuoteCategory.funds => l10n.categoryFunds,
     };
 
 Color categoryColor(QuoteCategory category) => switch (category) {
   QuoteCategory.fx => AppPalette.currency,
   QuoteCategory.metals => AppPalette.gold,
   QuoteCategory.stocks => AppPalette.stock,
+  QuoteCategory.funds => AppPalette.fund,
 };
 
 /// Display name: localized for known currencies/metals; the ticker for
 /// stocks (company names are long; see [assetSubtitle]).
 String assetDisplayName(AppLocalizations l10n, Asset asset) =>
-    asset.type == AssetType.stock
+    asset.type == AssetType.stock || asset.type == AssetType.fund
     ? asset.code
     : instrumentName(
         l10n,
@@ -37,7 +39,8 @@ String assetDisplayName(AppLocalizations l10n, Asset asset) =>
 
 /// Secondary line on the detail screen: company name for stocks.
 String assetSubtitle(AppLocalizations l10n, Asset asset) =>
-    asset.type == AssetType.stock && asset.name != asset.code
+    (asset.type == AssetType.stock || asset.type == AssetType.fund) &&
+        asset.name != asset.code
     ? asset.name
     : instrumentSubtitle(l10n, (type: asset.type, code: asset.code));
 
@@ -48,6 +51,7 @@ String quantityUnit(AppLocalizations l10n, Instrument instrument) =>
       (type: AssetType.gold, code: 'GRAM') ||
       (type: AssetType.silver, code: _) => l10n.unitGram,
       (type: AssetType.gold || AssetType.stock, code: _) => l10n.unitPiece,
+      (type: AssetType.fund, code: _) => l10n.unitShare,
     };
 
 /// `12,5 gram` · `1.250 USD` · `3 adet`.

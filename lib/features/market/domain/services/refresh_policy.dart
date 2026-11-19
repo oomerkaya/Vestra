@@ -13,6 +13,8 @@ import 'package:vestra/features/market/domain/entities/quote.dart';
 /// - FX and metals: any day, any time (while the app is open).
 /// - Stocks: only during the BIST session, weekdays 10:00-18:00
 ///   Europe/Istanbul, until 12:30 on half days, never on holidays.
+/// - Funds (TEFAS): once per Istanbul calendar day (prices are published
+///   daily), any time of day.
 /// - Stocks are fetched as the whole BIST market in one request, so a
 ///   newly added stock already has a price from the last snapshot.
 /// - First fetch: a category that has never been fetched (empty cache) is
@@ -66,6 +68,9 @@ abstract final class RefreshPolicy {
     if (_backingOff(now, backoffUntil)) return false;
     if (_coolingDown(now, lastAttempt, manual: manual)) return false;
     if (lastSuccess == null) return true; // first fetch, any time
+    if (category == QuoteCategory.funds) {
+      return !_sameIstanbulDay(lastSuccess, now);
+    }
     if (category == QuoteCategory.stocks && !isSessionOpen(now, calendar)) {
       return false;
     }
@@ -82,9 +87,25 @@ abstract final class RefreshPolicy {
   }) => !manual && lastAttempt != null && _since(lastAttempt, now) < interval;
 
   /// Earliest time a category with this [lastSuccess] may update again;
-  /// `null` if it has never been updated.
-  static DateTime? nextUpdate(DateTime? lastSuccess) =>
-      lastSuccess?.add(interval);
+  /// `null` if it has never been updated. Funds: next Istanbul midnight.
+  static DateTime? nextUpdate(
+    DateTime? lastSuccess, {
+    QuoteCategory? category,
+  }) {
+    if (lastSuccess == null) return null;
+    if (category == QuoteCategory.funds) {
+      final local = toIstanbul(lastSuccess);
+      final nextMidnight = DateTime.utc(local.year, local.month, local.day + 1);
+      return nextMidnight.subtract(istanbulOffset);
+    }
+    return lastSuccess.add(interval);
+  }
+
+  static bool _sameIstanbulDay(DateTime a, DateTime b) {
+    final x = toIstanbul(a);
+    final y = toIstanbul(b);
+    return x.year == y.year && x.month == y.month && x.day == y.day;
+  }
 
   /// Exponential backoff after HTTP 429: 1, 2, 4, 8, 16, 30, 30 … minutes.
   /// A server-provided `Retry-After` wins if it is longer.

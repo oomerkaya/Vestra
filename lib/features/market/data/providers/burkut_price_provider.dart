@@ -24,6 +24,7 @@ class BurkutPriceProvider
         FxRateProvider,
         MetalPriceProvider,
         StockPriceProvider,
+        FundPriceProvider,
         StockListingProvider,
         ApiKeyValidator {
   BurkutPriceProvider({
@@ -74,6 +75,15 @@ class BurkutPriceProvider
       ],
     );
   }
+
+  @override
+  Future<Result<List<Quote>>> fetchFunds() => _call(
+    'funds',
+    (key) async => [
+      for (final dto in await _items(_remote.getFunds(key)))
+        _quote((type: AssetType.fund, code: dto.symbol), dto),
+    ],
+  );
 
   @override
   Future<Result<List<StockListing>>> fetchListings() => _call(

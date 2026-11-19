@@ -32,6 +32,7 @@ class MarketScreen extends StatelessWidget {
                   l10n.marketTabFx,
                   l10n.marketTabMetals,
                   l10n.marketTabStocks,
+                  l10n.marketTabFunds,
                 ],
               ),
             ),
@@ -42,6 +43,7 @@ class MarketScreen extends StatelessWidget {
             MarketCategoryTab(category: QuoteCategory.fx),
             MarketCategoryTab(category: QuoteCategory.metals),
             MarketCategoryTab(category: QuoteCategory.stocks),
+            MarketCategoryTab(category: QuoteCategory.funds),
           ],
         ),
       ),
@@ -80,8 +82,14 @@ class _SegmentedTabBar extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
           splashBorderRadius: AppRadius.smAll,
+          labelPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
           tabs: [
-            for (final label in labels) Tab(height: 36, text: label),
+            // Four tabs on a phone: shrink the label rather than cut it.
+            for (final label in labels)
+              Tab(
+                height: 36,
+                child: FittedBox(fit: BoxFit.scaleDown, child: Text(label)),
+              ),
           ],
         ),
       ),

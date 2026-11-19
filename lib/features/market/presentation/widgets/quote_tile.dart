@@ -21,7 +21,11 @@ class QuoteTile extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = context.l10n;
     final change = quote.changePercent;
-    final decimals = quote.priceTry < Decimal.fromInt(10) ? 4 : 2;
+    // Small prices (funds, JPY) need more digits, but only as many as the
+    // value has: 0.1127 -> 4, 0.000123 -> 6; at least 2.
+    final decimals = quote.priceTry < Decimal.fromInt(10)
+        ? quote.priceTry.scale.clamp(2, 6)
+        : 2;
 
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -54,7 +58,9 @@ class QuoteTile extends StatelessWidget {
                 const SizedBox(height: AppSpacing.xxs),
                 Text(
                   // Stocks: company name from the market snapshot.
-                  quote.instrument.type == AssetType.stock && quote.name != null
+                  (quote.instrument.type == AssetType.stock ||
+                              quote.instrument.type == AssetType.fund) &&
+                          quote.name != null
                       ? quote.name!
                       : instrumentSubtitle(l10n, quote.instrument),
                   maxLines: 1,

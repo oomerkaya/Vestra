@@ -16,16 +16,16 @@ import 'package:vestra/features/market/domain/repositories/market_repository.dar
 
 /// Orchestrates providers and the local price cache.
 ///
-/// Only the requested categories are fetched. Order: FX (primary, then
-/// fallback on any failure) -> metals -> stocks. If the primary reports a missing/rejected key or an
+/// Only the requested categories are fetched, all from Bürküt. Order:
+/// FX -> metals -> stocks -> funds. If the primary reports a missing/rejected key or an
 /// exhausted quota, the remaining primary calls are skipped so no request
 /// is wasted.
 class MarketRepositoryImpl implements MarketRepository {
   MarketRepositoryImpl({
     required this._fx,
-    required this._fxFallback,
     required this._metals,
     required this._stocks,
+    required this._funds,
     required this._cache,
     required this._quota,
     required this._meta,
@@ -33,9 +33,9 @@ class MarketRepositoryImpl implements MarketRepository {
   }) : _clock = clock ?? DateTime.now;
 
   final FxRateProvider _fx;
-  final FxRateProvider _fxFallback;
   final MetalPriceProvider _metals;
   final StockPriceProvider _stocks;
+  final FundPriceProvider _funds;
   final PriceCacheLocalDataSource _cache;
   final QuotaLocalDataSource _quota;
   final MarketMetaLocalDataSource _meta;
@@ -70,66 +70,48 @@ class MarketRepositoryImpl implements MarketRepository {
   }) async {
     final quotes = <Quote>[];
     final failures = <QuoteCategory, Failure>{};
-    var usedFallback = false;
     Failure? primaryBlocked;
     var wholeMarket = false;
-    // Categories fetched as the provider's complete list (not the partial
-    // free FX fallback): their stale rows are replaced, not kept.
+    // Categories fetched as the provider's complete list: their stale rows
+    // are replaced, not kept.
     final complete = <QuoteCategory>{};
 
-    // FX: primary, falling back to the free source on any failure.
-    if (categories.contains(QuoteCategory.fx)) {
-      switch (await _fx.fetchRates()) {
-        case Success(:final value):
-          quotes.addAll(value);
-          complete.add(QuoteCategory.fx);
-        case Err(:final failure):
-          if (_blocksPrimary(failure)) primaryBlocked = failure;
-          switch (await _fxFallback.fetchRates()) {
-            case Success(:final value):
-              quotes.addAll(value);
-              usedFallback = true;
-            case Err(failure: final fallbackFailure):
-              failures[QuoteCategory.fx] = fallbackFailure;
-          }
+    // Runs one category unless it wasn't requested or an earlier call
+    // already showed that Bürküt can't be used (no/rejected key, quota).
+    Future<void> fetch(
+      QuoteCategory category,
+      Future<Result<List<Quote>>> Function() call, {
+      bool isComplete = true,
+    }) async {
+      if (!categories.contains(category)) return;
+      final blocked = primaryBlocked;
+      if (blocked != null) {
+        failures[category] = blocked;
+        return;
       }
-    }
-
-    // Metals.
-    if (!categories.contains(QuoteCategory.metals)) {
-      // not requested
-    } else if (primaryBlocked != null) {
-      failures[QuoteCategory.metals] = primaryBlocked;
-    } else {
-      switch (await _metals.fetchPrices()) {
+      switch (await call()) {
         case Success(:final value):
           quotes.addAll(value);
-          complete.add(QuoteCategory.metals);
+          if (isComplete && value.isNotEmpty) complete.add(category);
         case Err(:final failure):
-          failures[QuoteCategory.metals] = failure;
+          failures[category] = failure;
           if (_blocksPrimary(failure)) primaryBlocked = failure;
       }
     }
 
-    // Stocks: whole market or the given symbols, one request either way.
-    if (categories.contains(QuoteCategory.stocks) &&
-        (stockSymbols == null || stockSymbols.isNotEmpty)) {
-      if (primaryBlocked != null) {
-        failures[QuoteCategory.stocks] = primaryBlocked;
-      } else {
-        final symbols = stockSymbols?.toList()?..sort();
-        switch (await _stocks.fetchQuotes(symbols: symbols)) {
-          case Success(:final value):
-            quotes.addAll(value);
-            if (symbols == null && value.isNotEmpty) {
-              wholeMarket = true;
-              complete.add(QuoteCategory.stocks);
-            }
-          case Err(:final failure):
-            failures[QuoteCategory.stocks] = failure;
-        }
-      }
+    await fetch(QuoteCategory.fx, _fx.fetchRates);
+    await fetch(QuoteCategory.metals, _metals.fetchPrices);
+    // Stocks: whole market (null) or the given symbols, one request.
+    if (stockSymbols == null || stockSymbols.isNotEmpty) {
+      final symbols = stockSymbols?.toList()?..sort();
+      await fetch(
+        QuoteCategory.stocks,
+        () => _stocks.fetchQuotes(symbols: symbols),
+        isComplete: symbols == null,
+      );
+      wholeMarket = symbols == null && complete.contains(QuoteCategory.stocks);
     }
+    await fetch(QuoteCategory.funds, _funds.fetchFunds);
 
     try {
       if (quotes.isNotEmpty) {
@@ -146,7 +128,6 @@ class MarketRepositoryImpl implements MarketRepository {
       RefreshReport(
         updated: quotes.length,
         failures: failures,
-        usedFxFallback: usedFallback,
       ),
     );
   }

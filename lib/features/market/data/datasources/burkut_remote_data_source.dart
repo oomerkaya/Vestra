@@ -20,6 +20,10 @@ class BurkutRemoteDataSource {
 
   Future<BurkutResponse> getGold(String apiKey) => _get('/gold', apiKey);
 
+  /// All TEFAS funds (2,441 on 2026-11-19, ~1.9 MB). Large JSON is decoded
+  /// off the UI thread by dio's default transformer.
+  Future<BurkutResponse> getFunds(String apiKey) => _get('/funds', apiKey);
+
   /// One request. Without [symbols]: the whole BIST market (634 stocks on
   /// 2026-11-18, ~280 KB). With [symbols]: `?symbols=` (honoured by the live
   /// API) and the result is also filtered here as a safeguard.

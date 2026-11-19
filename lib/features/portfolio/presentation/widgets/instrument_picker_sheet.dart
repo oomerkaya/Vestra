@@ -56,6 +56,7 @@ class _InstrumentPickerSheetState extends ConsumerState<InstrumentPickerSheet> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final isStocks = widget.category == QuoteCategory.stocks;
+    final isFunds = widget.category == QuoteCategory.funds;
     final quotes = {
       for (final q in ref.watch(quotesProvider).value ?? const <Quote>[])
         q.instrument: q,
@@ -80,7 +81,7 @@ class _InstrumentPickerSheetState extends ConsumerState<InstrumentPickerSheet> {
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
-          if (isStocks)
+          if (isStocks || isFunds)
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.xl,
@@ -93,7 +94,9 @@ class _InstrumentPickerSheetState extends ConsumerState<InstrumentPickerSheet> {
                 autofocus: true,
                 textCapitalization: TextCapitalization.characters,
                 decoration: InputDecoration(
-                  hintText: l10n.pickerSearchStocks,
+                  hintText: isFunds
+                      ? l10n.marketSearchFunds
+                      : l10n.pickerSearchStocks,
                   prefixIcon: const Icon(Icons.search_rounded),
                 ),
                 onChanged: (v) =>
@@ -103,6 +106,8 @@ class _InstrumentPickerSheetState extends ConsumerState<InstrumentPickerSheet> {
           Expanded(
             child: isStocks
                 ? _stockList(context, quotes)
+                : isFunds
+                ? _fundList(context, quotes)
                 : _catalogList(context, quotes),
           ),
         ],
@@ -130,6 +135,52 @@ class _InstrumentPickerSheetState extends ConsumerState<InstrumentPickerSheet> {
           ).pop((instrument: instrument, name: name)),
         );
       },
+    );
+  }
+
+  /// Funds come from the cached daily TEFAS snapshot.
+  Widget _fundList(BuildContext context, Map<Instrument, Quote> quotes) {
+    final l10n = context.l10n;
+    final funds = [
+      for (final q in quotes.values)
+        if (q.instrument.type == AssetType.fund) q,
+    ]..sort((a, b) => a.instrument.code.compareTo(b.instrument.code));
+    final matches = _query.isEmpty
+        ? funds
+        : [
+            for (final q in funds)
+              if (q.instrument.code.startsWith(_query) ||
+                  turkishUpperCase(q.name ?? '').contains(_query))
+                q,
+          ];
+    if (funds.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Text(l10n.marketFundsNotLoaded),
+      );
+    }
+    return ListView(
+      children: [
+        if (matches.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.xl),
+            child: Center(child: Text(l10n.pickerNoResults)),
+          ),
+        for (final q in matches.take(100))
+          _PickerTile(
+            instrument: q.instrument,
+            title: q.instrument.code,
+            subtitle: q.name ?? q.instrument.code,
+            quote: q,
+            onTap: () =>
+                Navigator.of(
+                  context,
+                ).pop((
+                  instrument: q.instrument,
+                  name: q.name ?? q.instrument.code,
+                )),
+          ),
+      ],
     );
   }
 

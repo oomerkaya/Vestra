@@ -166,9 +166,24 @@ Kullanıcı geri bildirimleriyle sırayla yapıldı; son durum aşağıda.
 
 "Dağılım" bölümü artık `CollapsibleSection` içinde (`AllocationChart`).
 
+### 6. Frankfurter kaldırıldı, TEFAS fonları eklendi (2026-11-19)
+
+**Frankfurter:**
+- Kullanıcı isteğiyle kaldırıldı; uygulama yalnızca Bürküt'le çalışıyor.
+- Anahtar yoksa hiçbir kategoride fiyat gelmez. Anahtar uyarısı artık Döviz dahil her sekmede çıkıyor.
+- Silinenler: `FrankfurterRemoteDataSource`, `FrankfurterFxProvider`, `RefreshReport.usedFxFallback`, `QuoteSource.frankfurter`. Önbellekteki eski Frankfurter satırları kaynağı tanınmadığı için gösterilmiyor; Bürküt'ün ilk döviz güncellemesinde yerlerine yenileri yazılıyor.
+
+**Fonlar:**
+- **Canlı doğrulama:** `/funds` kullanıcının anahtarıyla denendi (1 istek). 2.441 fon geldi (2.037 yatırım fonu, 399 emeklilik, 5 BYF), ~1,9 MB. Alanlar: `symbol`, `name`, `price`, `dailyChangePct`, `type`, `fundType`, `riskLevel` ve getiriler; mevcut esnek DTO hepsini okuyor. Fiyatlar ₺0,0001 ile ₺10.308 arasında.
+- **Yeni tür:** `AssetType.fund`, `QuoteCategory.funds`, `FundPriceProvider` (Bürküt uyguluyor). Renk turkuaz `#14B8A6`, birim "pay".
+- **Güncelleme:** İstanbul takvim günü başına bir kez, saat ve seans fark etmez (`RefreshPolicy`, `_sameIstanbulDay`). "Sonraki güncelleme" gece yarısı. Kota etkisi ayda ~30 istek.
+- **Piyasa:** 4. sekme **Fonlar**: Portföyümde + Tümü (arama, 50'şer satır). Dört sekme dar ekranda sığsın diye etiketler gerekirse küçülüyor (`FittedBox`).
+- **Portföy:** Varlık eklemede 4. tür **Fonlar**, fon seçici günlük anlık görüntüden aramalı. Dağılımda yeni dilim.
+- **Fiyat gösterimi:** 10 TL'nin altındaki fiyatlarda değerin kendi basamak sayısı kullanılıyor (2-6): ₺0,1127, ₺0,000123.
+
 ### Testler
 
-161 test. Kapsananlar:
+166 test. Kapsananlar:
 - İlk çekmenin her saatte izinli olması.
 - Sonrasında hisselerin seansı beklemesi.
 - Ons'un aynı yenilemedeki ya da önbellekteki kurla TL'ye çevrilmesi, kur yoksa atlanması.

@@ -32,9 +32,8 @@
   },
   "marketRefreshing": "Güncelleniyor…",
   "marketSourceBurkut": "Bürküt · hisseler en az 15 dk gecikmeli",
-  "marketSourceFallback": "Döviz: ECB günlük referans kuru (yedek kaynak)",
-  "marketNeedsKeyTitle": "Altın, gümüş ve hisse için API anahtarı gerekli",
-  "marketNeedsKeyMessage": "Döviz kurları ücretsiz yedek kaynaktan geliyor. Bürküt'ten ücretsiz anahtar alıp Ayarlar'a ekle.",
+  "marketNeedsKeyTitle": "Fiyatlar için Bürküt API anahtarı gerekli",
+  "marketNeedsKeyMessage": "Döviz, altın, hisse ve fon fiyatları Bürküt'ten gelir. burkutportfoy.com/developer adresinden ücretsiz anahtar alıp Ayarlar'a ekle.",
   "marketGoToSettings": "Ayarlara git",
   "marketQuotaExhausted": "Bu ayın Bürküt istek kotası doldu. Altın ve hisse fiyatları gelecek ay güncellenecek; döviz yedek kaynaktan geliyor.",
   "marketKeyRejected": "Bürküt API anahtarı reddedildi. Ayarlar'dan kontrol et.",
@@ -70,7 +69,7 @@
       }
     }
   },
-  "settingsApiKeyNotSet": "Ayarlanmadı · altın, gümüş ve hisse için gerekli",
+  "settingsApiKeyNotSet": "Ayarlanmadı · fiyatlar için gerekli",
   "settingsQuota": "Bu ayki istek kullanımı",
   "settingsQuotaValue": "{used} / {limit}",
   "@settingsQuotaValue": {
@@ -84,7 +83,7 @@
     }
   },
   "settingsQuotaExhausted": "Kota doldu",
-  "settingsDataNote": "Döviz ve altın/gümüş fiyatları uygulama açıkken 30 dakikada bir güncellenir. Hisseler yalnızca hafta içi 10:00-18:00 arasında güncellenir ve Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Bürküt lisanslı bir veri dağıtıcısı değildir.",
+  "settingsDataNote": "Fiyatlar Bürküt'ten gelir. Döviz ve altın/gümüş uygulama açıkken 30 dakikada bir, hisseler yalnızca hafta içi 10:00-18:00 arasında 30 dakikada bir, fonlar günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.",
   "apiKeySheetTitle": "Bürküt API anahtarı",
   "apiKeySheetHelp": "burkutportfoy.com/developer adresinden ücretsiz hesap açıp anahtar oluşturabilirsin (ayda 1.000 istek). Anahtar yalnızca bu cihazda şifreli saklanır.",
   "apiKeyFieldLabel": "API anahtarı",
@@ -256,5 +255,11 @@
       }
     }
   },
-  "marketStocksNotLoaded": "Hisse fiyatları ilk güncellemeyle gelir."
+  "marketStocksNotLoaded": "Hisse fiyatları ilk güncellemeyle gelir.",
+  "marketTabFunds": "Fonlar",
+  "categoryFunds": "Fonlar",
+  "unitShare": "pay",
+  "marketFundsRule": "Günde bir kez güncellenir (TEFAS fiyatları günlük açıklanır)",
+  "marketSearchFunds": "Fon ara (kod veya ad)",
+  "marketFundsNotLoaded": "Fon listesi ilk güncellemeyle gelir."
 }

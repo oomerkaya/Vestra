@@ -244,22 +244,16 @@ abstract class AppLocalizations {
   /// **'Bürküt · hisseler en az 15 dk gecikmeli'**
   String get marketSourceBurkut;
 
-  /// No description provided for @marketSourceFallback.
-  ///
-  /// In tr, this message translates to:
-  /// **'Döviz: ECB günlük referans kuru (yedek kaynak)'**
-  String get marketSourceFallback;
-
   /// No description provided for @marketNeedsKeyTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Altın, gümüş ve hisse için API anahtarı gerekli'**
+  /// **'Fiyatlar için Bürküt API anahtarı gerekli'**
   String get marketNeedsKeyTitle;
 
   /// No description provided for @marketNeedsKeyMessage.
   ///
   /// In tr, this message translates to:
-  /// **'Döviz kurları ücretsiz yedek kaynaktan geliyor. Bürküt\'ten ücretsiz anahtar alıp Ayarlar\'a ekle.'**
+  /// **'Döviz, altın, hisse ve fon fiyatları Bürküt\'ten gelir. burkutportfoy.com/developer adresinden ücretsiz anahtar alıp Ayarlar\'a ekle.'**
   String get marketNeedsKeyMessage;
 
   /// No description provided for @marketGoToSettings.
@@ -433,7 +427,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsApiKeyNotSet.
   ///
   /// In tr, this message translates to:
-  /// **'Ayarlanmadı · altın, gümüş ve hisse için gerekli'**
+  /// **'Ayarlanmadı · fiyatlar için gerekli'**
   String get settingsApiKeyNotSet;
 
   /// No description provided for @settingsQuota.
@@ -457,7 +451,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsDataNote.
   ///
   /// In tr, this message translates to:
-  /// **'Döviz ve altın/gümüş fiyatları uygulama açıkken 30 dakikada bir güncellenir. Hisseler yalnızca hafta içi 10:00-18:00 arasında güncellenir ve Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Bürküt lisanslı bir veri dağıtıcısı değildir.'**
+  /// **'Fiyatlar Bürküt\'ten gelir. Döviz ve altın/gümüş uygulama açıkken 30 dakikada bir, hisseler yalnızca hafta içi 10:00-18:00 arasında 30 dakikada bir, fonlar günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.'**
   String get settingsDataNote;
 
   /// No description provided for @apiKeySheetTitle.
@@ -1077,6 +1071,42 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Hisse fiyatları ilk güncellemeyle gelir.'**
   String get marketStocksNotLoaded;
+
+  /// No description provided for @marketTabFunds.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fonlar'**
+  String get marketTabFunds;
+
+  /// No description provided for @categoryFunds.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fonlar'**
+  String get categoryFunds;
+
+  /// No description provided for @unitShare.
+  ///
+  /// In tr, this message translates to:
+  /// **'pay'**
+  String get unitShare;
+
+  /// No description provided for @marketFundsRule.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günde bir kez güncellenir (TEFAS fiyatları günlük açıklanır)'**
+  String get marketFundsRule;
+
+  /// No description provided for @marketSearchFunds.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fon ara (kod veya ad)'**
+  String get marketSearchFunds;
+
+  /// No description provided for @marketFundsNotLoaded.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fon listesi ilk güncellemeyle gelir.'**
+  String get marketFundsNotLoaded;
 }
 
 class _AppLocalizationsDelegate

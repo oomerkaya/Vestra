@@ -12,6 +12,10 @@ Her faz bitiminde o fazda **ne yapıldığı, neden yapıldığı ve nasıl doğ
 | 4 - Özellikler | [faz-4-ozellikler.md](faz-4-ozellikler.md) | Bitti |
 | 5 - Cila ve yayın | — | Bekliyor |
 
+## Taslak öneriler
+
+- [oneri-kap-bildirimleri.md](oneri-kap-bildirimleri.md): portföydeki hisseler için KAP bildirimleri (karar bekliyor)
+
 ## Doküman şablonu
 
 Her faz dokümanı şu başlıkları içerir:

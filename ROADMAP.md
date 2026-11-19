@@ -41,7 +41,9 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 - [x] Fiyat güncelleme ekranı ve "son güncelleme" göstergesi (Faz 3'te)
 
 ## Sıradaki (Faz 5'ten önce, 2026-11-20)
-- [ ] Frankfurter'ı tamamen kaldır; uygulama yalnızca Bürküt API ile çalışsın (yedek kaynak kodu, testleri, ayarlar/piyasa metinleri, CLAUDE.md ve dokümanlar)
+- [x] Frankfurter'ı tamamen kaldır; uygulama yalnızca Bürküt API ile çalışsın
+- [x] TEFAS fonları (günde bir güncelleme)
+- [ ] KAP bildirimleri: taslak öneri `docs/oneri-kap-bildirimleri.md`, karar bekliyor
 - [ ] Kullanıcının belirteceği diğer güncellemeler ve genel kontroller
 - [ ] Ardından Faz 5
 

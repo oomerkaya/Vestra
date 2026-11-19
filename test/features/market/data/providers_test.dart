@@ -1,4 +1,3 @@
-import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -7,19 +6,15 @@ import 'package:vestra/core/domain/instrument.dart';
 import 'package:vestra/core/error/failure.dart';
 import 'package:vestra/core/error/result.dart';
 import 'package:vestra/features/market/data/datasources/burkut_remote_data_source.dart';
-import 'package:vestra/features/market/data/datasources/frankfurter_remote_data_source.dart';
 import 'package:vestra/features/market/data/datasources/quota_local_data_source.dart';
 import 'package:vestra/features/market/data/dto/burkut_dtos.dart';
 import 'package:vestra/features/market/data/providers/burkut_price_provider.dart';
-import 'package:vestra/features/market/data/providers/frankfurter_fx_provider.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
 
 import '../../../helpers/fixtures.dart';
 import '../../../helpers/test_database.dart';
 
 class _MockBurkut extends Mock implements BurkutRemoteDataSource {}
-
-class _MockFrankfurter extends Mock implements FrankfurterRemoteDataSource {}
 
 /// Builds a response from raw JSON items, as the API would send them.
 BurkutResponse _response(
@@ -262,27 +257,41 @@ void main() {
     });
   });
 
-  group('FrankfurterFxProvider', () {
-    test('inverts per-TRY rates to TRY per unit', () async {
-      final remote = _MockFrankfurter();
-      when(() => remote.latestPerTry(any())).thenAnswer(
-        (_) async => (
-          date: DateTime.utc(2026, 11, 17),
-          perTry: {'USD': d('0.02'), 'EUR': d('0.016'), 'BAD': Decimal.zero},
-        ),
+  group('funds', () {
+    test('every TEFAS fund is mapped with price and daily change', () async {
+      when(() => remote.getFunds(any())).thenAnswer(
+        (_) async => _response([
+          // Shape of the live /funds item (2026-11-19), trimmed.
+          {
+            'symbol': 'TCD',
+            'code': 'TCD',
+            'name': 'TACIRLER PORTFOY DEGISKEN FON',
+            'price': 43.4046,
+            'currentPrice': 43.4046,
+            'dailyChangePct': -1.6827,
+            'type': 'MUTUAL',
+          },
+          {
+            'symbol': 'AAJ',
+            'name': 'AGESA OKS STANDART EMEKLILIK YATIRIM FONU',
+            'price': 0.1127,
+            'dailyChangePct': -0.2187,
+            'type': 'PENSION',
+          },
+          {'symbol': 'NOPRICE', 'price': null},
+        ]),
       );
 
-      final quotes = (await FrankfurterFxProvider(
-        remote,
-        clock: () => now,
-      ).fetchRates()).valueOrNull!;
+      final quotes = (await provider().fetchFunds()).valueOrNull!;
 
-      final byCode = {for (final q in quotes) q.instrument.code: q};
-      expect(byCode['USD']!.priceTry, d('50'));
-      expect(byCode['EUR']!.priceTry, d('62.5'));
-      expect(byCode.containsKey('BAD'), isFalse);
-      expect(byCode['USD']!.source, QuoteSource.frankfurter);
-      expect(byCode['USD']!.asOf, DateTime.utc(2026, 11, 17));
+      expect(quotes.map((q) => q.instrument), [
+        (type: AssetType.fund, code: 'TCD'),
+        (type: AssetType.fund, code: 'AAJ'),
+      ]);
+      expect(quotes.first.priceTry, d('43.4046'));
+      expect(quotes.first.changePercent, d('-1.6827'));
+      expect(quotes.last.priceTry, d('0.1127'));
+      expect((await quota.current()).used, 1);
     });
   });
 

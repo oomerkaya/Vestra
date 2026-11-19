@@ -9,15 +9,11 @@ class RefreshReport {
   const RefreshReport({
     required this.updated,
     required this.failures,
-    this.usedFxFallback = false,
   });
 
   /// Number of quotes written to the cache.
   final int updated;
   final Map<QuoteCategory, Failure> failures;
-
-  /// FX came from the free fallback instead of the primary provider.
-  final bool usedFxFallback;
 
   bool get hasFailures => failures.isNotEmpty;
 }

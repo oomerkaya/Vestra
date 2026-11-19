@@ -15,6 +15,7 @@ class InstrumentAvatar extends StatelessWidget {
     AssetType.gold => AppPalette.gold,
     AssetType.silver => AppPalette.silver,
     AssetType.stock => AppPalette.stock,
+    AssetType.fund => AppPalette.fund,
   };
 
   @override

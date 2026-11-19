@@ -34,6 +34,7 @@ abstract final class AppPalette {
   static const Color gold = Color(0xFFD4A017);
   static const Color silver = Color(0xFF94A3B8);
   static const Color stock = Color(0xFF8B5CF6);
+  static const Color fund = Color(0xFF14B8A6);
 }
 
 /// Colors that Material's [ColorScheme] does not cover.

@@ -320,6 +320,11 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                   label: l10n.categoryStocks,
                   icon: Icons.candlestick_chart_outlined,
                 ),
+                ChoiceTile(
+                  value: QuoteCategory.funds,
+                  label: l10n.categoryFunds,
+                  icon: Icons.pie_chart_outline_rounded,
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.xl),
@@ -346,7 +351,14 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
               ),
               subtitle: picked == null
                   ? null
-                  : Text(instrumentSubtitle(l10n, picked.instrument)),
+                  : Text(
+                      // Stocks and funds: full name; others: unit/code.
+                      _hasLongName(picked)
+                          ? picked.name
+                          : instrumentSubtitle(l10n, picked.instrument),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
               trailing: canChangeInstrument
                   ? const Icon(Icons.chevron_right_rounded)
                   : null,
@@ -451,6 +463,12 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
       ),
     );
   }
+
+  /// Stocks and funds carry the provider's full name (shown as subtitle).
+  static bool _hasLongName(PickedInstrument p) =>
+      (p.instrument.type == AssetType.stock ||
+          p.instrument.type == AssetType.fund) &&
+      p.name != p.instrument.code;
 
   static String _formatDate(DateTime d) =>
       '${d.day.toString().padLeft(2, '0')}.'

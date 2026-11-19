@@ -29,3 +29,8 @@ abstract interface class StockPriceProvider {
 abstract interface class StockListingProvider {
   Future<Result<List<StockListing>>> fetchListings();
 }
+
+/// TEFAS investment and pension fund prices (all funds, one request).
+abstract interface class FundPriceProvider {
+  Future<Result<List<Quote>>> fetchFunds();
+}

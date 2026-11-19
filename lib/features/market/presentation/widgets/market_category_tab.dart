@@ -47,6 +47,7 @@ class MarketCategoryTab extends ConsumerWidget {
         if (heldInstruments.contains(q.instrument)) q,
     ];
     final isStocks = category == QuoteCategory.stocks;
+    final isSearchable = isStocks || category == QuoteCategory.funds;
 
     return RefreshIndicator(
       onRefresh: () => _onPullToRefresh(context, ref, quotes, calendar),
@@ -72,7 +73,7 @@ class MarketCategoryTab extends ConsumerWidget {
           ),
           ?_notice(l10n, refresh, hasKey: hasKey),
           const SizedBox(height: AppSpacing.lg),
-          if (quotes.isEmpty && !isStocks)
+          if (quotes.isEmpty && !isSearchable)
             AppCard(
               child: EmptyState(
                 icon: Icons.candlestick_chart_outlined,
@@ -90,8 +91,18 @@ class MarketCategoryTab extends ConsumerWidget {
                   : _QuoteList(quotes: mine),
             ),
             const SizedBox(height: AppSpacing.md),
-            if (isStocks)
-              _AllStocksSection(quotes: quotes, initiallyExpanded: mine.isEmpty)
+            if (isSearchable)
+              _SearchableAllSection(
+                quotes: quotes,
+                initiallyExpanded: mine.isEmpty,
+                storageKey: 'market-${category.name}-all',
+                hint: isStocks
+                    ? l10n.marketSearchStocks
+                    : l10n.marketSearchFunds,
+                emptyText: isStocks
+                    ? l10n.marketStocksNotLoaded
+                    : l10n.marketFundsNotLoaded,
+              )
             else
               CollapsibleSection(
                 title: l10n.marketSectionAll,
@@ -126,7 +137,10 @@ class MarketCategoryTab extends ConsumerWidget {
         !RefreshPolicy.isSessionOpen(DateTime.now(), calendar)) {
       message = l10n.marketSessionClosed;
     } else {
-      final next = RefreshPolicy.nextUpdate(_latest(quotes));
+      final next = RefreshPolicy.nextUpdate(
+        _latest(quotes),
+        category: category,
+      );
       if (next == null) return;
       message = l10n.marketUpToDate(DateFormatters.shortDateTime(next));
     }
@@ -150,8 +164,8 @@ class MarketCategoryTab extends ConsumerWidget {
     PriceRefreshState refresh, {
     required bool hasKey,
   }) {
-    // FX works without a key (free fallback), the others don't.
-    if (!hasKey && category != QuoteCategory.fx) {
+    // Every category needs the Bürküt key.
+    if (!hasKey) {
       return _NoticeCard(
         icon: Icons.key_outlined,
         title: l10n.marketNeedsKeyTitle,
@@ -197,9 +211,8 @@ class _StatusCard extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final latest = MarketCategoryTab._latest(quotes);
-    final next = RefreshPolicy.nextUpdate(latest);
+    final next = RefreshPolicy.nextUpdate(latest, category: category);
     final isStocks = category == QuoteCategory.stocks;
-    final usesFallback = quotes.any((q) => q.source == QuoteSource.frankfurter);
 
     final title = isRefreshing
         ? l10n.marketRefreshing
@@ -212,11 +225,12 @@ class _StatusCard extends StatelessWidget {
         l10n.marketSessionClosed
       else if (!isRefreshing && next != null && next.isAfter(DateTime.now()))
         l10n.marketNextUpdate(DateFormatters.shortDateTime(next)),
-      if (isStocks) l10n.marketStocksRule else l10n.marketUpdateRule,
-      if (usesFallback)
-        l10n.marketSourceFallback
-      else if (quotes.isNotEmpty && isStocks)
-        l10n.marketSourceBurkut,
+      switch (category) {
+        QuoteCategory.stocks => l10n.marketStocksRule,
+        QuoteCategory.funds => l10n.marketFundsRule,
+        _ => l10n.marketUpdateRule,
+      },
+      if (quotes.isNotEmpty && isStocks) l10n.marketSourceBurkut,
     ];
 
     return Padding(
@@ -388,22 +402,28 @@ class _Hint extends StatelessWidget {
   );
 }
 
-/// Every BIST stock from the last market snapshot, with search. Rendered
-/// in pages of 50 so 600+ rows don't build at once.
-class _AllStocksSection extends StatefulWidget {
-  const _AllStocksSection({
+/// Every stock or fund from the last snapshot, with search. Rendered in
+/// pages of 50 so hundreds/thousands of rows don't build at once.
+class _SearchableAllSection extends StatefulWidget {
+  const _SearchableAllSection({
     required this.quotes,
     required this.initiallyExpanded,
+    required this.storageKey,
+    required this.hint,
+    required this.emptyText,
   });
 
   final List<Quote> quotes;
   final bool initiallyExpanded;
+  final String storageKey;
+  final String hint;
+  final String emptyText;
 
   @override
-  State<_AllStocksSection> createState() => _AllStocksSectionState();
+  State<_SearchableAllSection> createState() => _SearchableAllSectionState();
 }
 
-class _AllStocksSectionState extends State<_AllStocksSection> {
+class _SearchableAllSectionState extends State<_SearchableAllSection> {
   static const int _pageSize = 50;
 
   String _query = '';
@@ -427,7 +447,7 @@ class _AllStocksSectionState extends State<_AllStocksSection> {
       title: l10n.marketSectionAll,
       trailing: widget.quotes.length.toString(),
       initiallyExpanded: widget.initiallyExpanded,
-      storageKey: 'market-stocks-all',
+      storageKey: widget.storageKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -441,7 +461,7 @@ class _AllStocksSectionState extends State<_AllStocksSection> {
             child: TextField(
               textCapitalization: TextCapitalization.characters,
               decoration: InputDecoration(
-                hintText: l10n.marketSearchStocks,
+                hintText: widget.hint,
                 prefixIcon: const Icon(Icons.search_rounded),
                 isDense: true,
               ),
@@ -452,7 +472,7 @@ class _AllStocksSectionState extends State<_AllStocksSection> {
             ),
           ),
           if (widget.quotes.isEmpty)
-            _Hint(l10n.marketStocksNotLoaded)
+            _Hint(widget.emptyText)
           else if (matches.isEmpty)
             _Hint(l10n.pickerNoResults)
           else

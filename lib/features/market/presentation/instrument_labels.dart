@@ -40,7 +40,9 @@ String instrumentName(
     _ => null,
   };
   // Stocks are shown by ticker; the company name goes in the subtitle.
-  if (instrument.type == AssetType.stock) return instrument.code;
+  if (instrument.type == AssetType.stock || instrument.type == AssetType.fund) {
+    return instrument.code;
+  }
   return known ?? providerName ?? instrument.code;
 }
 
@@ -75,4 +77,5 @@ String instrumentSubtitle(AppLocalizations l10n, Instrument instrument) =>
       (type: AssetType.silver, code: 'SILVER_GRAM') => l10n.unitGram,
       (type: AssetType.gold || AssetType.silver, code: _) => l10n.unitPiece,
       (type: AssetType.stock, code: _) => l10n.exchangeBist,
+      (type: AssetType.fund, code: _) => l10n.categoryFunds,
     };

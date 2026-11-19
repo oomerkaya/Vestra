@@ -103,8 +103,10 @@ void main() {
       backoffUntil: backoffUntil,
     );
 
-    test('every category waits 30 minutes after a successful update', () {
-      for (final c in QuoteCategory.values) {
+    test('FX, metals and stocks wait 30 minutes after an update', () {
+      for (final c in QuoteCategory.values.where(
+        (c) => c != QuoteCategory.funds,
+      )) {
         expect(
           due(c, now: open, sinceSuccess: const Duration(minutes: 29)),
           isFalse,
@@ -114,6 +116,33 @@ void main() {
           isTrue,
         );
       }
+    });
+
+    test('funds update once per Istanbul day, any hour', () {
+      // Last update Monday 09:00 Istanbul.
+      final monday9 = ist(2026, 11, 16, 9);
+      bool fundsDue(DateTime now) => RefreshPolicy.isDue(
+        category: QuoteCategory.funds,
+        now: now,
+        lastSuccess: monday9,
+        lastAttempt: null,
+        calendar: calendar,
+        manual: true,
+      );
+
+      expect(fundsDue(ist(2026, 11, 16, 23, 59)), isFalse, reason: 'same day');
+      expect(fundsDue(ist(2026, 11, 17, 0, 1)), isTrue, reason: 'next day');
+      expect(fundsDue(ist(2026, 11, 22, 3)), isTrue, reason: 'weekend ok');
+    });
+
+    test('next fund update is the next Istanbul midnight', () {
+      expect(
+        RefreshPolicy.nextUpdate(
+          ist(2026, 11, 16, 14),
+          category: QuoteCategory.funds,
+        ),
+        ist(2026, 11, 17, 0),
+      );
     });
 
     test('manual refresh does NOT bypass the 30 minute rule', () {

@@ -1,7 +1,7 @@
 import 'package:decimal/decimal.dart';
 import 'package:vestra/core/domain/instrument.dart';
 
-enum QuoteSource { burkut, frankfurter }
+enum QuoteSource { burkut }
 
 /// Price of one instrument in TRY at a point in time.
 ///
@@ -40,11 +40,13 @@ class Quote {
 enum QuoteCategory {
   fx,
   metals,
-  stocks;
+  stocks,
+  funds;
 
   static QuoteCategory of(AssetType type) => switch (type) {
     AssetType.currency => QuoteCategory.fx,
     AssetType.gold || AssetType.silver => QuoteCategory.metals,
     AssetType.stock => QuoteCategory.stocks,
+    AssetType.fund => QuoteCategory.funds,
   };
 }

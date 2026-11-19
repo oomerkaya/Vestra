@@ -64,6 +64,8 @@ class _FakeMarket implements MarketRepository {
         _q(AssetType.currency, 'USD', now),
       if (categories.contains(QuoteCategory.metals))
         _q(AssetType.gold, 'GRAM', now),
+      if (categories.contains(QuoteCategory.funds))
+        _q(AssetType.fund, 'TCD', now),
       if (categories.contains(QuoteCategory.stocks))
         for (final s in stockSymbols ?? marketSymbols)
           if (!unknownSymbols.contains(s)) _q(AssetType.stock, s, now),
@@ -148,13 +150,18 @@ void main() {
     expect(market.calls, hasLength(1), reason: 'no extra quota used');
   });
 
-  test('after 30 minutes the categories are fetched again', () async {
+  test('after 30 minutes the intraday categories are fetched again', () async {
     await controller().refreshDue(manual: true);
 
     now = now.add(const Duration(minutes: 30));
     final again = await controller().refreshDue();
 
-    expect(again, QuoteCategory.values.toSet());
+    // Funds: once per day, so not again the same afternoon.
+    expect(again, {
+      QuoteCategory.fx,
+      QuoteCategory.metals,
+      QuoteCategory.stocks,
+    });
     expect(market.calls, hasLength(2));
   });
 
@@ -176,6 +183,7 @@ void main() {
     now = now.add(const Duration(minutes: 31));
     final requested = await controller().refreshDue();
 
+    // Funds were already fetched at 11:00 that day.
     expect(requested, {QuoteCategory.fx, QuoteCategory.metals});
     expect(
       market.calls.every((c) => !c.contains(QuoteCategory.stocks)),

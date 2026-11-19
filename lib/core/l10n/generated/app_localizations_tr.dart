@@ -89,16 +89,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get marketSourceBurkut => 'Bürküt · hisseler en az 15 dk gecikmeli';
 
   @override
-  String get marketSourceFallback =>
-      'Döviz: ECB günlük referans kuru (yedek kaynak)';
-
-  @override
-  String get marketNeedsKeyTitle =>
-      'Altın, gümüş ve hisse için API anahtarı gerekli';
+  String get marketNeedsKeyTitle => 'Fiyatlar için Bürküt API anahtarı gerekli';
 
   @override
   String get marketNeedsKeyMessage =>
-      'Döviz kurları ücretsiz yedek kaynaktan geliyor. Bürküt\'ten ücretsiz anahtar alıp Ayarlar\'a ekle.';
+      'Döviz, altın, hisse ve fon fiyatları Bürküt\'ten gelir. burkutportfoy.com/developer adresinden ücretsiz anahtar alıp Ayarlar\'a ekle.';
 
   @override
   String get marketGoToSettings => 'Ayarlara git';
@@ -191,8 +186,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get settingsApiKeyNotSet =>
-      'Ayarlanmadı · altın, gümüş ve hisse için gerekli';
+  String get settingsApiKeyNotSet => 'Ayarlanmadı · fiyatlar için gerekli';
 
   @override
   String get settingsQuota => 'Bu ayki istek kullanımı';
@@ -207,7 +201,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsDataNote =>
-      'Döviz ve altın/gümüş fiyatları uygulama açıkken 30 dakikada bir güncellenir. Hisseler yalnızca hafta içi 10:00-18:00 arasında güncellenir ve Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Bürküt lisanslı bir veri dağıtıcısı değildir.';
+      'Fiyatlar Bürküt\'ten gelir. Döviz ve altın/gümüş uygulama açıkken 30 dakikada bir, hisseler yalnızca hafta içi 10:00-18:00 arasında 30 dakikada bir, fonlar günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.';
 
   @override
   String get apiKeySheetTitle => 'Bürküt API anahtarı';
@@ -543,4 +537,23 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get marketStocksNotLoaded =>
       'Hisse fiyatları ilk güncellemeyle gelir.';
+
+  @override
+  String get marketTabFunds => 'Fonlar';
+
+  @override
+  String get categoryFunds => 'Fonlar';
+
+  @override
+  String get unitShare => 'pay';
+
+  @override
+  String get marketFundsRule =>
+      'Günde bir kez güncellenir (TEFAS fiyatları günlük açıklanır)';
+
+  @override
+  String get marketSearchFunds => 'Fon ara (kod veya ad)';
+
+  @override
+  String get marketFundsNotLoaded => 'Fon listesi ilk güncellemeyle gelir.';
 }

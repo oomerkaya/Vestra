@@ -21,241 +21,182 @@ class _Metals extends Mock implements MetalPriceProvider {}
 
 class _Stocks extends Mock implements StockPriceProvider {}
 
-Quote _q(AssetType type, String code, String price, QuoteSource source) =>
-    Quote(
-      instrument: (type: type, code: code),
-      priceTry: d(price),
-      source: source,
-      fetchedAt: DateTime(2026, 11, 17, 12),
-      changePercent: d('1.5'),
-    );
+class _Funds extends Mock implements FundPriceProvider {}
+
+Quote _q(AssetType type, String code, String price) => Quote(
+  instrument: (type: type, code: code),
+  priceTry: d(price),
+  source: QuoteSource.burkut,
+  fetchedAt: DateTime(2026, 11, 17, 12),
+  changePercent: d('1.5'),
+);
 
 final Set<QuoteCategory> _all = QuoteCategory.values.toSet();
 
 void main() {
   late AppDatabase db;
   late _Fx fx;
-  late _Fx fallback;
   late _Metals metals;
   late _Stocks stocks;
+  late _Funds funds;
   late MarketRepositoryImpl repo;
   final now = DateTime.utc(2026, 11, 18, 12);
 
-  final usd = _q(AssetType.currency, 'USD', '42.1', QuoteSource.burkut);
-  final usdEcb = _q(AssetType.currency, 'USD', '42', QuoteSource.frankfurter);
-  final gram = _q(AssetType.gold, 'GRAM', '3500', QuoteSource.burkut);
-  final thyao = _q(AssetType.stock, 'THYAO', '312.5', QuoteSource.burkut);
+  final usd = _q(AssetType.currency, 'USD', '42.1');
+  final gbp = _q(AssetType.currency, 'GBP', '56');
+  final gram = _q(AssetType.gold, 'GRAM', '3500');
+  final ons = _q(AssetType.gold, 'ONS', '176000');
+  final thyao = _q(AssetType.stock, 'THYAO', '312.5');
+  final tcd = _q(AssetType.fund, 'TCD', '43.4046');
 
   setUp(() {
     db = createTestDatabase();
     fx = _Fx();
-    fallback = _Fx();
     metals = _Metals();
     stocks = _Stocks();
+    funds = _Funds();
     repo = MarketRepositoryImpl(
       fx: fx,
-      fxFallback: fallback,
       metals: metals,
       stocks: stocks,
+      funds: funds,
       cache: PriceCacheLocalDataSource(db),
       quota: QuotaLocalDataSource(db),
       meta: MarketMetaLocalDataSource(db),
       clock: () => now,
     );
+    when(() => fx.fetchRates()).thenAnswer((_) async => Success([usd]));
+    when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
     when(
-      () => fallback.fetchRates(),
-    ).thenAnswer((_) async => Success([usdEcb]));
+      () => stocks.fetchQuotes(symbols: any(named: 'symbols')),
+    ).thenAnswer((_) async => Success([thyao]));
+    when(() => funds.fetchFunds()).thenAnswer((_) async => Success([tcd]));
   });
   tearDown(() => db.close());
 
   Future<List<Quote>> cached() async =>
       (await repo.watchQuotes().first).valueOrNull!;
 
-  test('happy path stores all categories and skips the fallback', () async {
-    when(() => fx.fetchRates()).thenAnswer((_) async => Success([usd]));
-    when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
-    when(
-      () => stocks.fetchQuotes(symbols: any(named: 'symbols')),
-    ).thenAnswer((_) async => Success([thyao]));
+  test('all four categories are fetched and stored', () async {
+    final report = (await repo.refresh(categories: _all)).valueOrNull!;
 
-    final report = (await repo.refresh(
-      categories: _all,
-      stockSymbols: {'THYAO'},
-    )).valueOrNull!;
-
-    expect(report.updated, 3);
+    expect(report.updated, 4);
     expect(report.hasFailures, isFalse);
-    expect(report.usedFxFallback, isFalse);
-    verifyNever(() => fallback.fetchRates());
-    final stored = await cached();
-    expect(stored, hasLength(3));
-    final storedUsd = stored.firstWhere((q) => q.instrument.code == 'USD');
-    expect(storedUsd.priceTry, d('42.1'));
-    expect(storedUsd.changePercent, d('1.5'));
+    final codes = (await cached()).map((q) => q.instrument.code).toSet();
+    expect(codes, {'USD', 'GRAM', 'THYAO', 'TCD'});
+    verify(() => stocks.fetchQuotes()).called(1);
   });
 
-  test('missing key: FX from fallback, metals/stocks skipped', () async {
+  test('only the requested categories are fetched', () async {
+    await repo.refresh(categories: {QuoteCategory.funds});
+
+    verify(() => funds.fetchFunds()).called(1);
+    verifyNever(() => fx.fetchRates());
+    verifyNever(() => metals.fetchPrices());
+    verifyNever(() => stocks.fetchQuotes(symbols: any(named: 'symbols')));
+  });
+
+  test('missing key: nothing is fetched, every category fails', () async {
     when(
       () => fx.fetchRates(),
     ).thenAnswer((_) async => const Err(AuthFailure(missingKey: true)));
 
-    final report = (await repo.refresh(
-      categories: _all,
-      stockSymbols: {'THYAO'},
-    )).valueOrNull!;
+    final report = (await repo.refresh(categories: _all)).valueOrNull!;
 
-    expect(report.usedFxFallback, isTrue);
-    expect(report.failures[QuoteCategory.metals], isA<AuthFailure>());
-    expect(report.failures[QuoteCategory.stocks], isA<AuthFailure>());
-    expect(report.failures.containsKey(QuoteCategory.fx), isFalse);
+    expect(report.updated, 0);
+    expect(report.failures.keys.toSet(), _all);
+    expect(report.failures.values, everyElement(isA<AuthFailure>()));
     verifyNever(() => metals.fetchPrices());
     verifyNever(() => stocks.fetchQuotes(symbols: any(named: 'symbols')));
-    expect((await cached()).single.source, QuoteSource.frankfurter);
+    verifyNever(() => funds.fetchFunds());
   });
 
-  test('network failure on FX still tries metals', () async {
+  test('a network failure on one category still tries the others', () async {
     when(
       () => fx.fetchRates(),
     ).thenAnswer((_) async => const Err(NetworkFailure()));
-    when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
 
-    final report = (await repo.refresh(
-      categories: _all,
-      stockSymbols: {},
-    )).valueOrNull!;
+    final report = (await repo.refresh(categories: _all)).valueOrNull!;
 
-    expect(report.usedFxFallback, isTrue);
-    expect(report.updated, 2);
-    verify(() => metals.fetchPrices()).called(1);
-  });
-
-  test('no stocks held: stock provider is not called', () async {
-    when(() => fx.fetchRates()).thenAnswer((_) async => Success([usd]));
-    when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
-
-    await repo.refresh(categories: _all, stockSymbols: {});
-
-    verifyNever(() => stocks.fetchQuotes(symbols: any(named: 'symbols')));
+    expect(report.failures.keys, [QuoteCategory.fx]);
+    expect(report.updated, 3);
   });
 
   test('a newer quote replaces the cached one', () async {
-    when(() => fx.fetchRates()).thenAnswer((_) async => Success([usd]));
-    when(
-      () => metals.fetchPrices(),
-    ).thenAnswer((_) async => const Success([]));
-    await repo.refresh(categories: _all, stockSymbols: {});
-
-    final newer = _q(AssetType.currency, 'USD', '43', QuoteSource.burkut);
+    await repo.refresh(categories: {QuoteCategory.fx});
+    final newer = _q(AssetType.currency, 'USD', '43');
     when(() => fx.fetchRates()).thenAnswer((_) async => Success([newer]));
-    await repo.refresh(categories: _all, stockSymbols: {});
+
+    await repo.refresh(categories: {QuoteCategory.fx});
 
     expect((await cached()).single.priceTry, d('43'));
   });
 
   test('everything failing keeps the old cache', () async {
-    when(() => fx.fetchRates()).thenAnswer((_) async => Success([usd]));
-    when(
-      () => metals.fetchPrices(),
-    ).thenAnswer((_) async => const Success([]));
-    await repo.refresh(categories: _all, stockSymbols: {});
-
+    await repo.refresh(categories: {QuoteCategory.fx});
     when(
       () => fx.fetchRates(),
     ).thenAnswer((_) async => const Err(NetworkFailure()));
-    when(
-      () => fallback.fetchRates(),
-    ).thenAnswer((_) async => const Err(NetworkFailure()));
-    when(
-      () => metals.fetchPrices(),
-    ).thenAnswer((_) async => const Err(NetworkFailure()));
+
     final report = (await repo.refresh(
-      categories: _all,
-      stockSymbols: {},
+      categories: {QuoteCategory.fx},
     )).valueOrNull!;
 
     expect(report.updated, 0);
-    expect(report.failures.keys, containsAll([QuoteCategory.fx]));
     expect((await cached()).single.priceTry, d('42.1'));
   });
 
-  test('only the requested categories are fetched', () async {
-    when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
+  test('empty stockSymbols fetches no stocks', () async {
+    await repo.refresh(
+      categories: {QuoteCategory.stocks},
+      stockSymbols: const {},
+    );
 
-    final report = (await repo.refresh(
-      categories: {QuoteCategory.metals},
-      stockSymbols: {'THYAO'},
-    )).valueOrNull!;
-
-    expect(report.updated, 1);
-    verifyNever(() => fx.fetchRates());
-    verifyNever(() => fallback.fetchRates());
     verifyNever(() => stocks.fetchQuotes(symbols: any(named: 'symbols')));
   });
 
-  test('stockSymbols null = whole market in one request', () async {
-    when(() => fx.fetchRates()).thenAnswer((_) async => Success([usd]));
-    when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
-    when(
-      () => stocks.fetchQuotes(symbols: any(named: 'symbols')),
-    ).thenAnswer((_) async => Success([thyao]));
+  group('stocks snapshot', () {
+    test('a whole-market fetch records the snapshot time', () async {
+      expect(await repo.stocksSnapshotAt(), isNull);
 
-    await repo.refresh(categories: _all);
+      await repo.refresh(categories: {QuoteCategory.stocks});
 
-    verify(() => stocks.fetchQuotes()).called(1);
-  });
+      expect(await repo.stocksSnapshotAt(), now);
+    });
 
-  test('a whole-market stock fetch records the snapshot time', () async {
-    when(() => fx.fetchRates()).thenAnswer((_) async => Success([usd]));
-    when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
-    when(
-      () => stocks.fetchQuotes(symbols: any(named: 'symbols')),
-    ).thenAnswer((_) async => Success([thyao]));
+    test('fetching only some symbols is not a snapshot', () async {
+      await repo.refresh(
+        categories: {QuoteCategory.stocks},
+        stockSymbols: {'THYAO'},
+      );
 
-    expect(await repo.stocksSnapshotAt(), isNull);
-    await repo.refresh(categories: {QuoteCategory.stocks});
-
-    expect(await repo.stocksSnapshotAt(), now);
-  });
-
-  test('fetching only some symbols does not count as a snapshot', () async {
-    when(
-      () => stocks.fetchQuotes(symbols: any(named: 'symbols')),
-    ).thenAnswer((_) async => Success([thyao]));
-
-    await repo.refresh(
-      categories: {QuoteCategory.stocks},
-      stockSymbols: {'THYAO'},
-    );
-
-    expect(await repo.stocksSnapshotAt(), isNull);
+      expect(await repo.stocksSnapshotAt(), isNull);
+    });
   });
 
   group('stale rows', () {
-    final ons = _q(AssetType.gold, 'ONS', '176000', QuoteSource.burkut);
-    final gbp = _q(AssetType.currency, 'GBP', '56', QuoteSource.burkut);
-
     test('unsupported metals in the cache are not shown', () async {
       await PriceCacheLocalDataSource(db).upsertAll([
         ons.toCompanion(),
         gram.toCompanion(),
       ]);
 
-      final shown = await cached();
-
-      expect(shown.map((q) => q.instrument.code), ['GRAM']);
+      expect((await cached()).map((q) => q.instrument.code), ['GRAM']);
     });
 
-    test('a complete metals list removes rows it no longer contains', () async {
-      await PriceCacheLocalDataSource(db).upsertAll([ons.toCompanion()]);
-      when(() => metals.fetchPrices()).thenAnswer((_) async => Success([gram]));
+    test('a complete list removes rows it no longer contains', () async {
+      await PriceCacheLocalDataSource(db).upsertAll([
+        ons.toCompanion(),
+        gbp.toCompanion(),
+      ]);
 
-      await repo.refresh(categories: {QuoteCategory.metals});
+      await repo.refresh(categories: {QuoteCategory.metals, QuoteCategory.fx});
 
       final rows = await db.select(db.priceCache).get();
-      expect(rows.map((r) => r.code), ['GRAM']);
+      expect(rows.map((r) => r.code).toSet(), {'GRAM', 'USD'});
     });
 
-    test('the partial FX fallback does not delete other currencies', () async {
+    test('a failed category keeps its rows', () async {
       await PriceCacheLocalDataSource(db).upsertAll([gbp.toCompanion()]);
       when(
         () => fx.fetchRates(),
@@ -263,8 +204,7 @@ void main() {
 
       await repo.refresh(categories: {QuoteCategory.fx});
 
-      final codes = (await cached()).map((q) => q.instrument.code).toSet();
-      expect(codes, {'USD', 'GBP'});
+      expect((await cached()).single.instrument.code, 'GBP');
     });
 
     test('an empty answer never wipes the cache', () async {
