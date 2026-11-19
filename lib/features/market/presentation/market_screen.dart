@@ -19,7 +19,7 @@ class MarketScreen extends StatelessWidget {
         appBar: AppBar(
           title: Text(l10n.navMarket),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(56),
+            preferredSize: const Size.fromHeight(66),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.screen,
@@ -87,7 +87,8 @@ class _SegmentedTabBar extends StatelessWidget {
             // Four tabs on a phone: shrink the label rather than cut it.
             for (final label in labels)
               Tab(
-                height: 36,
+                // 48 dp touch target with the padding around it.
+                height: 46,
                 child: FittedBox(fit: BoxFit.scaleDown, child: Text(label)),
               ),
           ],

@@ -8,6 +8,7 @@ import 'package:vestra/core/theme/app_tokens.dart';
 import 'package:vestra/core/widgets/app_card.dart';
 import 'package:vestra/core/widgets/collapsible_section.dart';
 import 'package:vestra/core/widgets/empty_state.dart';
+import 'package:vestra/core/widgets/error_state.dart';
 import 'package:vestra/core/widgets/section_header.dart';
 import 'package:vestra/features/market/market_providers.dart';
 import 'package:vestra/features/portfolio/domain/entities/portfolio_summary.dart';
@@ -22,8 +23,14 @@ class PortfolioScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final summary =
-        ref.watch(portfolioSummaryProvider).value ?? PortfolioSummary.empty;
+    final summaryAsync = ref.watch(portfolioSummaryProvider);
+    if (summaryAsync.hasError) {
+      return Scaffold(
+        appBar: AppBar(title: Text(l10n.navPortfolio)),
+        body: const Center(child: ErrorState()),
+      );
+    }
+    final summary = summaryAsync.value ?? PortfolioSummary.empty;
     final hasStocks = ref.watch(heldStockSymbolsProvider).isNotEmpty;
     final unseen = ref.watch(kapUnseenCountProvider);
     final withNews = ref.watch(newDisclosureSymbolsProvider);
@@ -48,6 +55,9 @@ class PortfolioScreen extends ConsumerWidget {
               icon: Badge.count(
                 count: unseen,
                 isLabelVisible: unseen > 0,
+                // Accent, not red: red means a loss in this app.
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                textColor: Theme.of(context).colorScheme.onPrimary,
                 child: const Icon(Icons.campaign_outlined),
               ),
             ),

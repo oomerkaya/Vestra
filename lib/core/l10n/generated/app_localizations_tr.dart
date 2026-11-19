@@ -695,4 +695,11 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get backupErrorInvalid =>
       'Yedek dosyası bozuk ya da tutarsız; portföyün değişmedi.';
+
+  @override
+  String get errorLoadTitle => 'Veriler okunamadı';
+
+  @override
+  String get errorLoadMessage =>
+      'Telefondaki kayıtlara erişilemedi. Uygulamayı kapatıp yeniden aç.';
 }

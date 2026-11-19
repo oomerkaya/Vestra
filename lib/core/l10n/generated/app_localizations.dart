@@ -1357,6 +1357,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Yedek dosyası bozuk ya da tutarsız; portföyün değişmedi.'**
   String get backupErrorInvalid;
+
+  /// No description provided for @errorLoadTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Veriler okunamadı'**
+  String get errorLoadTitle;
+
+  /// No description provided for @errorLoadMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Telefondaki kayıtlara erişilemedi. Uygulamayı kapatıp yeniden aç.'**
+  String get errorLoadMessage;
 }
 
 class _AppLocalizationsDelegate

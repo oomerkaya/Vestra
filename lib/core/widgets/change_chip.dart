@@ -49,12 +49,15 @@ class ChangeChip extends StatelessWidget {
           children: [
             Icon(icon, size: 14, color: fg),
             const SizedBox(width: AppSpacing.xs),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: fg,
-                fontWeight: FontWeight.w600,
-                fontFeatures: AppTypography.tabular,
+            // Wraps instead of overflowing at large system font sizes.
+            Flexible(
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: fg,
+                  fontWeight: FontWeight.w600,
+                  fontFeatures: AppTypography.tabular,
+                ),
               ),
             ),
           ],

@@ -15,6 +15,7 @@ import 'package:vestra/core/widgets/app_card.dart';
 import 'package:vestra/core/widgets/change_chip.dart';
 import 'package:vestra/core/widgets/confirm_dialog.dart';
 import 'package:vestra/core/widgets/empty_state.dart';
+import 'package:vestra/core/widgets/error_state.dart';
 import 'package:vestra/core/widgets/instrument_avatar.dart';
 import 'package:vestra/core/widgets/messages.dart';
 import 'package:vestra/core/widgets/section_header.dart';
@@ -37,7 +38,14 @@ class AssetDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final holdings = ref.watch(holdingsProvider).value;
+    final holdingsAsync = ref.watch(holdingsProvider);
+    if (holdingsAsync.hasError) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: const Center(child: ErrorState()),
+      );
+    }
+    final holdings = holdingsAsync.value;
     final holding = holdings?.where((h) => h.asset.id == assetId).firstOrNull;
     final summary = ref.watch(portfolioSummaryProvider).value;
     final valued = summary?.holdings

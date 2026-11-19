@@ -12,7 +12,9 @@ abstract final class AppPalette {
   static const Color lightSurface = Color(0xFFFFFFFF);
   static const Color lightSurfaceMuted = Color(0xFFEEF0F3);
   static const Color lightTextPrimary = Color(0xFF111318);
-  static const Color lightTextSecondary = Color(0xFF6B7280);
+  static const Color lightTextSecondary = Color(
+    0xFF636A77,
+  ); // WCAG AA 4.5:1 on background, surface and muted surface
   static const Color lightDivider = Color(0xFFE5E7EB);
 
   // Dark neutrals.

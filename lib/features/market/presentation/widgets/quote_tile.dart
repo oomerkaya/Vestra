@@ -7,6 +7,7 @@ import 'package:vestra/core/theme/app_typography.dart';
 import 'package:vestra/core/utils/formatters.dart';
 import 'package:vestra/core/widgets/change_chip.dart';
 import 'package:vestra/core/widgets/instrument_avatar.dart';
+import 'package:vestra/core/widgets/trailing_figures.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/presentation/instrument_labels.dart';
 
@@ -67,8 +68,7 @@ class QuoteTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          TrailingFigures(
             children: [
               Text(
                 Formatters.currencyTry(quote.priceTry, decimals: decimals),

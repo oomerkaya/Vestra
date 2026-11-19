@@ -9,6 +9,7 @@ import 'package:vestra/core/utils/formatters.dart';
 import 'package:vestra/core/widgets/app_card.dart';
 import 'package:vestra/core/widgets/collapsible_section.dart';
 import 'package:vestra/core/widgets/empty_state.dart';
+import 'package:vestra/core/widgets/error_state.dart';
 import 'package:vestra/core/widgets/messages.dart';
 import 'package:vestra/features/market/domain/entities/market_calendar.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
@@ -31,7 +32,11 @@ class MarketCategoryTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final allQuotes = ref.watch(quotesProvider).value ?? const <Quote>[];
+    final quotesAsync = ref.watch(quotesProvider);
+    if (quotesAsync.hasError && !quotesAsync.hasValue) {
+      return const Center(child: ErrorState());
+    }
+    final allQuotes = quotesAsync.value ?? const <Quote>[];
     final heldInstruments = ref.watch(heldInstrumentsProvider);
     final refresh = ref.watch(priceRefreshControllerProvider);
     final hasKey = ref.watch(burkutKeyProvider).value != null;

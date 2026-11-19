@@ -329,5 +329,7 @@
   "backupRestoreFailed": "Yedek geri yüklenemedi; portföyün değişmedi.",
   "backupErrorNotABackup": "Bu dosya bir Vestra yedeği değil.",
   "backupErrorNewer": "Bu yedek daha yeni bir Vestra sürümüyle oluşturulmuş. Önce uygulamayı güncelle.",
-  "backupErrorInvalid": "Yedek dosyası bozuk ya da tutarsız; portföyün değişmedi."
+  "backupErrorInvalid": "Yedek dosyası bozuk ya da tutarsız; portföyün değişmedi.",
+  "errorLoadTitle": "Veriler okunamadı",
+  "errorLoadMessage": "Telefondaki kayıtlara erişilemedi. Uygulamayı kapatıp yeniden aç."
 }

@@ -134,65 +134,84 @@ class AllocationChart extends StatelessWidget {
               ),
     ];
 
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      child: Row(
-        children: [
-          DonutChart(
-            size: 120,
-            thickness: 16,
-            semanticsLabel: [
-              for (final (i, s) in slices.indexed)
-                '${s.label} ${Formatters.percent(percents[i], decimals: 0)}',
-            ].join(', '),
-            segments: [
-              for (final (i, s) in slices.indexed)
-                DonutSegment(
-                  fraction: percents[i].toDouble() / 100,
+    final chart = DonutChart(
+      size: 120,
+      thickness: 16,
+      semanticsLabel: [
+        for (final (i, s) in slices.indexed)
+          '${s.label} ${Formatters.percent(percents[i], decimals: 0)}',
+      ].join(', '),
+      segments: [
+        for (final (i, s) in slices.indexed)
+          DonutSegment(
+            fraction: percents[i].toDouble() / 100,
+            color: s.color,
+          ),
+      ],
+    );
+    final legend = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (final (i, s) in slices.indexed) ...[
+          if (i > 0) const SizedBox(height: AppSpacing.md),
+          Row(
+            children: [
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
                   color: s.color,
+                  borderRadius: AppRadius.pillAll,
                 ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Text(
+                  s.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ),
+              Text(
+                Formatters.percent(percents[i], decimals: 1),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontFeatures: AppTypography.tabular,
+                ),
+              ),
             ],
           ),
-          const SizedBox(width: AppSpacing.xl),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (final (i, s) in slices.indexed) ...[
-                  if (i > 0) const SizedBox(height: AppSpacing.md),
-                  Row(
-                    children: [
-                      Container(
-                        width: 10,
-                        height: 10,
-                        decoration: BoxDecoration(
-                          color: s.color,
-                          borderRadius: AppRadius.pillAll,
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: Text(
-                          s.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                      Text(
-                        Formatters.percent(percents[i], decimals: 1),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontFeatures: AppTypography.tabular,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ],
-            ),
-          ),
         ],
+      ],
+    );
+
+    return Padding(
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      // Side by side; stacked when a large system font size leaves the
+      // legend too little room.
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final legendWidth = constraints.maxWidth - 120 - AppSpacing.xl;
+          final needed = MediaQuery.textScalerOf(context).scale(170);
+          if (legendWidth >= needed) {
+            return Row(
+              children: [
+                chart,
+                const SizedBox(width: AppSpacing.xl),
+                Expanded(child: legend),
+              ],
+            );
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(child: chart),
+              const SizedBox(height: AppSpacing.xl),
+              legend,
+            ],
+          );
+        },
       ),
     );
   }

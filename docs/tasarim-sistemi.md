@@ -39,7 +39,7 @@ Inter v4.1, resmi sürüm: `github.com/rsms/inter/releases` → `extras/ttf/`. L
 | Kart yüzeyi | `#FFFFFF` | `#16191E` |
 | Soluk yüzey (input, seçenek) | `#EEF0F3` | `#1F232A` |
 | Birincil metin | `#111318` | `#F3F4F6` |
-| İkincil metin | `#6B7280` | `#9CA3AF` |
+| İkincil metin | `#636A77` (WCAG AA için koyulaştırıldı, eski `#6B7280`) | `#9CA3AF` |
 | Ayraç | `#E5E7EB` | `#262B33` |
 | Kazanç | `#15803D` | `#34D399` |
 | Kayıp | `#DC2626` | `#F87171` |

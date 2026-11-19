@@ -5,6 +5,7 @@ import 'package:vestra/core/theme/app_typography.dart';
 import 'package:vestra/core/utils/formatters.dart';
 import 'package:vestra/core/widgets/change_chip.dart';
 import 'package:vestra/core/widgets/instrument_avatar.dart';
+import 'package:vestra/core/widgets/trailing_figures.dart';
 import 'package:vestra/features/market/presentation/instrument_labels.dart';
 import 'package:vestra/features/portfolio/domain/entities/portfolio_summary.dart';
 import 'package:vestra/features/portfolio/presentation/portfolio_labels.dart';
@@ -52,29 +53,33 @@ class HoldingTile extends StatelessWidget {
           children: [
             InstrumentAvatar(
               type: asset.type,
-              label: instrumentShortLabel((type: asset.type, code: asset.code)),
+              label: instrumentShortLabel((
+                type: asset.type,
+                code: asset.code,
+              )),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  // Wrap: the pill moves below the name when both don't
+                  // fit (large system font sizes).
+                  Wrap(
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.xxs,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Flexible(
-                        child: Text(
-                          assetDisplayName(l10n, asset),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                      Text(
+                        assetDisplayName(l10n, asset),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      if (hasNewDisclosure) ...[
-                        const SizedBox(width: AppSpacing.sm),
+                      if (hasNewDisclosure)
                         _KapPill(semanticsLabel: l10n.kapNewBadgeSemantics),
-                      ],
                     ],
                   ),
                   if (company != null)
@@ -97,8 +102,7 @@ class HoldingTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            TrailingFigures(
               children: [
                 Text(
                   value == null
