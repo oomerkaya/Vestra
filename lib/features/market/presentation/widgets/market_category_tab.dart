@@ -233,14 +233,13 @@ class _StatusCard extends StatelessWidget {
         l10n.marketSessionClosed
       else if (!isRefreshing && next != null && next.isAfter(DateTime.now()))
         l10n.marketNextUpdate(DateFormatters.shortDateTime(next)),
+      // Funds have one price per day (NAV), so "delayed" does not apply.
       switch (category) {
         QuoteCategory.stocks => l10n.marketStocksRule,
         QuoteCategory.funds => l10n.marketFundsRule,
-        _ => l10n.marketUpdateRule,
+        _ => '${l10n.marketUpdateRule}. ${l10n.marketDataDelayed}.',
       },
-      // Funds have one price per day (NAV), so "delayed" does not apply.
-      if (quotes.isNotEmpty && category != QuoteCategory.funds)
-        l10n.marketDataDelayed,
+      if (quotes.isNotEmpty && isStocks) l10n.marketDataDelayed,
     ];
 
     return Padding(
