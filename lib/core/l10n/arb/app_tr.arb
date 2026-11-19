@@ -261,5 +261,22 @@
   "unitShare": "pay",
   "marketFundsRule": "Hafta içi 10:00-18:00 arasında, günde bir kez güncellenir (TEFAS fiyatları günlük açıklanır)",
   "marketSearchFunds": "Fon ara (kod veya ad)",
-  "marketFundsNotLoaded": "Fon listesi ilk güncellemeyle gelir."
+  "marketFundsNotLoaded": "Fon listesi ilk güncellemeyle gelir.",
+  "kapSectionTitle": "Son KAP bildirimleri",
+  "kapAssetSectionTitle": "KAP bildirimleri",
+  "kapNoneRecent": "Son 7 günde bildirim yok.",
+  "kapNone": "Bu hisse için yakın tarihli bildirim yok.",
+  "kapNotLoaded": "Bildirimler henüz yüklenmedi. Günde bir kez otomatik güncellenir.",
+  "kapLoading": "Bildirimler yükleniyor…",
+  "kapPortfolioFooter": "Kaynak: KAP, Bürküt üzerinden. Portföydeki değeri en yüksek 5 hisse için günde bir kez güncellenir; diğer hisselerin bildirimleri detay ekranında.",
+  "kapAssetFooter": "Kaynak: KAP, Bürküt üzerinden. Günde bir kez güncellenir.",
+  "kapOpenOnKap": "Bildirimi KAP'ta aç",
+  "linkOpenFailed": "Bağlantı açılamadı.",
+  "kapShowAll": "{count} bildirimin tümünü göster",
+  "@kapShowAll": {
+    "placeholders": {
+      "count": {"type": "String"}
+    }
+  },
+  "kapShowLess": "Daha az göster"
 }

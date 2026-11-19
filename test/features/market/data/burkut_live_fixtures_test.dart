@@ -14,7 +14,7 @@ import 'package:vestra/features/market/domain/entities/quote.dart';
 import '../../../helpers/fixtures.dart';
 import '../../../helpers/test_database.dart';
 
-/// Regression tests on real Bürküt responses captured on 2026-11-18
+/// Regression tests on real Bürküt responses captured on 2026-11-18/19
 /// (`test/fixtures/burkut/*.json`, no API key inside). If Bürküt changes
 /// its format, refresh the fixtures and these tests show what broke.
 class _FixtureAdapter implements HttpClientAdapter {
@@ -114,6 +114,21 @@ void main() {
     expect(quotes['THYAO']!.priceTry, d('323.75'));
     expect(quotes['THYAO']!.changePercent, d('0.47'));
     expect(quotes['ASELS']!.priceTry, d('343.75'));
+  });
+
+  test('/kap: paged envelope, KAP link from short_description', () async {
+    final items = (await provider.fetchDisclosures('THYAO')).valueOrNull!;
+
+    expect(items, hasLength(5));
+    expect(items.every((d) => d.symbol == 'THYAO'), isTrue);
+    final first = items.first;
+    expect(first.title, 'Şirket Genel Bilgi Formu');
+    expect(first.summary, isNull, reason: 'empty summary');
+    expect(first.headline, 'Şirket Genel Bilgi Formu');
+    expect(first.url, 'https://www.kap.org.tr/tr/Bildirim/1697886');
+    expect(first.publishedAt, DateTime.utc(2026, 11, 13, 7, 58));
+    expect(items[1].headline, 'Ekim 2026 Trafik Sonuçları');
+    expect(items[1].title, 'Özel Durum Açıklaması (Genel)');
   });
 
   test('quota headers sync the local counter', () async {

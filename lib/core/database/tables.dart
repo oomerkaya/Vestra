@@ -64,6 +64,24 @@ class PriceCache extends Table {
   Set<Column> get primaryKey => {type, code};
 }
 
+/// Recent KAP disclosures of tracked stocks (v3). Replaced per symbol on
+/// every fetch, so only the latest few per stock are kept.
+@DataClassName('KapDisclosureRow')
+class KapDisclosures extends Table {
+  /// Bürküt's id of the disclosure.
+  TextColumn get id => text()();
+  TextColumn get symbol => text()();
+  TextColumn get title => text()();
+  TextColumn get summary => text().nullable()();
+
+  /// Link to the original disclosure on kap.org.tr, if given.
+  TextColumn get url => text().nullable()();
+  DateTimeColumn get publishedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 /// Simple key/value store for app preferences (non-secret only).
 @DataClassName('SettingRow')
 class AppSettings extends Table {

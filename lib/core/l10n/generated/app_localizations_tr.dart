@@ -556,4 +556,45 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get marketFundsNotLoaded => 'Fon listesi ilk güncellemeyle gelir.';
+
+  @override
+  String get kapSectionTitle => 'Son KAP bildirimleri';
+
+  @override
+  String get kapAssetSectionTitle => 'KAP bildirimleri';
+
+  @override
+  String get kapNoneRecent => 'Son 7 günde bildirim yok.';
+
+  @override
+  String get kapNone => 'Bu hisse için yakın tarihli bildirim yok.';
+
+  @override
+  String get kapNotLoaded =>
+      'Bildirimler henüz yüklenmedi. Günde bir kez otomatik güncellenir.';
+
+  @override
+  String get kapLoading => 'Bildirimler yükleniyor…';
+
+  @override
+  String get kapPortfolioFooter =>
+      'Kaynak: KAP, Bürküt üzerinden. Portföydeki değeri en yüksek 5 hisse için günde bir kez güncellenir; diğer hisselerin bildirimleri detay ekranında.';
+
+  @override
+  String get kapAssetFooter =>
+      'Kaynak: KAP, Bürküt üzerinden. Günde bir kez güncellenir.';
+
+  @override
+  String get kapOpenOnKap => 'Bildirimi KAP\'ta aç';
+
+  @override
+  String get linkOpenFailed => 'Bağlantı açılamadı.';
+
+  @override
+  String kapShowAll(String count) {
+    return '$count bildirimin tümünü göster';
+  }
+
+  @override
+  String get kapShowLess => 'Daha az göster';
 }

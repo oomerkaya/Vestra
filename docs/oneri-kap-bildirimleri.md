@@ -1,6 +1,8 @@
 # Taslak öneri: Portföydeki hisseler için KAP bildirimleri
 
-**Durum:** Karar bekliyor · **Tarih:** 2026-11-19
+**Durum:** ✅ Karar verildi ve uygulandı (2026-11-19) · **Tarih:** 2026-11-19
+
+> **Karar:** Seçenek D, üst sınır **5 hisse** (portföydeki değeri en yüksek). `url_launcher` eklendi; bildirimler KAP'ta tarayıcıda açılıyor. Güncelleme aralığı ayrıca 60 dakikaya çıkarıldı ve fonlar seansa bağlandı. Ayrıntı: `docs/faz-4-ozellikler.md` bölüm 9. Bu sınırla KAP ayda en fazla ~150 istek.
 
 ## İstek
 

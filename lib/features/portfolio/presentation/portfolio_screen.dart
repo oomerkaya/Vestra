@@ -2,6 +2,7 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:vestra/core/domain/instrument.dart';
 import 'package:vestra/core/l10n/l10n.dart';
 import 'package:vestra/core/router/app_routes.dart';
 import 'package:vestra/core/theme/app_tokens.dart';
@@ -13,6 +14,7 @@ import 'package:vestra/features/portfolio/domain/entities/portfolio_summary.dart
 import 'package:vestra/features/portfolio/portfolio_providers.dart';
 import 'package:vestra/features/portfolio/presentation/widgets/allocation_card.dart';
 import 'package:vestra/features/portfolio/presentation/widgets/holding_tile.dart';
+import 'package:vestra/features/portfolio/presentation/widgets/kap_sections.dart';
 import 'package:vestra/features/portfolio/presentation/widgets/portfolio_summary_card.dart';
 
 class PortfolioScreen extends ConsumerWidget {
@@ -23,6 +25,10 @@ class PortfolioScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final summary =
         ref.watch(portfolioSummaryProvider).value ?? PortfolioSummary.empty;
+    final stockSymbols = {
+      for (final v in summary.holdings)
+        if (v.holding.asset.type == AssetType.stock) v.holding.asset.code,
+    };
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.navPortfolio)),
@@ -93,6 +99,10 @@ class PortfolioScreen extends ConsumerWidget {
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
+          ],
+          if (stockSymbols.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.lg),
+            PortfolioKapSection(symbols: stockSymbols),
           ],
         ],
       ),

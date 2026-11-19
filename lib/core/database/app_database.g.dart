@@ -1585,6 +1585,418 @@ class AppSettingsCompanion extends UpdateCompanion<SettingRow> {
   }
 }
 
+class $KapDisclosuresTable extends KapDisclosures
+    with TableInfo<$KapDisclosuresTable, KapDisclosureRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $KapDisclosuresTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _symbolMeta = const VerificationMeta('symbol');
+  @override
+  late final GeneratedColumn<String> symbol = GeneratedColumn<String>(
+    'symbol',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _summaryMeta = const VerificationMeta(
+    'summary',
+  );
+  @override
+  late final GeneratedColumn<String> summary = GeneratedColumn<String>(
+    'summary',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _urlMeta = const VerificationMeta('url');
+  @override
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+    'url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _publishedAtMeta = const VerificationMeta(
+    'publishedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> publishedAt = GeneratedColumn<DateTime>(
+    'published_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    symbol,
+    title,
+    summary,
+    url,
+    publishedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'kap_disclosures';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<KapDisclosureRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('symbol')) {
+      context.handle(
+        _symbolMeta,
+        symbol.isAcceptableOrUnknown(data['symbol']!, _symbolMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_symbolMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('summary')) {
+      context.handle(
+        _summaryMeta,
+        summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta),
+      );
+    }
+    if (data.containsKey('url')) {
+      context.handle(
+        _urlMeta,
+        url.isAcceptableOrUnknown(data['url']!, _urlMeta),
+      );
+    }
+    if (data.containsKey('published_at')) {
+      context.handle(
+        _publishedAtMeta,
+        publishedAt.isAcceptableOrUnknown(
+          data['published_at']!,
+          _publishedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_publishedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  KapDisclosureRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return KapDisclosureRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      symbol: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}symbol'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      summary: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}summary'],
+      ),
+      url: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}url'],
+      ),
+      publishedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}published_at'],
+      )!,
+    );
+  }
+
+  @override
+  $KapDisclosuresTable createAlias(String alias) {
+    return $KapDisclosuresTable(attachedDatabase, alias);
+  }
+}
+
+class KapDisclosureRow extends DataClass
+    implements Insertable<KapDisclosureRow> {
+  /// Bürküt's id of the disclosure.
+  final String id;
+  final String symbol;
+  final String title;
+  final String? summary;
+
+  /// Link to the original disclosure on kap.org.tr, if given.
+  final String? url;
+  final DateTime publishedAt;
+  const KapDisclosureRow({
+    required this.id,
+    required this.symbol,
+    required this.title,
+    this.summary,
+    this.url,
+    required this.publishedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['symbol'] = Variable<String>(symbol);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || summary != null) {
+      map['summary'] = Variable<String>(summary);
+    }
+    if (!nullToAbsent || url != null) {
+      map['url'] = Variable<String>(url);
+    }
+    map['published_at'] = Variable<DateTime>(publishedAt);
+    return map;
+  }
+
+  KapDisclosuresCompanion toCompanion(bool nullToAbsent) {
+    return KapDisclosuresCompanion(
+      id: Value(id),
+      symbol: Value(symbol),
+      title: Value(title),
+      summary: summary == null && nullToAbsent
+          ? const Value.absent()
+          : Value(summary),
+      url: url == null && nullToAbsent ? const Value.absent() : Value(url),
+      publishedAt: Value(publishedAt),
+    );
+  }
+
+  factory KapDisclosureRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return KapDisclosureRow(
+      id: serializer.fromJson<String>(json['id']),
+      symbol: serializer.fromJson<String>(json['symbol']),
+      title: serializer.fromJson<String>(json['title']),
+      summary: serializer.fromJson<String?>(json['summary']),
+      url: serializer.fromJson<String?>(json['url']),
+      publishedAt: serializer.fromJson<DateTime>(json['publishedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'symbol': serializer.toJson<String>(symbol),
+      'title': serializer.toJson<String>(title),
+      'summary': serializer.toJson<String?>(summary),
+      'url': serializer.toJson<String?>(url),
+      'publishedAt': serializer.toJson<DateTime>(publishedAt),
+    };
+  }
+
+  KapDisclosureRow copyWith({
+    String? id,
+    String? symbol,
+    String? title,
+    Value<String?> summary = const Value.absent(),
+    Value<String?> url = const Value.absent(),
+    DateTime? publishedAt,
+  }) => KapDisclosureRow(
+    id: id ?? this.id,
+    symbol: symbol ?? this.symbol,
+    title: title ?? this.title,
+    summary: summary.present ? summary.value : this.summary,
+    url: url.present ? url.value : this.url,
+    publishedAt: publishedAt ?? this.publishedAt,
+  );
+  KapDisclosureRow copyWithCompanion(KapDisclosuresCompanion data) {
+    return KapDisclosureRow(
+      id: data.id.present ? data.id.value : this.id,
+      symbol: data.symbol.present ? data.symbol.value : this.symbol,
+      title: data.title.present ? data.title.value : this.title,
+      summary: data.summary.present ? data.summary.value : this.summary,
+      url: data.url.present ? data.url.value : this.url,
+      publishedAt: data.publishedAt.present
+          ? data.publishedAt.value
+          : this.publishedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('KapDisclosureRow(')
+          ..write('id: $id, ')
+          ..write('symbol: $symbol, ')
+          ..write('title: $title, ')
+          ..write('summary: $summary, ')
+          ..write('url: $url, ')
+          ..write('publishedAt: $publishedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, symbol, title, summary, url, publishedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is KapDisclosureRow &&
+          other.id == this.id &&
+          other.symbol == this.symbol &&
+          other.title == this.title &&
+          other.summary == this.summary &&
+          other.url == this.url &&
+          other.publishedAt == this.publishedAt);
+}
+
+class KapDisclosuresCompanion extends UpdateCompanion<KapDisclosureRow> {
+  final Value<String> id;
+  final Value<String> symbol;
+  final Value<String> title;
+  final Value<String?> summary;
+  final Value<String?> url;
+  final Value<DateTime> publishedAt;
+  final Value<int> rowid;
+  const KapDisclosuresCompanion({
+    this.id = const Value.absent(),
+    this.symbol = const Value.absent(),
+    this.title = const Value.absent(),
+    this.summary = const Value.absent(),
+    this.url = const Value.absent(),
+    this.publishedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  KapDisclosuresCompanion.insert({
+    required String id,
+    required String symbol,
+    required String title,
+    this.summary = const Value.absent(),
+    this.url = const Value.absent(),
+    required DateTime publishedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       symbol = Value(symbol),
+       title = Value(title),
+       publishedAt = Value(publishedAt);
+  static Insertable<KapDisclosureRow> custom({
+    Expression<String>? id,
+    Expression<String>? symbol,
+    Expression<String>? title,
+    Expression<String>? summary,
+    Expression<String>? url,
+    Expression<DateTime>? publishedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (symbol != null) 'symbol': symbol,
+      if (title != null) 'title': title,
+      if (summary != null) 'summary': summary,
+      if (url != null) 'url': url,
+      if (publishedAt != null) 'published_at': publishedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  KapDisclosuresCompanion copyWith({
+    Value<String>? id,
+    Value<String>? symbol,
+    Value<String>? title,
+    Value<String?>? summary,
+    Value<String?>? url,
+    Value<DateTime>? publishedAt,
+    Value<int>? rowid,
+  }) {
+    return KapDisclosuresCompanion(
+      id: id ?? this.id,
+      symbol: symbol ?? this.symbol,
+      title: title ?? this.title,
+      summary: summary ?? this.summary,
+      url: url ?? this.url,
+      publishedAt: publishedAt ?? this.publishedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (symbol.present) {
+      map['symbol'] = Variable<String>(symbol.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (summary.present) {
+      map['summary'] = Variable<String>(summary.value);
+    }
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
+    if (publishedAt.present) {
+      map['published_at'] = Variable<DateTime>(publishedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('KapDisclosuresCompanion(')
+          ..write('id: $id, ')
+          ..write('symbol: $symbol, ')
+          ..write('title: $title, ')
+          ..write('summary: $summary, ')
+          ..write('url: $url, ')
+          ..write('publishedAt: $publishedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1593,6 +2005,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $AssetTransactionsTable(this);
   late final $PriceCacheTable priceCache = $PriceCacheTable(this);
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
+  late final $KapDisclosuresTable kapDisclosures = $KapDisclosuresTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1602,6 +2015,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     assetTransactions,
     priceCache,
     appSettings,
+    kapDisclosures,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -2720,6 +3134,242 @@ typedef $$AppSettingsTableProcessedTableManager =
       SettingRow,
       PrefetchHooks Function()
     >;
+typedef $$KapDisclosuresTableCreateCompanionBuilder =
+    KapDisclosuresCompanion Function({
+      required String id,
+      required String symbol,
+      required String title,
+      Value<String?> summary,
+      Value<String?> url,
+      required DateTime publishedAt,
+      Value<int> rowid,
+    });
+typedef $$KapDisclosuresTableUpdateCompanionBuilder =
+    KapDisclosuresCompanion Function({
+      Value<String> id,
+      Value<String> symbol,
+      Value<String> title,
+      Value<String?> summary,
+      Value<String?> url,
+      Value<DateTime> publishedAt,
+      Value<int> rowid,
+    });
+
+class $$KapDisclosuresTableFilterComposer
+    extends Composer<_$AppDatabase, $KapDisclosuresTable> {
+  $$KapDisclosuresTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get symbol => $composableBuilder(
+    column: $table.symbol,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get summary => $composableBuilder(
+    column: $table.summary,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get url => $composableBuilder(
+    column: $table.url,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get publishedAt => $composableBuilder(
+    column: $table.publishedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$KapDisclosuresTableOrderingComposer
+    extends Composer<_$AppDatabase, $KapDisclosuresTable> {
+  $$KapDisclosuresTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get symbol => $composableBuilder(
+    column: $table.symbol,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get summary => $composableBuilder(
+    column: $table.summary,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get url => $composableBuilder(
+    column: $table.url,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get publishedAt => $composableBuilder(
+    column: $table.publishedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$KapDisclosuresTableAnnotationComposer
+    extends Composer<_$AppDatabase, $KapDisclosuresTable> {
+  $$KapDisclosuresTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get symbol =>
+      $composableBuilder(column: $table.symbol, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get summary =>
+      $composableBuilder(column: $table.summary, builder: (column) => column);
+
+  GeneratedColumn<String> get url =>
+      $composableBuilder(column: $table.url, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get publishedAt => $composableBuilder(
+    column: $table.publishedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$KapDisclosuresTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $KapDisclosuresTable,
+          KapDisclosureRow,
+          $$KapDisclosuresTableFilterComposer,
+          $$KapDisclosuresTableOrderingComposer,
+          $$KapDisclosuresTableAnnotationComposer,
+          $$KapDisclosuresTableCreateCompanionBuilder,
+          $$KapDisclosuresTableUpdateCompanionBuilder,
+          (
+            KapDisclosureRow,
+            BaseReferences<
+              _$AppDatabase,
+              $KapDisclosuresTable,
+              KapDisclosureRow
+            >,
+          ),
+          KapDisclosureRow,
+          PrefetchHooks Function()
+        > {
+  $$KapDisclosuresTableTableManager(
+    _$AppDatabase db,
+    $KapDisclosuresTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$KapDisclosuresTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$KapDisclosuresTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$KapDisclosuresTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> symbol = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> summary = const Value.absent(),
+                Value<String?> url = const Value.absent(),
+                Value<DateTime> publishedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => KapDisclosuresCompanion(
+                id: id,
+                symbol: symbol,
+                title: title,
+                summary: summary,
+                url: url,
+                publishedAt: publishedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String symbol,
+                required String title,
+                Value<String?> summary = const Value.absent(),
+                Value<String?> url = const Value.absent(),
+                required DateTime publishedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => KapDisclosuresCompanion.insert(
+                id: id,
+                symbol: symbol,
+                title: title,
+                summary: summary,
+                url: url,
+                publishedAt: publishedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$KapDisclosuresTable, KapDisclosureRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $KapDisclosuresTable,
+                    KapDisclosureRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$KapDisclosuresTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $KapDisclosuresTable,
+      KapDisclosureRow,
+      $$KapDisclosuresTableFilterComposer,
+      $$KapDisclosuresTableOrderingComposer,
+      $$KapDisclosuresTableAnnotationComposer,
+      $$KapDisclosuresTableCreateCompanionBuilder,
+      $$KapDisclosuresTableUpdateCompanionBuilder,
+      (
+        KapDisclosureRow,
+        BaseReferences<_$AppDatabase, $KapDisclosuresTable, KapDisclosureRow>,
+      ),
+      KapDisclosureRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2732,4 +3382,6 @@ class $AppDatabaseManager {
       $$PriceCacheTableTableManager(_db, _db.priceCache);
   $$AppSettingsTableTableManager get appSettings =>
       $$AppSettingsTableTableManager(_db, _db.appSettings);
+  $$KapDisclosuresTableTableManager get kapDisclosures =>
+      $$KapDisclosuresTableTableManager(_db, _db.kapDisclosures);
 }

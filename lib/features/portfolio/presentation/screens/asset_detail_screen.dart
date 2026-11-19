@@ -25,6 +25,7 @@ import 'package:vestra/features/portfolio/domain/entities/holding.dart';
 import 'package:vestra/features/portfolio/domain/entities/portfolio_summary.dart';
 import 'package:vestra/features/portfolio/portfolio_providers.dart';
 import 'package:vestra/features/portfolio/presentation/portfolio_labels.dart';
+import 'package:vestra/features/portfolio/presentation/widgets/kap_sections.dart';
 import 'package:vestra/features/portfolio/presentation/widgets/portfolio_summary_card.dart';
 
 /// One asset: position summary, buy/sell shortcuts and its transactions.
@@ -110,6 +111,10 @@ class AssetDetailScreen extends ConsumerWidget {
               ),
             ],
           ),
+          if (asset.type == AssetType.stock) ...[
+            const SizedBox(height: AppSpacing.lg),
+            AssetKapSection(symbol: asset.code),
+          ],
           SectionHeader(l10n.assetDetailTransactions),
           AppCard(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),

@@ -193,9 +193,37 @@ Kullanıcı geri bildirimleriyle sırayla yapıldı; son durum aşağıda.
 - **Gerekçe:** TEFAS hafta sonu ve tatilde yeni fiyat açıklamıyor; o günlerde istek ve 1,9 MB veri boşa gidiyordu. Gece yarısı çekilen fiyat da zaten önceki günün fiyatıydı; seans içinde çekmek o günün fiyatını yakalama şansını artırıyor. Kota etkisi ayda ~30'dan ~22'ye iniyor.
 - **Değişenler:** `RefreshPolicy.isDue` (fonlar seansa bağlı), `RefreshPolicy.nextUpdate` (fonlarda bir sonraki işlem gününün 10:00'ı; hafta sonu ve tatiller atlanıyor, takvim parametresi eklendi), piyasa ekranındaki kural metni.
 
+### 9. KAP bildirimleri (2026-11-19)
+
+**Kararlar (kullanıcıyla):**
+- Taslaktaki **seçenek D**, üst sınır **5**: portföydeki değeri en yüksek 5 hisse otomatik, diğerleri detay ekranı açılınca.
+- KAP linkleri için **`url_launcher`** paketi eklendi (kullanıcı onayıyla, yeni paket). Android 11+ için `AndroidManifest.xml`'e https `VIEW` sorgusu eklendi.
+- **Şema v3:** yeni `kap_disclosures` tablosu (id, symbol, title, summary, url, publishedAt). Geçiş yalnızca tablo oluşturuyor; v2→v3 veri koruma testi var.
+
+**Canlı doğrulama:** `/kap?symbol=THYAO&size=5` (1 istek). Cevap `test/fixtures/burkut/kap.json`'a kaydedildi. Zarf sayfalı (`data.content`). `summary` bazen boş; asıl bildirim linki `short_description` içinde ("Orjinal Link: https://www.kap.org.tr/tr/Bildirim/…").
+
+**Kurallar (`DisclosurePolicy`):**
+- Her hisse İstanbul günü başına bir kez, 08:00'den sonra; hiç çekilmemiş hisse hemen.
+- Kalan aylık kota %20'nin altındaysa otomatik çekme yok (fiyatlar öncelikli). Detay ekranı yine çekebilir.
+- Başarısız denemeden sonra aynı hisse 60 dk bekler. Anahtar yok / kota dolu / 429 olursa o turdaki diğer hisseler denenmez.
+- Uygulama açıldıktan 20 sn sonra (önce fiyatlar; 4 + 5 istek dakikada 10 sınırının altında), sonra 15 dk'da bir ve uygulamaya dönünce kontrol edilir. Arka planda çalışmaz.
+- Portföyden çıkan hissenin bildirimleri ve çekme zamanı silinir.
+- **Kota etkisi:** en fazla 5 × 30 = 150 istek/ay. Yoğun kullanımla toplam ~840, orta ~520.
+
+**Arayüz:**
+- **Portföy ekranı:** varlık listesinin altında açılır-kapanır **"Son KAP bildirimleri"**: son 7 gün, en yeni üstte, 5'ten fazlaysa "tümünü göster". Satır: sembol · tarih, konu (yoksa tür), altında tür; dokununca KAP'ta açılır. Altta kaynak notu.
+- **Hisse detay ekranı:** Alım/Satış düğmelerinin altında **"KAP bildirimleri"** (son 5). Ekran açılınca o hisse gerekiyorsa çekilir; böylece ilk 5'in dışındaki hisseler de görülebiliyor.
+- Yorum, olumlu/olumsuz etiketi yok (yatırım tavsiyesi sayılmaması için). Yalnızca `https://kap.org.tr` linkleri açılıyor.
+
+**Dosyalar:**
+- Domain: `market/domain/entities/kap_disclosure.dart`, `DisclosureProvider` (`price_providers.dart`), `repositories/disclosure_repository.dart`, `services/disclosure_policy.dart`.
+- Data: `dto/kap_disclosure_dto.dart`, `mappers/kap_disclosure_mapper.dart`, `datasources/kap_disclosure_local_data_source.dart`, `repositories/disclosure_repository_impl.dart`, `BurkutRemoteDataSource.getKap`, `BurkutPriceProvider.fetchDisclosures`.
+- Presentation: `portfolio/presentation/kap_refresh_controller.dart`, `portfolio/presentation/widgets/kap_sections.dart`, `market/presentation/widgets/kap_disclosure_tile.dart`, `core/widgets/external_link.dart`, `DateFormatters.date`.
+- Testler: `disclosure_policy_test.dart`, `disclosure_repository_impl_test.dart`, `kap_refresh_controller_test.dart`, canlı fixture testi, v2→v3 migration testi.
+
 ### Testler
 
-166 test. Kapsananlar:
+186 test. Kapsananlar:
 - İlk çekmenin her saatte izinli olması.
 - Sonrasında hisselerin seansı beklemesi.
 - Ons'un aynı yenilemedeki ya da önbellekteki kurla TL'ye çevrilmesi, kur yoksa atlanması.

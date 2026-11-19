@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:vestra/features/market/data/dto/burkut_dtos.dart';
 import 'package:vestra/features/market/data/dto/json_parsing.dart';
+import 'package:vestra/features/market/data/dto/kap_disclosure_dto.dart';
 
 /// Raw HTTP access to the Bürküt public API. Throws [DioException].
 ///
@@ -52,16 +53,41 @@ class BurkutRemoteDataSource {
   /// stock search list, not for prices.
   Future<BurkutResponse> getAllStocks(String apiKey) => _get('/stocks', apiKey);
 
+  /// Latest [size] KAP disclosures of one stock. One request per stock:
+  /// `?symbol=A,B` returns nothing (verified 2026-11-19).
+  Future<BurkutKapResponse> getKap(
+    String apiKey,
+    String symbol, {
+    int size = 5,
+  }) async {
+    final response = await _raw(
+      '/kap',
+      apiKey,
+      query: {'symbol': symbol.toUpperCase(), 'size': '$size'},
+    );
+    return BurkutKapResponse(
+      KapDisclosureDto.listFrom(response.data),
+      quotaRemaining: _intHeader(response, quotaHeader),
+      quotaLimit: _intHeader(response, quotaLimitHeader),
+    );
+  }
+
+  Future<Response<Object?>> _raw(
+    String path,
+    String apiKey, {
+    Map<String, String>? query,
+  }) => _dio.get<Object?>(
+    path,
+    queryParameters: query,
+    options: Options(headers: {'X-API-Key': apiKey}),
+  );
+
   Future<BurkutResponse> _get(
     String path,
     String apiKey, {
     Map<String, String>? query,
   }) async {
-    final response = await _dio.get<Object?>(
-      path,
-      queryParameters: query,
-      options: Options(headers: {'X-API-Key': apiKey}),
-    );
+    final response = await _raw(path, apiKey, query: query);
     return BurkutResponse(
       [
         for (final json in unwrapList(response.data))

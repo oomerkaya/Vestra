@@ -1107,6 +1107,78 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Fon listesi ilk güncellemeyle gelir.'**
   String get marketFundsNotLoaded;
+
+  /// No description provided for @kapSectionTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son KAP bildirimleri'**
+  String get kapSectionTitle;
+
+  /// No description provided for @kapAssetSectionTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'KAP bildirimleri'**
+  String get kapAssetSectionTitle;
+
+  /// No description provided for @kapNoneRecent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son 7 günde bildirim yok.'**
+  String get kapNoneRecent;
+
+  /// No description provided for @kapNone.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu hisse için yakın tarihli bildirim yok.'**
+  String get kapNone;
+
+  /// No description provided for @kapNotLoaded.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirimler henüz yüklenmedi. Günde bir kez otomatik güncellenir.'**
+  String get kapNotLoaded;
+
+  /// No description provided for @kapLoading.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirimler yükleniyor…'**
+  String get kapLoading;
+
+  /// No description provided for @kapPortfolioFooter.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaynak: KAP, Bürküt üzerinden. Portföydeki değeri en yüksek 5 hisse için günde bir kez güncellenir; diğer hisselerin bildirimleri detay ekranında.'**
+  String get kapPortfolioFooter;
+
+  /// No description provided for @kapAssetFooter.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaynak: KAP, Bürküt üzerinden. Günde bir kez güncellenir.'**
+  String get kapAssetFooter;
+
+  /// No description provided for @kapOpenOnKap.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirimi KAP\'ta aç'**
+  String get kapOpenOnKap;
+
+  /// No description provided for @linkOpenFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlantı açılamadı.'**
+  String get linkOpenFailed;
+
+  /// No description provided for @kapShowAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} bildirimin tümünü göster'**
+  String kapShowAll(String count);
+
+  /// No description provided for @kapShowLess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daha az göster'**
+  String get kapShowLess;
 }
 
 class _AppLocalizationsDelegate

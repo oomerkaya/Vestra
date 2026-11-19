@@ -8,12 +8,14 @@ import 'package:vestra/features/market/data/datasources/burkut_remote_data_sourc
 import 'package:vestra/features/market/data/datasources/quota_local_data_source.dart';
 import 'package:vestra/features/market/data/dto/burkut_dtos.dart';
 import 'package:vestra/features/market/data/mappers/burkut_symbols.dart';
+import 'package:vestra/features/market/data/mappers/kap_disclosure_mapper.dart';
+import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/domain/entities/stock_listing.dart';
 import 'package:vestra/features/market/domain/providers/price_providers.dart';
 import 'package:vestra/features/settings/domain/repositories/api_key_repository.dart';
 
-/// Bürküt implementation of all three price interfaces.
+/// Bürküt implementation of all price interfaces and KAP disclosures.
 ///
 /// Before each request: needs an API key (else `AuthFailure(missingKey)`)
 /// and remaining quota (else `QuotaExceededFailure`); no request is sent in
@@ -26,6 +28,7 @@ class BurkutPriceProvider
         StockPriceProvider,
         FundPriceProvider,
         StockListingProvider,
+        DisclosureProvider,
         ApiKeyValidator {
   BurkutPriceProvider({
     required this._remote,
@@ -94,6 +97,20 @@ class BurkutPriceProvider
     ],
   );
 
+  @override
+  Future<Result<List<KapDisclosure>>> fetchDisclosures(
+    String symbol, {
+    int limit = 5,
+  }) => _call('kap', (key) async {
+    final response = await _remote.getKap(key, symbol, size: limit);
+    await _syncQuota(response.quotaRemaining, response.quotaLimit);
+    return [
+      for (final dto in response.items)
+        // The symbol filter is honoured by the API; keep it as a safeguard.
+        if (dto.symbol == symbol.toUpperCase()) dto.toEntity(),
+    ];
+  });
+
   /// Validates a key with one cheap request (counts against the quota).
   @override
   Future<Result<void>> validate(String key) async {
@@ -141,11 +158,12 @@ class BurkutPriceProvider
   /// reported the remaining monthly requests.
   Future<List<BurkutPriceDto>> _items(Future<BurkutResponse> call) async {
     final response = await call;
-    final remaining = response.quotaRemaining;
-    if (remaining != null) {
-      await _quota.syncRemaining(remaining, limit: response.quotaLimit);
-    }
+    await _syncQuota(response.quotaRemaining, response.quotaLimit);
     return response.items;
+  }
+
+  Future<void> _syncQuota(int? remaining, int? limit) async {
+    if (remaining != null) await _quota.syncRemaining(remaining, limit: limit);
   }
 
   Quote _quote(Instrument instrument, BurkutPriceDto dto) => Quote(

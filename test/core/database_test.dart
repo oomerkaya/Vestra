@@ -23,6 +23,6 @@ void main() {
     final row = await db.customSelect('PRAGMA foreign_keys').getSingle();
 
     expect(row.data.values.single, 1);
-    expect(db.schemaVersion, 2);
+    expect(db.schemaVersion, 3);
   });
 }

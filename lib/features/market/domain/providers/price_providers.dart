@@ -3,6 +3,7 @@
 // ignore_for_file: one_member_abstracts
 
 import 'package:vestra/core/error/result.dart';
+import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/domain/entities/stock_listing.dart';
 
@@ -33,4 +34,14 @@ abstract interface class StockListingProvider {
 /// TEFAS investment and pension fund prices (all funds, one request).
 abstract interface class FundPriceProvider {
   Future<Result<List<Quote>>> fetchFunds();
+}
+
+/// KAP disclosures. One call = one stock = one request (Bürküt does not
+/// accept several symbols at once, verified 2026-11-19).
+abstract interface class DisclosureProvider {
+  /// Latest [limit] disclosures of [symbol], newest first.
+  Future<Result<List<KapDisclosure>>> fetchDisclosures(
+    String symbol, {
+    int limit,
+  });
 }

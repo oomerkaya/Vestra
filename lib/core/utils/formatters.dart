@@ -78,6 +78,12 @@ abstract final class DateFormatters {
     return sameDay ? time : '${_two(local.day)}.${_two(local.month)} $time';
   }
 
+  /// `09.11.2026`.
+  static String date(DateTime value) {
+    final local = value.toLocal();
+    return '${_two(local.day)}.${_two(local.month)}.${local.year}';
+  }
+
   static String _two(int v) => v.toString().padLeft(2, '0');
 }
 

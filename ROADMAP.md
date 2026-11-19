@@ -44,7 +44,8 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 - [x] Frankfurter'ı tamamen kaldır; uygulama yalnızca Bürküt API ile çalışsın
 - [x] TEFAS fonları (günde bir güncelleme)
 - [x] Güncelleme aralığı 30 dk → 60 dk (kota)
-- [ ] KAP bildirimleri: taslak öneri `docs/oneri-kap-bildirimleri.md`, karar bekliyor
+- [x] Fonlar yalnızca seans içinde
+- [x] KAP bildirimleri: değeri en yüksek 5 hisse, günde bir; detay ekranında tek hisse (`docs/oneri-kap-bildirimleri.md`)
 - [ ] Kullanıcının belirteceği diğer güncellemeler ve genel kontroller
 - [ ] Ardından Faz 5
 

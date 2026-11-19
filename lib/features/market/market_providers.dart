@@ -7,17 +7,21 @@ import 'package:vestra/core/error/result.dart';
 import 'package:vestra/core/network/dio_factory.dart';
 import 'package:vestra/core/utils/app_logger.dart';
 import 'package:vestra/features/market/data/datasources/burkut_remote_data_source.dart';
+import 'package:vestra/features/market/data/datasources/kap_disclosure_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/market_meta_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/price_cache_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/quota_local_data_source.dart';
 import 'package:vestra/features/market/data/datasources/stock_listing_local_data_source.dart';
 import 'package:vestra/features/market/data/providers/burkut_price_provider.dart';
+import 'package:vestra/features/market/data/repositories/disclosure_repository_impl.dart';
 import 'package:vestra/features/market/data/repositories/market_repository_impl.dart';
 import 'package:vestra/features/market/data/repositories/stock_directory_repository_impl.dart';
+import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
 import 'package:vestra/features/market/domain/entities/market_calendar.dart';
 import 'package:vestra/features/market/domain/entities/quota_usage.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/domain/entities/stock_listing.dart';
+import 'package:vestra/features/market/domain/repositories/disclosure_repository.dart';
 import 'package:vestra/features/market/domain/repositories/market_repository.dart';
 import 'package:vestra/features/market/domain/repositories/stock_directory_repository.dart';
 import 'package:vestra/features/settings/domain/usecases/save_burkut_key.dart';
@@ -112,3 +116,23 @@ final stockListingsProvider = FutureProvider<List<StockListing>>((ref) async {
     Err(:final failure) => throw failure,
   };
 });
+
+final disclosureRepositoryProvider = Provider<DisclosureRepository>(
+  (ref) => DisclosureRepositoryImpl(
+    provider: ref.watch(burkutPriceProviderProvider),
+    local: KapDisclosureLocalDataSource(ref.watch(appDatabaseProvider)),
+  ),
+);
+
+/// Stored KAP disclosures of held stocks, newest first, live.
+final kapDisclosuresProvider = StreamProvider<List<KapDisclosure>>(
+  (ref) => ref
+      .watch(disclosureRepositoryProvider)
+      .watchAll()
+      .map(
+        (result) => switch (result) {
+          Success(:final value) => value,
+          Err(:final failure) => throw failure,
+        },
+      ),
+);
