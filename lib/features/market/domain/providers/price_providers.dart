@@ -4,6 +4,7 @@
 
 import 'package:vestra/core/error/result.dart';
 import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
+import 'package:vestra/features/market/domain/entities/quota_usage.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/domain/entities/stock_listing.dart';
 
@@ -41,4 +42,10 @@ abstract interface class DisclosureProvider {
   /// The latest disclosures of every company, newest first, in one
   /// request (Bürküt: 500, about the last 29 hours).
   Future<Result<List<KapDisclosure>>> fetchDisclosureFeed();
+}
+
+/// The provider's own quota count. Must not cost a request (Bürküt
+/// `/quota`: `quotaCheckConsumesCredit: false`, verified 2026-11-19).
+abstract interface class QuotaStatusProvider {
+  Future<Result<QuotaStatus>> fetchQuotaStatus();
 }

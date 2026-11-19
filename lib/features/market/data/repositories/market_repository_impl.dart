@@ -29,6 +29,7 @@ class MarketRepositoryImpl implements MarketRepository {
     required this._cache,
     required this._quota,
     required this._meta,
+    this._quotaStatus,
     DateTime Function()? clock,
   }) : _clock = clock ?? DateTime.now;
 
@@ -39,6 +40,7 @@ class MarketRepositoryImpl implements MarketRepository {
   final PriceCacheLocalDataSource _cache;
   final QuotaLocalDataSource _quota;
   final MarketMetaLocalDataSource _meta;
+  final QuotaStatusProvider? _quotaStatus;
   final DateTime Function() _clock;
 
   @override
@@ -179,6 +181,23 @@ class MarketRepositoryImpl implements MarketRepository {
       return Success(await _quota.current());
     } on Object catch (error) {
       return Err(StorageFailure(error.toString()));
+    }
+  }
+
+  @override
+  Future<Result<QuotaUsage>> syncQuota() async {
+    final source = _quotaStatus;
+    if (source == null) return quotaUsage();
+    final status = await source.fetchQuotaStatus();
+    switch (status) {
+      case Err(:final failure):
+        return Err(failure);
+      case Success(:final value):
+        try {
+          return Success(await _quota.syncStatus(value));
+        } on Object catch (error) {
+          return Err(StorageFailure(error.toString()));
+        }
     }
   }
 

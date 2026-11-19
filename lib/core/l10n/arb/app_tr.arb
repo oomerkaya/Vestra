@@ -83,6 +83,14 @@
     }
   },
   "settingsQuotaExhausted": "Kota doldu",
+  "settingsQuotaReset": "{date} tarihinde yenilenir",
+  "@settingsQuotaReset": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "settingsDataNote": "API anahtarını burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Vestra resmi bir Bürküt uygulaması değildir.",
   "apiKeySheetTitle": "Bürküt API anahtarı",
   "apiKeySheetHelp": "Anahtarı burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Yalnızca bu cihazda şifreli saklanır.",

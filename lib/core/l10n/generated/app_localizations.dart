@@ -448,6 +448,12 @@ abstract class AppLocalizations {
   /// **'Kota doldu'**
   String get settingsQuotaExhausted;
 
+  /// No description provided for @settingsQuotaReset.
+  ///
+  /// In tr, this message translates to:
+  /// **'{date} tarihinde yenilenir'**
+  String settingsQuotaReset(String date);
+
   /// No description provided for @settingsDataNote.
   ///
   /// In tr, this message translates to:

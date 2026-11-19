@@ -9,14 +9,35 @@ import 'package:vestra/core/theme/app_tokens.dart';
 import 'package:vestra/core/utils/formatters.dart';
 import 'package:vestra/core/widgets/app_card.dart';
 import 'package:vestra/features/market/market_providers.dart';
+import 'package:vestra/features/market/presentation/price_refresh_controller.dart';
 import 'package:vestra/features/settings/presentation/widgets/api_key_sheet.dart';
 
-/// API key status, monthly quota usage and data-source notes.
-class DataSourceSection extends ConsumerWidget {
+/// API key status, monthly quota usage and data-source notes. Opening it
+/// refreshes the quota from the server (free).
+class DataSourceSection extends ConsumerStatefulWidget {
   const DataSourceSection({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DataSourceSection> createState() => _DataSourceSectionState();
+}
+
+class _DataSourceSectionState extends ConsumerState<DataSourceSection> {
+  @override
+  void initState() {
+    super.initState();
+    if (ref.read(autoRefreshEnabledProvider)) {
+      unawaited(
+        Future<void>.microtask(
+          () => ref
+              .read(priceRefreshControllerProvider.notifier)
+              .syncQuota(force: true),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final key = ref.watch(burkutKeyProvider).value;
@@ -97,6 +118,13 @@ class DataSourceSection extends ConsumerWidget {
                           : theme.colorScheme.primary,
                     ),
                   ),
+                  if (quota.resetAt case final resetAt?) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      l10n.settingsQuotaReset(DateFormatters.date(resetAt)),
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
                 ],
               ),
             ),

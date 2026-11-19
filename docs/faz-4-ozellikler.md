@@ -287,9 +287,18 @@ Kullanıcı geri bildirimleriyle sırayla yapıldı; son durum aşağıda.
 - **Bürküt adı arayüzden kaldırıldı;** yalnızca Ayarlar → Veri kaynağı'ndaki API anahtarı bölümünde kaldı: "API anahtarını burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Vestra resmi bir Bürküt uygulaması değildir." (Bürküt'ün 2. şartı README/repo açıklaması için; uygulama içinde de bir cümle olarak tutuldu.) Döviz, Madenler ve Borsa sekmelerinde not "Veriler gecikmelidir"; Fonlar'da yok (günde tek fiyat). Lisanslı dağıtıcı ve güncelleme kuralları uzun notu ayarlardan çıkarıldı (kurallar piyasa sekmelerinde zaten yazıyor). Eski "döviz yedek kaynaktan geliyor" metni (Frankfurter kalıntısı) düzeltildi.
 - Diğer metinler kısaltıldı (anahtar penceresi, KAP sayfası ve detay alt notları, anahtar uyarıları).
 
+### 13. Bürküt `/quota` (2026-11-19)
+
+- Bürküt yeni uç noktalar duyurdu: `/quota` (kota harcamaz), `/stocks/history` (çoklu hisse geçmişi), `/corporate-actions` (sermaye artırımı, temettü). Kullanıcı kararıyla **yalnızca `/quota`** bağlandı; diğerleri şimdilik yok (`/corporate-actions` bedelsiz artırımlarda lot/maliyet düzeltmesi için ileride değerlendirilebilir).
+- **Canlı doğrulama:** iki çağrıdan sonra kalan kota değişmedi (951). Cevap: `monthly` (`limit`, `used`, `remaining`, `resetAt`), `rateLimit` (dakikalık), `credits` (`quotaCheckConsumesCredit: false`), `limits` (ücretsiz planda toplu geçmiş en fazla 5 hisse/90 gün; kurumsal işlemler en fazla 365 gün, toplu sorgu kapalı). Fixture: `test/fixtures/burkut/quota.json`.
+- **Kullanım:** `PriceRefreshController.syncQuota` her fiyat kontrolünden önce, en fazla 10 dakikada bir; Ayarlar → Veri kaynağı açılınca zorla. Hata olursa yerel sayaç kullanılmaya devam eder. Kota sunucuda doluysa `exhaustedByServer` olur ve hiçbir istek gönderilmez.
+- **Ayarlar:** kota çubuğunun altında "01.12.2026 tarihinde yenilenir".
+- **Dosyalar:** `QuotaStatus`, `QuotaStatusProvider`, `QuotaUsage.resetAt`, `BurkutRemoteDataSource.getQuota`, `BurkutPriceProvider.fetchQuotaStatus` (sayaca yazmıyor), `QuotaLocalDataSource.syncStatus`, `MarketRepository.syncQuota`, `DataSourceSection` (stateful).
+- **Testler:** 190.
+
 ### Testler
 
-188 test. Kapsananlar:
+190 test. Kapsananlar:
 - İlk çekmenin her saatte izinli olması.
 - Sonrasında hisselerin seansı beklemesi.
 - Ons'un aynı yenilemedeki ya da önbellekteki kurla TL'ye çevrilmesi, kur yoksa atlanması.

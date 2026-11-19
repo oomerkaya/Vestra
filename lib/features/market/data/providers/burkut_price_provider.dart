@@ -10,6 +10,7 @@ import 'package:vestra/features/market/data/dto/burkut_dtos.dart';
 import 'package:vestra/features/market/data/mappers/burkut_symbols.dart';
 import 'package:vestra/features/market/data/mappers/kap_disclosure_mapper.dart';
 import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
+import 'package:vestra/features/market/domain/entities/quota_usage.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/domain/entities/stock_listing.dart';
 import 'package:vestra/features/market/domain/providers/price_providers.dart';
@@ -29,6 +30,7 @@ class BurkutPriceProvider
         FundPriceProvider,
         StockListingProvider,
         DisclosureProvider,
+        QuotaStatusProvider,
         ApiKeyValidator {
   BurkutPriceProvider({
     required this._remote,
@@ -104,6 +106,23 @@ class BurkutPriceProvider
         await _syncQuota(response.quotaRemaining, response.quotaLimit);
         return [for (final dto in response.items) ...dto.toEntities()];
       });
+
+  /// Free: not checked against nor recorded in the local counter.
+  @override
+  Future<Result<QuotaStatus>> fetchQuotaStatus() async {
+    final key = await _readApiKey();
+    if (key == null || key.isEmpty) {
+      return const Err(AuthFailure(missingKey: true));
+    }
+    try {
+      final status = await _remote.getQuota(key);
+      return status == null
+          ? const Err(UnexpectedFailure('burkut quota: unexpected format'))
+          : Success(status);
+    } on DioException catch (e) {
+      return Err(mapDioException(e));
+    }
+  }
 
   /// Validates a key with one cheap request (counts against the quota).
   @override

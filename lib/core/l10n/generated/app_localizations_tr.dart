@@ -199,6 +199,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settingsQuotaExhausted => 'Kota doldu';
 
   @override
+  String settingsQuotaReset(String date) {
+    return '$date tarihinde yenilenir';
+  }
+
+  @override
   String get settingsDataNote =>
       'API anahtarını burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Vestra resmi bir Bürküt uygulaması değildir.';
 

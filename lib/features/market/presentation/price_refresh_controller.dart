@@ -54,6 +54,10 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
   AppLifecycleListener? _lifecycle;
   bool _foreground = true;
   final Map<QuoteCategory, DateTime> _lastAttempt = {};
+  DateTime? _quotaSyncedAt;
+
+  /// The free `/quota` check runs at most this often, unless forced.
+  static const Duration _quotaSyncInterval = Duration(minutes: 10);
 
   /// Clock override for tests.
   @visibleForTesting
@@ -97,6 +101,10 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
     if (!ref.mounted) return const {};
 
     final repository = ref.read(marketRepositoryProvider);
+    // Free: aligns the counter with the server before deciding, so an
+    // exhausted quota sends nothing.
+    await syncQuota();
+    if (!ref.mounted) return const {};
     final stocksSnapshot = await repository.stocksSnapshotAt();
     if (!ref.mounted) return const {};
 
@@ -162,6 +170,21 @@ class PriceRefreshController extends Notifier<PriceRefreshState> {
         );
     }
     return due;
+  }
+
+  /// Replaces the local quota count with the server's own (`/quota`,
+  /// costs no request). At most every 10 minutes unless [force]d, e.g.
+  /// when the settings screen opens. Failures are ignored: the local count
+  /// stays in use.
+  Future<void> syncQuota({bool force = false}) async {
+    final now = clock();
+    final last = _quotaSyncedAt;
+    if (!force && last != null && now.difference(last) < _quotaSyncInterval) {
+      return;
+    }
+    _quotaSyncedAt = now;
+    final result = await ref.read(marketRepositoryProvider).syncQuota();
+    if (ref.mounted && result is Success) ref.invalidate(quotaUsageProvider);
   }
 
   /// Newest `fetchedAt` per category (each category is fetched as a

@@ -5,6 +5,7 @@ class QuotaUsage {
     required this.used,
     required this.limit,
     this.exhaustedByServer = false,
+    this.resetAt,
   });
 
   /// Bürküt free plan: 1,000 requests per month.
@@ -18,6 +19,9 @@ class QuotaUsage {
   /// The provider itself reported the quota as used up.
   final bool exhaustedByServer;
 
+  /// When the provider resets the monthly count; `null` until reported.
+  final DateTime? resetAt;
+
   bool get isExhausted => exhaustedByServer || used >= limit;
 
   int get remaining => (limit - used).clamp(0, limit);
@@ -26,4 +30,19 @@ class QuotaUsage {
     final local = time.toLocal();
     return '${local.year}-${local.month.toString().padLeft(2, '0')}';
   }
+}
+
+/// The provider's own view of the monthly quota (Bürküt `/quota`).
+class QuotaStatus {
+  const QuotaStatus({
+    required this.limit,
+    required this.used,
+    required this.remaining,
+    this.resetAt,
+  });
+
+  final int limit;
+  final int used;
+  final int remaining;
+  final DateTime? resetAt;
 }

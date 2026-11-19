@@ -51,6 +51,7 @@ final marketRepositoryProvider = Provider<MarketRepository>((ref) {
     cache: PriceCacheLocalDataSource(ref.watch(appDatabaseProvider)),
     quota: ref.watch(quotaLocalDataSourceProvider),
     meta: MarketMetaLocalDataSource(ref.watch(appDatabaseProvider)),
+    quotaStatus: burkut,
   );
 });
 

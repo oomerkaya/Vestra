@@ -140,6 +140,21 @@ void main() {
     },
   );
 
+  test('/quota: parsed, costs nothing locally', () async {
+    final status = (await provider.fetchQuotaStatus()).valueOrNull!;
+
+    expect(status.limit, 1000);
+    expect(status.used, 49);
+    expect(status.remaining, 951);
+    expect(status.resetAt, DateTime.utc(2026, 12));
+    expect((await quota.current()).used, 0, reason: 'not counted');
+
+    final synced = await quota.syncStatus(status);
+    expect(synced.used, 49);
+    expect(synced.resetAt, DateTime.utc(2026, 12));
+    expect((await quota.current()).resetAt, DateTime.utc(2026, 12));
+  });
+
   test('quota headers sync the local counter', () async {
     await provider.fetchPrices();
 

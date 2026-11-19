@@ -83,6 +83,14 @@ class _FakeMarket implements MarketRepository {
   @override
   Future<DateTime?> stocksSnapshotAt() async => snapshotAt;
 
+  int quotaSyncs = 0;
+
+  @override
+  Future<Result<QuotaUsage>> syncQuota() async {
+    quotaSyncs++;
+    return quotaUsage();
+  }
+
   @override
   Future<Result<QuotaUsage>> quotaUsage() async => const Success(
     QuotaUsage(period: '2026-11', used: 0, limit: 1000),
@@ -207,6 +215,20 @@ void main() {
     // 10:20: nothing due for anyone.
     now = ist(2026, 11, 17, 10, 20);
     expect(await controller().refreshDue(manual: true), isEmpty);
+  });
+
+  test('the free quota check runs at most every 10 minutes', () async {
+    await controller().refreshDue(manual: true);
+    now = now.add(const Duration(minutes: 5));
+    await controller().refreshDue(manual: true);
+    expect(market.quotaSyncs, 1);
+
+    now = now.add(const Duration(minutes: 5));
+    await controller().refreshDue(manual: true);
+    expect(market.quotaSyncs, 2);
+
+    await controller().syncQuota(force: true);
+    expect(market.quotaSyncs, 3, reason: 'settings screen forces it');
   });
 
   test('regular stock update is one whole-market request', () async {

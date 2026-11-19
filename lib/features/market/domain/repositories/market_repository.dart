@@ -32,6 +32,10 @@ abstract interface class MarketRepository {
 
   Future<Result<QuotaUsage>> quotaUsage();
 
+  /// Replaces the local quota count with the provider's own (free, no
+  /// request is counted). Returns the updated usage.
+  Future<Result<QuotaUsage>> syncQuota();
+
   /// When the whole BIST market was last fetched successfully; `null` if
   /// never (then stocks are fetched even outside the session).
   Future<DateTime?> stocksSnapshotAt();

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:vestra/features/market/data/dto/burkut_dtos.dart';
 import 'package:vestra/features/market/data/dto/json_parsing.dart';
 import 'package:vestra/features/market/data/dto/kap_disclosure_dto.dart';
+import 'package:vestra/features/market/domain/entities/quota_usage.dart';
 
 /// Raw HTTP access to the Bürküt public API. Throws [DioException].
 ///
@@ -69,6 +70,26 @@ class BurkutRemoteDataSource {
       KapDisclosureDto.listFrom(response.data),
       quotaRemaining: _intHeader(response, quotaHeader),
       quotaLimit: _intHeader(response, quotaLimitHeader),
+    );
+  }
+
+  /// Monthly quota of the key. Costs no request
+  /// (`quotaCheckConsumesCredit: false`, verified 2026-11-19).
+  Future<QuotaStatus?> getQuota(String apiKey) async {
+    final response = await _raw('/quota', apiKey);
+    final data = response.data;
+    final body = data is Map<String, dynamic> ? data['data'] : null;
+    final monthly = body is Map<String, dynamic> ? body['monthly'] : null;
+    if (monthly is! Map<String, dynamic>) return null;
+    final limit = (monthly['limit'] as num?)?.toInt();
+    final used = (monthly['used'] as num?)?.toInt();
+    final remaining = (monthly['remaining'] as num?)?.toInt();
+    if (limit == null || used == null || remaining == null) return null;
+    return QuotaStatus(
+      limit: limit,
+      used: used,
+      remaining: remaining,
+      resetAt: parseDateTime(monthly['resetAt']),
     );
   }
 

@@ -6,8 +6,8 @@ import 'package:vestra/features/market/domain/entities/quota_usage.dart';
 /// Counts Bürküt requests per calendar month in `app_settings`.
 ///
 /// The count is the app's own estimate, corrected by the server's
-/// `X-Quota-Remaining` header whenever it is present; the server's
-/// "quota exceeded" answer always wins.
+/// `X-Quota-Remaining` header whenever it is present and replaced by the
+/// free `/quota` answer; the server's "quota exceeded" answer always wins.
 class QuotaLocalDataSource {
   QuotaLocalDataSource(this._db, {DateTime Function()? clock})
     : _clock = clock ?? DateTime.now;
@@ -39,7 +39,22 @@ class QuotaLocalDataSource {
       used: u.used + 1,
       limit: u.limit,
       exhaustedByServer: u.exhaustedByServer,
+      resetAt: u.resetAt,
     ),
+  );
+
+  /// Replaces the counter with the server's own numbers (`/quota`).
+  Future<QuotaUsage> syncStatus(QuotaStatus status) => _update(
+    (u) {
+      final limit = status.limit > 0 ? status.limit : u.limit;
+      return QuotaUsage(
+        period: u.period,
+        used: status.used.clamp(0, limit),
+        limit: limit,
+        exhaustedByServer: status.remaining <= 0,
+        resetAt: status.resetAt ?? u.resetAt,
+      );
+    },
   );
 
   /// Aligns the counter with the server's `X-Quota-Remaining` and
@@ -53,6 +68,7 @@ class QuotaLocalDataSource {
         used: (effectiveLimit - remaining).clamp(0, effectiveLimit),
         limit: effectiveLimit,
         exhaustedByServer: remaining <= 0,
+        resetAt: u.resetAt,
       );
     },
   );
@@ -63,6 +79,7 @@ class QuotaLocalDataSource {
       used: u.used,
       limit: u.limit,
       exhaustedByServer: true,
+      resetAt: u.resetAt,
     ),
   );
 
@@ -82,6 +99,7 @@ class QuotaLocalDataSource {
     'used': u.used,
     'limit': u.limit,
     'exhausted': u.exhaustedByServer,
+    'resetAt': u.resetAt?.toUtc().toIso8601String(),
   });
 
   static QuotaUsage? _decode(String? raw) {
@@ -93,6 +111,7 @@ class QuotaLocalDataSource {
         used: json['used'] as int,
         limit: json['limit'] as int? ?? QuotaUsage.burkutFreeLimit,
         exhaustedByServer: json['exhausted'] as bool? ?? false,
+        resetAt: DateTime.tryParse(json['resetAt'] as String? ?? ''),
       );
     } on Object {
       return null;
