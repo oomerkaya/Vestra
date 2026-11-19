@@ -49,5 +49,5 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 - [ ] Flutter yükseltmesi + `material.dart` → `material_ui` geçişi (CI sürümüyle birlikte)
 - [ ] Hata ekranları, boş durumlar, erişilebilirlik
 - [ ] Yedekleme/dışa aktarma (veri yerelde olduğu için)
-- [ ] README: kurulum, kendi API anahtarını alma, veri kaynağı ve gecikme uyarısı, yatırım tavsiyesi değildir notu
+- [ ] README: kurulum, kendi API anahtarını alma, veri kaynağı ve gecikme uyarısı, yatırım tavsiyesi değildir notu; "resmi Bürküt uygulaması değildir, bağımsız topluluk istemcisidir" notu (Bürküt şartı); LICENSE dosyası (garanti yok maddesi); repo linkini Bürküt'e (Samet) ilet
 - [ ] GitHub Releases ile APK
