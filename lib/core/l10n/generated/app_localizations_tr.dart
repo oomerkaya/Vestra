@@ -201,7 +201,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsDataNote =>
-      'Fiyatlar Bürküt\'ten gelir. Döviz ve altın/gümüş uygulama açıkken saatte bir, hisseler yalnızca hafta içi 10:00-18:00 arasında saatte bir, fonlar günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.';
+      'Fiyatlar Bürküt\'ten gelir. Döviz ve altın/gümüş uygulama açıkken saatte bir, hisseler yalnızca hafta içi 10:00-18:00 arasında saatte bir, fonlar yalnızca hafta içi 10:00-18:00 arasında günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.';
 
   @override
   String get apiKeySheetTitle => 'Bürküt API anahtarı';
@@ -549,7 +549,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get marketFundsRule =>
-      'Günde bir kez güncellenir (TEFAS fiyatları günlük açıklanır)';
+      'Hafta içi 10:00-18:00 arasında, günde bir kez güncellenir (TEFAS fiyatları günlük açıklanır)';
 
   @override
   String get marketSearchFunds => 'Fon ara (kod veya ad)';

@@ -451,7 +451,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsDataNote.
   ///
   /// In tr, this message translates to:
-  /// **'Fiyatlar Bürküt\'ten gelir. Döviz ve altın/gümüş uygulama açıkken saatte bir, hisseler yalnızca hafta içi 10:00-18:00 arasında saatte bir, fonlar günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.'**
+  /// **'Fiyatlar Bürküt\'ten gelir. Döviz ve altın/gümüş uygulama açıkken saatte bir, hisseler yalnızca hafta içi 10:00-18:00 arasında saatte bir, fonlar yalnızca hafta içi 10:00-18:00 arasında günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.'**
   String get settingsDataNote;
 
   /// No description provided for @apiKeySheetTitle.
@@ -1093,7 +1093,7 @@ abstract class AppLocalizations {
   /// No description provided for @marketFundsRule.
   ///
   /// In tr, this message translates to:
-  /// **'Günde bir kez güncellenir (TEFAS fiyatları günlük açıklanır)'**
+  /// **'Hafta içi 10:00-18:00 arasında, günde bir kez güncellenir (TEFAS fiyatları günlük açıklanır)'**
   String get marketFundsRule;
 
   /// No description provided for @marketSearchFunds.

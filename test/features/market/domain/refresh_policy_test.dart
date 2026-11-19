@@ -118,30 +118,50 @@ void main() {
       }
     });
 
-    test('funds update once per Istanbul day, any hour', () {
-      // Last update Monday 09:00 Istanbul.
-      final monday9 = ist(2026, 11, 16, 9);
+    test('funds update once per trading day, only in the session', () {
+      // Last update Monday 11:00 Istanbul.
+      final monday11 = ist(2026, 11, 16, 11);
       bool fundsDue(DateTime now) => RefreshPolicy.isDue(
         category: QuoteCategory.funds,
         now: now,
-        lastSuccess: monday9,
+        lastSuccess: monday11,
         lastAttempt: null,
         calendar: calendar,
         manual: true,
       );
 
-      expect(fundsDue(ist(2026, 11, 16, 23, 59)), isFalse, reason: 'same day');
-      expect(fundsDue(ist(2026, 11, 17, 0, 1)), isTrue, reason: 'next day');
-      expect(fundsDue(ist(2026, 11, 22, 3)), isTrue, reason: 'weekend ok');
+      expect(fundsDue(ist(2026, 11, 16, 17)), isFalse, reason: 'same day');
+      expect(fundsDue(ist(2026, 11, 17, 0, 1)), isFalse, reason: 'night');
+      expect(fundsDue(ist(2026, 11, 17, 9, 59)), isFalse, reason: 'pre-open');
+      expect(fundsDue(ist(2026, 11, 17, 10)), isTrue, reason: 'next session');
+      expect(fundsDue(ist(2026, 11, 22, 12)), isFalse, reason: 'weekend');
     });
 
-    test('next fund update is the next Istanbul midnight', () {
+    test('first fund fetch is allowed outside the session', () {
+      expect(
+        due(QuoteCategory.funds, now: weekend),
+        isTrue,
+      );
+    });
+
+    test('next fund update is the next trading day at 10:00', () {
+      // Monday -> Tuesday 10:00.
       expect(
         RefreshPolicy.nextUpdate(
           ist(2026, 11, 16, 14),
           category: QuoteCategory.funds,
+          calendar: calendar,
         ),
-        ist(2026, 11, 17, 0),
+        ist(2026, 11, 17, 10),
+      );
+      // Friday -> Monday 10:00 (weekend skipped).
+      expect(
+        RefreshPolicy.nextUpdate(
+          ist(2026, 11, 20, 14),
+          category: QuoteCategory.funds,
+          calendar: calendar,
+        ),
+        ist(2026, 11, 23, 10),
       );
     });
 

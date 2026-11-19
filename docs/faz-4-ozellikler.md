@@ -187,6 +187,12 @@ Kullanıcı geri bildirimleriyle sırayla yapıldı; son durum aşağıda.
 - **Gerekçe:** Uygulamayı iş saatlerinde 8 saat açık bırakan kullanıcı 30 dakikalık aralıkla ayda ~1.340 istekle kotayı (1.000) aşıyordu. 60 dakikayla bu ~690'a iniyor; KAP gibi ek özelliklere de yer kalıyor.
 - **Değişenler:** `RefreshPolicy.interval` 60 dk (otomatik yeniden deneme beklemesi de bununla birlikte 60 dk). 429 backoff üst sınırı 30 dk olarak kaldı. Piyasa ve ayarlar metinleri "saatte bir". Testler yeni aralığa göre güncellendi.
 
+### 8. Fonlar yalnızca seans içinde (2026-11-19)
+
+- **Karar:** Kullanıcı isteğiyle fonlar hisseler gibi davranıyor: işlem günü başına bir kez, yalnızca seans içinde (hafta içi 10:00-18:00, yarım günde 12:30'a kadar, tatilde yok). İlk çekme yine her zaman yapılabiliyor.
+- **Gerekçe:** TEFAS hafta sonu ve tatilde yeni fiyat açıklamıyor; o günlerde istek ve 1,9 MB veri boşa gidiyordu. Gece yarısı çekilen fiyat da zaten önceki günün fiyatıydı; seans içinde çekmek o günün fiyatını yakalama şansını artırıyor. Kota etkisi ayda ~30'dan ~22'ye iniyor.
+- **Değişenler:** `RefreshPolicy.isDue` (fonlar seansa bağlı), `RefreshPolicy.nextUpdate` (fonlarda bir sonraki işlem gününün 10:00'ı; hafta sonu ve tatiller atlanıyor, takvim parametresi eklendi), piyasa ekranındaki kural metni.
+
 ### Testler
 
 166 test. Kapsananlar:

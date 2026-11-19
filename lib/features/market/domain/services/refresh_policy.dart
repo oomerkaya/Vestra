@@ -14,7 +14,8 @@ import 'package:vestra/features/market/domain/entities/quote.dart';
 /// - Stocks: only during the BIST session, weekdays 10:00-18:00
 ///   Europe/Istanbul, until 12:30 on half days, never on holidays.
 /// - Funds (TEFAS): once per Istanbul calendar day (prices are published
-///   daily), any time of day.
+///   daily), and only during the BIST session like stocks: no requests at
+///   night, on weekends or holidays.
 /// - Stocks are fetched as the whole BIST market in one request, so a
 ///   newly added stock already has a price from the last snapshot.
 /// - First fetch: a category that has never been fetched (empty cache) is
@@ -68,11 +69,11 @@ abstract final class RefreshPolicy {
     if (_backingOff(now, backoffUntil)) return false;
     if (_coolingDown(now, lastAttempt, manual: manual)) return false;
     if (lastSuccess == null) return true; // first fetch, any time
+    final sessionBound =
+        category == QuoteCategory.stocks || category == QuoteCategory.funds;
+    if (sessionBound && !isSessionOpen(now, calendar)) return false;
     if (category == QuoteCategory.funds) {
       return !_sameIstanbulDay(lastSuccess, now);
-    }
-    if (category == QuoteCategory.stocks && !isSessionOpen(now, calendar)) {
-      return false;
     }
     return _since(lastSuccess, now) >= interval;
   }
@@ -87,16 +88,25 @@ abstract final class RefreshPolicy {
   }) => !manual && lastAttempt != null && _since(lastAttempt, now) < interval;
 
   /// Earliest time a category with this [lastSuccess] may update again;
-  /// `null` if it has never been updated. Funds: next Istanbul midnight.
+  /// `null` if it has never been updated. Funds: the next session opening
+  /// (10:00 Istanbul) on a later trading day.
   static DateTime? nextUpdate(
     DateTime? lastSuccess, {
     QuoteCategory? category,
+    MarketCalendar? calendar,
   }) {
     if (lastSuccess == null) return null;
     if (category == QuoteCategory.funds) {
       final local = toIstanbul(lastSuccess);
-      final nextMidnight = DateTime.utc(local.year, local.month, local.day + 1);
-      return nextMidnight.subtract(istanbulOffset);
+      var day = DateTime.utc(local.year, local.month, local.day + 1);
+      while (day.weekday == DateTime.saturday ||
+          day.weekday == DateTime.sunday ||
+          (calendar?.isClosed(day) ?? false)) {
+        day = DateTime.utc(day.year, day.month, day.day + 1);
+      }
+      return day
+          .add(const Duration(minutes: _openMinute))
+          .subtract(istanbulOffset);
     }
     return lastSuccess.add(interval);
   }

@@ -70,6 +70,7 @@ class MarketCategoryTab extends ConsumerWidget {
             quotes: quotes,
             isRefreshing: refresh.refreshing.contains(category),
             sessionOpen: RefreshPolicy.isSessionOpen(DateTime.now(), calendar),
+            calendar: calendar,
           ),
           ?_notice(l10n, refresh, hasKey: hasKey),
           const SizedBox(height: AppSpacing.lg),
@@ -140,6 +141,7 @@ class MarketCategoryTab extends ConsumerWidget {
       final next = RefreshPolicy.nextUpdate(
         _latest(quotes),
         category: category,
+        calendar: calendar,
       );
       if (next == null) return;
       message = l10n.marketUpToDate(DateFormatters.shortDateTime(next));
@@ -199,19 +201,25 @@ class _StatusCard extends StatelessWidget {
     required this.quotes,
     required this.isRefreshing,
     required this.sessionOpen,
+    required this.calendar,
   });
 
   final QuoteCategory category;
   final List<Quote> quotes;
   final bool isRefreshing;
   final bool sessionOpen;
+  final MarketCalendar calendar;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final latest = MarketCategoryTab._latest(quotes);
-    final next = RefreshPolicy.nextUpdate(latest, category: category);
+    final next = RefreshPolicy.nextUpdate(
+      latest,
+      category: category,
+      calendar: calendar,
+    );
     final isStocks = category == QuoteCategory.stocks;
 
     final title = isRefreshing
