@@ -299,5 +299,35 @@
   "portfolioKeyAction": "Ayarlara git",
   "allocationByCategory": "Tür",
   "allocationByAsset": "Varlık",
-  "allocationOther": "Diğer"
+  "allocationOther": "Diğer",
+  "settingsSectionBackup": "Yedekleme",
+  "backupExport": "Portföyü dışa aktar",
+  "backupExportHint": "Varlıklar ve işlemler tek dosyaya kaydedilir",
+  "backupImport": "Yedekten geri yükle",
+  "backupImportHint": "Mevcut portföyün yerine yedektekiler yüklenir",
+  "backupNote": "Yedekte fiyatlar ve API anahtarı bulunmaz.",
+  "backupEmpty": "Portföy boş; yedeklenecek bir şey yok.",
+  "backupExportFailed": "Yedek oluşturulamadı.",
+  "backupShareSubject": "Vestra portföy yedeği",
+  "backupRestoreConfirmTitle": "Yedek geri yüklensin mi?",
+  "backupRestoreConfirmMessage": "{date} tarihli yedekte {assets} varlık ve {transactions} işlem var. Mevcut portföyün silinip yerine bunlar yüklenecek.",
+  "@backupRestoreConfirmMessage": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "assets": {
+        "type": "String"
+      },
+      "transactions": {
+        "type": "String"
+      }
+    }
+  },
+  "backupRestoreAction": "Geri yükle",
+  "backupRestored": "Yedek geri yüklendi",
+  "backupRestoreFailed": "Yedek geri yüklenemedi; portföyün değişmedi.",
+  "backupErrorNotABackup": "Bu dosya bir Vestra yedeği değil.",
+  "backupErrorNewer": "Bu yedek daha yeni bir Vestra sürümüyle oluşturulmuş. Önce uygulamayı güncelle.",
+  "backupErrorInvalid": "Yedek dosyası bozuk ya da tutarsız; portföyün değişmedi."
 }

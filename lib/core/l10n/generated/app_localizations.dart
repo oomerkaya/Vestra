@@ -1251,6 +1251,112 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Diğer'**
   String get allocationOther;
+
+  /// No description provided for @settingsSectionBackup.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedekleme'**
+  String get settingsSectionBackup;
+
+  /// No description provided for @backupExport.
+  ///
+  /// In tr, this message translates to:
+  /// **'Portföyü dışa aktar'**
+  String get backupExport;
+
+  /// No description provided for @backupExportHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Varlıklar ve işlemler tek dosyaya kaydedilir'**
+  String get backupExportHint;
+
+  /// No description provided for @backupImport.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedekten geri yükle'**
+  String get backupImport;
+
+  /// No description provided for @backupImportHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mevcut portföyün yerine yedektekiler yüklenir'**
+  String get backupImportHint;
+
+  /// No description provided for @backupNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedekte fiyatlar ve API anahtarı bulunmaz.'**
+  String get backupNote;
+
+  /// No description provided for @backupEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Portföy boş; yedeklenecek bir şey yok.'**
+  String get backupEmpty;
+
+  /// No description provided for @backupExportFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek oluşturulamadı.'**
+  String get backupExportFailed;
+
+  /// No description provided for @backupShareSubject.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vestra portföy yedeği'**
+  String get backupShareSubject;
+
+  /// No description provided for @backupRestoreConfirmTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek geri yüklensin mi?'**
+  String get backupRestoreConfirmTitle;
+
+  /// No description provided for @backupRestoreConfirmMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'{date} tarihli yedekte {assets} varlık ve {transactions} işlem var. Mevcut portföyün silinip yerine bunlar yüklenecek.'**
+  String backupRestoreConfirmMessage(
+    String date,
+    String assets,
+    String transactions,
+  );
+
+  /// No description provided for @backupRestoreAction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geri yükle'**
+  String get backupRestoreAction;
+
+  /// No description provided for @backupRestored.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek geri yüklendi'**
+  String get backupRestored;
+
+  /// No description provided for @backupRestoreFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek geri yüklenemedi; portföyün değişmedi.'**
+  String get backupRestoreFailed;
+
+  /// No description provided for @backupErrorNotABackup.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu dosya bir Vestra yedeği değil.'**
+  String get backupErrorNotABackup;
+
+  /// No description provided for @backupErrorNewer.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu yedek daha yeni bir Vestra sürümüyle oluşturulmuş. Önce uygulamayı güncelle.'**
+  String get backupErrorNewer;
+
+  /// No description provided for @backupErrorInvalid.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek dosyası bozuk ya da tutarsız; portföyün değişmedi.'**
+  String get backupErrorInvalid;
 }
 
 class _AppLocalizationsDelegate

@@ -7,6 +7,7 @@ import 'package:vestra/core/theme/app_tokens.dart';
 import 'package:vestra/core/widgets/app_card.dart';
 import 'package:vestra/core/widgets/choice_tiles.dart';
 import 'package:vestra/core/widgets/section_header.dart';
+import 'package:vestra/features/portfolio/presentation/widgets/backup_section.dart';
 import 'package:vestra/features/settings/presentation/theme_mode_provider.dart';
 import 'package:vestra/features/settings/presentation/widgets/data_source_section.dart';
 
@@ -41,6 +42,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           SectionHeader(l10n.settingsSectionData),
           const DataSourceSection(),
+          SectionHeader(l10n.settingsSectionBackup),
+          const BackupSection(),
           SectionHeader(l10n.settingsSectionAbout),
           AppCard(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),

@@ -634,4 +634,65 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get allocationOther => 'Diğer';
+
+  @override
+  String get settingsSectionBackup => 'Yedekleme';
+
+  @override
+  String get backupExport => 'Portföyü dışa aktar';
+
+  @override
+  String get backupExportHint => 'Varlıklar ve işlemler tek dosyaya kaydedilir';
+
+  @override
+  String get backupImport => 'Yedekten geri yükle';
+
+  @override
+  String get backupImportHint =>
+      'Mevcut portföyün yerine yedektekiler yüklenir';
+
+  @override
+  String get backupNote => 'Yedekte fiyatlar ve API anahtarı bulunmaz.';
+
+  @override
+  String get backupEmpty => 'Portföy boş; yedeklenecek bir şey yok.';
+
+  @override
+  String get backupExportFailed => 'Yedek oluşturulamadı.';
+
+  @override
+  String get backupShareSubject => 'Vestra portföy yedeği';
+
+  @override
+  String get backupRestoreConfirmTitle => 'Yedek geri yüklensin mi?';
+
+  @override
+  String backupRestoreConfirmMessage(
+    String date,
+    String assets,
+    String transactions,
+  ) {
+    return '$date tarihli yedekte $assets varlık ve $transactions işlem var. Mevcut portföyün silinip yerine bunlar yüklenecek.';
+  }
+
+  @override
+  String get backupRestoreAction => 'Geri yükle';
+
+  @override
+  String get backupRestored => 'Yedek geri yüklendi';
+
+  @override
+  String get backupRestoreFailed =>
+      'Yedek geri yüklenemedi; portföyün değişmedi.';
+
+  @override
+  String get backupErrorNotABackup => 'Bu dosya bir Vestra yedeği değil.';
+
+  @override
+  String get backupErrorNewer =>
+      'Bu yedek daha yeni bir Vestra sürümüyle oluşturulmuş. Önce uygulamayı güncelle.';
+
+  @override
+  String get backupErrorInvalid =>
+      'Yedek dosyası bozuk ya da tutarsız; portföyün değişmedi.';
 }

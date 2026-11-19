@@ -9,13 +9,16 @@ import 'package:vestra/features/market/domain/entities/quote.dart';
 import 'package:vestra/features/market/domain/services/disclosure_policy.dart';
 import 'package:vestra/features/market/market_providers.dart';
 import 'package:vestra/features/portfolio/data/datasources/portfolio_local_data_source.dart';
+import 'package:vestra/features/portfolio/data/repositories/backup_repository_impl.dart';
 import 'package:vestra/features/portfolio/data/repositories/portfolio_repository_impl.dart';
 import 'package:vestra/features/portfolio/domain/entities/asset_transaction.dart';
 import 'package:vestra/features/portfolio/domain/entities/holding.dart';
 import 'package:vestra/features/portfolio/domain/entities/portfolio_summary.dart';
+import 'package:vestra/features/portfolio/domain/repositories/backup_repository.dart';
 import 'package:vestra/features/portfolio/domain/repositories/portfolio_repository.dart';
 import 'package:vestra/features/portfolio/domain/services/portfolio_valuator.dart';
 import 'package:vestra/features/portfolio/domain/usecases/add_transaction.dart';
+import 'package:vestra/features/portfolio/domain/usecases/backup_use_cases.dart';
 import 'package:vestra/features/portfolio/domain/usecases/delete_asset.dart';
 import 'package:vestra/features/portfolio/domain/usecases/delete_transaction.dart';
 import 'package:vestra/features/portfolio/domain/usecases/update_transaction.dart';
@@ -29,6 +32,24 @@ final portfolioRepositoryProvider = Provider<PortfolioRepository>(
   (ref) => PortfolioRepositoryImpl(
     PortfolioLocalDataSource(ref.watch(appDatabaseProvider)),
   ),
+);
+
+final backupRepositoryProvider = Provider<BackupRepository>(
+  (ref) => BackupRepositoryImpl(
+    PortfolioLocalDataSource(ref.watch(appDatabaseProvider)),
+  ),
+);
+
+final exportPortfolioProvider = Provider<ExportPortfolio>(
+  (ref) => ExportPortfolio(ref.watch(backupRepositoryProvider)),
+);
+
+final readBackupProvider = Provider<ReadBackup>(
+  (ref) => ReadBackup(ref.watch(backupRepositoryProvider)),
+);
+
+final restoreBackupProvider = Provider<RestoreBackup>(
+  (ref) => RestoreBackup(ref.watch(backupRepositoryProvider)),
 );
 
 final addTransactionProvider = Provider<AddTransaction>(

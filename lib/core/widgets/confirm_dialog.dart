@@ -7,6 +7,9 @@ Future<bool> confirmDestructive(
   BuildContext context, {
   required String title,
   required String message,
+
+  /// Label of the confirming button; "Sil" when omitted.
+  String? confirmLabel,
 }) async {
   final l10n = context.l10n;
   final result = await showDialog<bool>(
@@ -24,7 +27,7 @@ Future<bool> confirmDestructive(
             foregroundColor: Theme.of(context).colorScheme.error,
           ),
           onPressed: () => Navigator.of(context).pop(true),
-          child: Text(l10n.commonDelete),
+          child: Text(confirmLabel ?? l10n.commonDelete),
         ),
       ],
     ),
