@@ -101,12 +101,16 @@ void main() {
     expect(await controller().refreshDue(), isTrue);
   });
 
-  test('nothing once half of the quota is used', () async {
-    used = 500;
+  test('runs above half of the quota; stops only when used up', () async {
+    used = 900;
     container.invalidate(quotaUsageProvider);
+    expect(await controller().refreshDue(), isTrue);
 
+    now = ist(2026, 11, 20, 9);
+    used = 1000;
+    container.invalidate(quotaUsageProvider);
     expect(await controller().refreshDue(), isFalse);
-    expect(kap.feeds, 0);
+    expect(kap.feeds, 1);
   });
 
   test('a failure waits an hour before the next try', () async {

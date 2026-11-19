@@ -40,14 +40,14 @@ void main() {
     });
   });
 
-  test('fetching stops once half of the quota is used', () {
+  test('only a used-up quota stops it', () {
     QuotaUsage used(int n) =>
         QuotaUsage(period: '2026-11', used: n, limit: 1000);
 
-    expect(DisclosurePolicy.autoAllowed(used(499)), isTrue);
-    expect(DisclosurePolicy.autoAllowed(used(500)), isFalse);
+    expect(DisclosurePolicy.allowed(used(999)), isTrue);
+    expect(DisclosurePolicy.allowed(used(1000)), isFalse);
     expect(
-      DisclosurePolicy.autoAllowed(
+      DisclosurePolicy.allowed(
         const QuotaUsage(
           period: '2026-11',
           used: 0,

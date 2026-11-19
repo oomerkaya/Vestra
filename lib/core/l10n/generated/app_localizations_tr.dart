@@ -86,25 +86,24 @@ class AppLocalizationsTr extends AppLocalizations {
   String get marketRefreshing => 'Güncelleniyor…';
 
   @override
-  String get marketSourceBurkut => 'Bürküt · hisseler en az 15 dk gecikmeli';
+  String get marketDataDelayed => 'Veriler gecikmelidir';
 
   @override
-  String get marketNeedsKeyTitle => 'Fiyatlar için Bürküt API anahtarı gerekli';
+  String get marketNeedsKeyTitle => 'Fiyatlar için API anahtarı gerekli';
 
   @override
-  String get marketNeedsKeyMessage =>
-      'Döviz, altın, hisse ve fon fiyatları Bürküt\'ten gelir. burkutportfoy.com/developer adresinden ücretsiz anahtar alıp Ayarlar\'a ekle.';
+  String get marketNeedsKeyMessage => 'Ayarlar\'dan API anahtarını ekle.';
 
   @override
   String get marketGoToSettings => 'Ayarlara git';
 
   @override
   String get marketQuotaExhausted =>
-      'Bu ayın Bürküt istek kotası doldu. Altın ve hisse fiyatları gelecek ay güncellenecek; döviz yedek kaynaktan geliyor.';
+      'Bu ayın istek kotası doldu. Fiyatlar gelecek ay güncellenecek.';
 
   @override
   String get marketKeyRejected =>
-      'Bürküt API anahtarı reddedildi. Ayarlar\'dan kontrol et.';
+      'API anahtarı kabul edilmedi. Ayarlar\'dan kontrol et.';
 
   @override
   String get errorNetwork =>
@@ -201,14 +200,14 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsDataNote =>
-      'Fiyatlar Bürküt\'ten gelir. Döviz ve altın/gümüş uygulama açıkken saatte bir, hisseler yalnızca hafta içi 10:00-18:00 arasında saatte bir, fonlar yalnızca hafta içi 10:00-18:00 arasında günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.';
+      'API anahtarını burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Vestra resmi bir Bürküt uygulaması değildir.';
 
   @override
   String get apiKeySheetTitle => 'Bürküt API anahtarı';
 
   @override
   String get apiKeySheetHelp =>
-      'burkutportfoy.com/developer adresinden ücretsiz hesap açıp anahtar oluşturabilirsin (ayda 1.000 istek). Anahtar yalnızca bu cihazda şifreli saklanır.';
+      'Anahtarı burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Yalnızca bu cihazda şifreli saklanır.';
 
   @override
   String get apiKeyFieldLabel => 'API anahtarı';
@@ -232,7 +231,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get apiKeyErrorMalformed => 'Anahtar biçimi geçersiz';
 
   @override
-  String get apiKeyErrorRejected => 'Bürküt bu anahtarı kabul etmedi';
+  String get apiKeyErrorRejected => 'Anahtar kabul edilmedi';
 
   @override
   String get apiKeyErrorQuota =>
@@ -448,7 +447,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get pickerStockListUnavailable =>
-      'Hisse listesi için Bürküt API anahtarı gerekli. Sembolü elle yazabilirsin.';
+      'Hisse listesi için API anahtarı gerekli. Sembolü elle yazabilirsin.';
 
   @override
   String get pickerNoResults => 'Sonuç yok';
@@ -549,7 +548,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get marketFundsRule =>
-      'Hafta içi 10:00-18:00 arasında, günde bir kez güncellenir (TEFAS fiyatları günlük açıklanır)';
+      'Hafta içi 10:00-18:00 arasında, günde bir kez güncellenir';
 
   @override
   String get marketSearchFunds => 'Fon ara (kod veya ad)';
@@ -558,14 +557,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get marketFundsNotLoaded => 'Fon listesi ilk güncellemeyle gelir.';
 
   @override
-  String get kapAssetSectionTitle => 'Yakın zamanda yapılan KAP bildirimleri';
+  String get kapAssetSectionTitle => 'Son KAP bildirimleri';
 
   @override
   String get kapNone => 'Son 30 günde kayıtlı bildirim yok.';
 
   @override
-  String get kapAssetFooter =>
-      'Kaynak: KAP, Bürküt üzerinden. Günde bir kez çekilen son 30 günün kayıtlarından gösterilir; uygulamanın açılmadığı günler eksik olabilir.';
+  String get kapAssetFooter => 'Son 30 gün · Günde bir kez güncellenir.';
 
   @override
   String get kapOpenOnKap => 'Bildirimi KAP\'ta aç';
@@ -587,11 +585,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get kapEmptyMessage =>
-      'KAP bildirimleri uygulama açıkken günde bir kez, 08:00\'den sonra güncellenir ve 30 gün saklanır.';
+      'Bildirimler günde bir kez güncellenir ve 30 gün saklanır.';
 
   @override
   String get kapScreenFooter =>
-      'Kaynak: KAP, Bürküt üzerinden. Yalnızca portföydeki hisseler, son 30 gün. Uygulama açıkken günde bir kez tek istekle güncellenir; açılmayan günler eksik olabilir. Aylık kotanın yarısı dolunca güncelleme durur.';
+      'Portföydeki hisselerin son 30 günlük bildirimleri. Günde bir kez güncellenir.';
 
   @override
   String get kapNewBadge => 'KAP';
@@ -618,7 +616,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get portfolioKeyMessage =>
-      'Güncel fiyatlar ve KAP bildirimleri için Bürküt API anahtarını Ayarlar\'dan gir.';
+      'Güncel fiyatlar ve KAP bildirimleri için Ayarlar\'dan API anahtarını ekle.';
 
   @override
   String get portfolioKeyAction => 'Ayarlara git';

@@ -10,7 +10,8 @@ import 'package:vestra/features/market/domain/services/refresh_policy.dart';
 ///   while the app is open. Never a request per stock, never older pages:
 ///   days the app is not opened stay a gap.
 /// - Everything is stored for [keepFor]; the screens only read storage.
-/// - Once half of the monthly quota is used, nothing is fetched.
+/// - No quota threshold of its own (one request a day); only a used-up
+///   quota stops it.
 /// - After a failed attempt the next try waits [retryWait].
 abstract final class DisclosurePolicy {
   /// Stored disclosures older than this are deleted.
@@ -19,14 +20,11 @@ abstract final class DisclosurePolicy {
   /// A disclosure this recent marks its holding as "new".
   static const Duration newWindow = Duration(hours: 24);
 
-  /// Fetching stops once this share of the monthly quota is used.
-  static const double autoQuotaShare = 0.5;
   static const int earliestHour = 8;
   static const Duration retryWait = Duration(minutes: 60);
 
   /// Whether fetching is allowed with this quota usage.
-  static bool autoAllowed(QuotaUsage usage) =>
-      !usage.isExhausted && usage.used < usage.limit * autoQuotaShare;
+  static bool allowed(QuotaUsage usage) => !usage.isExhausted;
 
   /// Once per Istanbul day, from 08:00; the very first fetch any time.
   static bool isDue({

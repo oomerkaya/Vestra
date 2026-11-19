@@ -238,7 +238,7 @@ class _StatusCard extends StatelessWidget {
         QuoteCategory.funds => l10n.marketFundsRule,
         _ => l10n.marketUpdateRule,
       },
-      if (quotes.isNotEmpty && isStocks) l10n.marketSourceBurkut,
+      if (quotes.isNotEmpty && isStocks) l10n.marketDataDelayed,
     ];
 
     return Padding(

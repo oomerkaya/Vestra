@@ -61,7 +61,7 @@ class KapRefreshController extends Notifier<bool> {
       await repository.prune();
       final usage = await ref.read(quotaUsageProvider.future);
       if (!ref.mounted || usage == null) return false;
-      if (!DisclosurePolicy.autoAllowed(usage)) return false;
+      if (!DisclosurePolicy.allowed(usage)) return false;
 
       final now = clock();
       final due = DisclosurePolicy.isDue(

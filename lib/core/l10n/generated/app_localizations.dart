@@ -238,22 +238,22 @@ abstract class AppLocalizations {
   /// **'Güncelleniyor…'**
   String get marketRefreshing;
 
-  /// No description provided for @marketSourceBurkut.
+  /// No description provided for @marketDataDelayed.
   ///
   /// In tr, this message translates to:
-  /// **'Bürküt · hisseler en az 15 dk gecikmeli'**
-  String get marketSourceBurkut;
+  /// **'Veriler gecikmelidir'**
+  String get marketDataDelayed;
 
   /// No description provided for @marketNeedsKeyTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Fiyatlar için Bürküt API anahtarı gerekli'**
+  /// **'Fiyatlar için API anahtarı gerekli'**
   String get marketNeedsKeyTitle;
 
   /// No description provided for @marketNeedsKeyMessage.
   ///
   /// In tr, this message translates to:
-  /// **'Döviz, altın, hisse ve fon fiyatları Bürküt\'ten gelir. burkutportfoy.com/developer adresinden ücretsiz anahtar alıp Ayarlar\'a ekle.'**
+  /// **'Ayarlar\'dan API anahtarını ekle.'**
   String get marketNeedsKeyMessage;
 
   /// No description provided for @marketGoToSettings.
@@ -265,13 +265,13 @@ abstract class AppLocalizations {
   /// No description provided for @marketQuotaExhausted.
   ///
   /// In tr, this message translates to:
-  /// **'Bu ayın Bürküt istek kotası doldu. Altın ve hisse fiyatları gelecek ay güncellenecek; döviz yedek kaynaktan geliyor.'**
+  /// **'Bu ayın istek kotası doldu. Fiyatlar gelecek ay güncellenecek.'**
   String get marketQuotaExhausted;
 
   /// No description provided for @marketKeyRejected.
   ///
   /// In tr, this message translates to:
-  /// **'Bürküt API anahtarı reddedildi. Ayarlar\'dan kontrol et.'**
+  /// **'API anahtarı kabul edilmedi. Ayarlar\'dan kontrol et.'**
   String get marketKeyRejected;
 
   /// No description provided for @errorNetwork.
@@ -451,7 +451,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsDataNote.
   ///
   /// In tr, this message translates to:
-  /// **'Fiyatlar Bürküt\'ten gelir. Döviz ve altın/gümüş uygulama açıkken saatte bir, hisseler yalnızca hafta içi 10:00-18:00 arasında saatte bir, fonlar yalnızca hafta içi 10:00-18:00 arasında günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.'**
+  /// **'API anahtarını burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Vestra resmi bir Bürküt uygulaması değildir.'**
   String get settingsDataNote;
 
   /// No description provided for @apiKeySheetTitle.
@@ -463,7 +463,7 @@ abstract class AppLocalizations {
   /// No description provided for @apiKeySheetHelp.
   ///
   /// In tr, this message translates to:
-  /// **'burkutportfoy.com/developer adresinden ücretsiz hesap açıp anahtar oluşturabilirsin (ayda 1.000 istek). Anahtar yalnızca bu cihazda şifreli saklanır.'**
+  /// **'Anahtarı burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Yalnızca bu cihazda şifreli saklanır.'**
   String get apiKeySheetHelp;
 
   /// No description provided for @apiKeyFieldLabel.
@@ -511,7 +511,7 @@ abstract class AppLocalizations {
   /// No description provided for @apiKeyErrorRejected.
   ///
   /// In tr, this message translates to:
-  /// **'Bürküt bu anahtarı kabul etmedi'**
+  /// **'Anahtar kabul edilmedi'**
   String get apiKeyErrorRejected;
 
   /// No description provided for @apiKeyErrorQuota.
@@ -925,7 +925,7 @@ abstract class AppLocalizations {
   /// No description provided for @pickerStockListUnavailable.
   ///
   /// In tr, this message translates to:
-  /// **'Hisse listesi için Bürküt API anahtarı gerekli. Sembolü elle yazabilirsin.'**
+  /// **'Hisse listesi için API anahtarı gerekli. Sembolü elle yazabilirsin.'**
   String get pickerStockListUnavailable;
 
   /// No description provided for @pickerNoResults.
@@ -1093,7 +1093,7 @@ abstract class AppLocalizations {
   /// No description provided for @marketFundsRule.
   ///
   /// In tr, this message translates to:
-  /// **'Hafta içi 10:00-18:00 arasında, günde bir kez güncellenir (TEFAS fiyatları günlük açıklanır)'**
+  /// **'Hafta içi 10:00-18:00 arasında, günde bir kez güncellenir'**
   String get marketFundsRule;
 
   /// No description provided for @marketSearchFunds.
@@ -1111,7 +1111,7 @@ abstract class AppLocalizations {
   /// No description provided for @kapAssetSectionTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Yakın zamanda yapılan KAP bildirimleri'**
+  /// **'Son KAP bildirimleri'**
   String get kapAssetSectionTitle;
 
   /// No description provided for @kapNone.
@@ -1123,7 +1123,7 @@ abstract class AppLocalizations {
   /// No description provided for @kapAssetFooter.
   ///
   /// In tr, this message translates to:
-  /// **'Kaynak: KAP, Bürküt üzerinden. Günde bir kez çekilen son 30 günün kayıtlarından gösterilir; uygulamanın açılmadığı günler eksik olabilir.'**
+  /// **'Son 30 gün · Günde bir kez güncellenir.'**
   String get kapAssetFooter;
 
   /// No description provided for @kapOpenOnKap.
@@ -1165,13 +1165,13 @@ abstract class AppLocalizations {
   /// No description provided for @kapEmptyMessage.
   ///
   /// In tr, this message translates to:
-  /// **'KAP bildirimleri uygulama açıkken günde bir kez, 08:00\'den sonra güncellenir ve 30 gün saklanır.'**
+  /// **'Bildirimler günde bir kez güncellenir ve 30 gün saklanır.'**
   String get kapEmptyMessage;
 
   /// No description provided for @kapScreenFooter.
   ///
   /// In tr, this message translates to:
-  /// **'Kaynak: KAP, Bürküt üzerinden. Yalnızca portföydeki hisseler, son 30 gün. Uygulama açıkken günde bir kez tek istekle güncellenir; açılmayan günler eksik olabilir. Aylık kotanın yarısı dolunca güncelleme durur.'**
+  /// **'Portföydeki hisselerin son 30 günlük bildirimleri. Günde bir kez güncellenir.'**
   String get kapScreenFooter;
 
   /// No description provided for @kapNewBadge.
@@ -1219,7 +1219,7 @@ abstract class AppLocalizations {
   /// No description provided for @portfolioKeyMessage.
   ///
   /// In tr, this message translates to:
-  /// **'Güncel fiyatlar ve KAP bildirimleri için Bürküt API anahtarını Ayarlar\'dan gir.'**
+  /// **'Güncel fiyatlar ve KAP bildirimleri için Ayarlar\'dan API anahtarını ekle.'**
   String get portfolioKeyMessage;
 
   /// No description provided for @portfolioKeyAction.

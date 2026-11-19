@@ -151,6 +151,10 @@ void main() {
     await seed(tester, now: DateTime.now());
     await pumpApp(tester);
 
+    // Closed by default.
+    expect(find.text('Varlık'), findsNothing);
+    await tester.tap(find.text('DAĞILIM'));
+    await tester.pumpAndSettle();
     expect(find.text('Borsa'), findsWidgets);
     await tester.tap(find.text('Varlık'));
     await tester.pumpAndSettle();

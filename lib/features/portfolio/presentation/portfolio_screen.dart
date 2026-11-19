@@ -77,6 +77,8 @@ class PortfolioScreen extends ConsumerWidget {
             CollapsibleSection(
               title: l10n.portfolioAllocation,
               storageKey: 'portfolio-allocation',
+              // Closed by default; the user opens it when needed.
+              initiallyExpanded: false,
               child: AllocationView(summary: summary),
             ),
           ],
