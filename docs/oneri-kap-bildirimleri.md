@@ -2,7 +2,7 @@
 
 **Durum:** ✅ Karar verildi ve uygulandı (2026-11-19) · **Tarih:** 2026-11-19
 
-> **Karar:** Seçenek D, üst sınır **5 hisse** (portföydeki değeri en yüksek). `url_launcher` eklendi; bildirimler KAP'ta tarayıcıda açılıyor. Güncelleme aralığı ayrıca 60 dakikaya çıkarıldı ve fonlar seansa bağlandı. Ayrıntı: `docs/faz-4-ozellikler.md` bölüm 9. Bu sınırla KAP ayda en fazla ~150 istek.
+> **Karar (güncellendi):** İlk uygulama seçenek D'ydi (5 hisse, hisse başına günlük istek). Aynı gün yapılan ikinci araştırmada genel akışın (`/kap?size=500`) tek istekte ~29 saatin tüm bildirimlerini verdiği görüldü; kullanıcının "tek istekle hepsini çekiyorsa devam edebilir" koşuluyla yöntem buna çevrildi: günde **1 istek** tüm tutulan hisseleri kapsıyor, ilk 5 hisse yalnızca ilk kez geçmiş için ayrı çekiliyor. Kotanın yarısı dolunca otomatik çekme duruyor. Ayrıntı: `docs/faz-4-ozellikler.md` bölüm 9 ve 10. KAP ayda ~30-40 istek.
 
 ## İstek
 

@@ -9,6 +9,7 @@ abstract final class AppRoutes {
   static const settings = '/settings';
 
   static const addTransaction = '/portfolio/add';
+  static const kap = '/portfolio/kap';
   static const assetDetailPattern = '/portfolio/asset/:assetId';
   static const editTransactionPattern =
       '/portfolio/asset/:assetId/transaction/:transactionId';

@@ -136,3 +136,8 @@ final kapDisclosuresProvider = StreamProvider<List<KapDisclosure>>(
         },
       ),
 );
+
+/// When the disclosure list was last opened (`null` = never), live.
+final kapSeenAtProvider = StreamProvider<DateTime?>(
+  (ref) => ref.watch(disclosureRepositoryProvider).watchSeenAt(),
+);

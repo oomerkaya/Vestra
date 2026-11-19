@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:vestra/core/di/database_provider.dart';
 import 'package:vestra/core/domain/instrument.dart';
 import 'package:vestra/core/error/result.dart';
+import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
 import 'package:vestra/features/market/domain/entities/quote.dart';
+import 'package:vestra/features/market/domain/services/disclosure_policy.dart';
 import 'package:vestra/features/market/market_providers.dart';
 import 'package:vestra/features/portfolio/data/datasources/portfolio_local_data_source.dart';
 import 'package:vestra/features/portfolio/data/repositories/portfolio_repository_impl.dart';
@@ -102,3 +104,42 @@ final heldInstrumentsProvider = Provider<Set<Instrument>>(
       if (h.quantity > Decimal.zero) (type: h.asset.type, code: h.asset.code),
   },
 );
+
+/// Symbols of held stocks.
+final heldStockSymbolsProvider = Provider<Set<String>>(
+  (ref) => {
+    for (final i in ref.watch(heldInstrumentsProvider))
+      if (i.type == AssetType.stock) i.code,
+  },
+);
+
+/// Stored KAP disclosures of held stocks, newest first.
+final heldDisclosuresProvider = Provider<List<KapDisclosure>>((ref) {
+  final held = ref.watch(heldStockSymbolsProvider);
+  return [
+    for (final d
+        in ref.watch(kapDisclosuresProvider).value ?? const <KapDisclosure>[])
+      if (held.contains(d.symbol)) d,
+  ];
+});
+
+/// Disclosures published since the list was last opened (the last 7 days
+/// before it was ever opened); drives the badge on the portfolio screen.
+final kapUnseenCountProvider = Provider<int>((ref) {
+  final seenAt =
+      ref.watch(kapSeenAtProvider).value ??
+      DateTime.now().subtract(const Duration(days: 7));
+  return ref
+      .watch(heldDisclosuresProvider)
+      .where((d) => d.publishedAt.isAfter(seenAt))
+      .length;
+});
+
+/// Held stocks with a disclosure in the last 24 hours.
+final newDisclosureSymbolsProvider = Provider<Set<String>>((ref) {
+  final since = DateTime.now().subtract(DisclosurePolicy.newWindow);
+  return {
+    for (final d in ref.watch(heldDisclosuresProvider))
+      if (d.publishedAt.isAfter(since)) d.symbol,
+  };
+});

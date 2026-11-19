@@ -37,12 +37,24 @@ String assetDisplayName(AppLocalizations l10n, Asset asset) =>
         providerName: asset.name,
       );
 
-/// Secondary line on the detail screen: company name for stocks.
-String assetSubtitle(AppLocalizations l10n, Asset asset) =>
-    (asset.type == AssetType.stock || asset.type == AssetType.fund) &&
-        asset.name != asset.code
-    ? asset.name
-    : instrumentSubtitle(l10n, (type: asset.type, code: asset.code));
+/// Company or fund name of a stock/fund, from the stored asset or the
+/// latest quote; `null` for other types or when unknown.
+String? companyName(Asset asset, Quote? quote) {
+  if (asset.type != AssetType.stock && asset.type != AssetType.fund) {
+    return null;
+  }
+  if (asset.name.isNotEmpty && asset.name != asset.code) return asset.name;
+  final fromQuote = quote?.name?.trim();
+  return fromQuote == null || fromQuote.isEmpty || fromQuote == asset.code
+      ? null
+      : fromQuote;
+}
+
+/// Secondary line on the detail screen: company name for stocks and funds
+/// if known, else the market or instrument description.
+String assetSubtitle(AppLocalizations l10n, Asset asset, {Quote? quote}) =>
+    companyName(asset, quote) ??
+    instrumentSubtitle(l10n, (type: asset.type, code: asset.code));
 
 /// Unit shown next to a quantity: ISO code, `gram` or `adet`.
 String quantityUnit(AppLocalizations l10n, Instrument instrument) =>

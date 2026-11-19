@@ -29,3 +29,18 @@ class KapDisclosure {
   /// The most informative line: the subject if given, else the type.
   String get headline => summary ?? title;
 }
+
+/// One page of the general KAP feed (all companies, newest first).
+class DisclosureFeedPage {
+  const DisclosureFeedPage({required this.items, required this.isLast});
+
+  final List<KapDisclosure> items;
+
+  /// No older page exists.
+  final bool isLast;
+
+  /// Publish time of the oldest item; `null` for an empty page.
+  DateTime? get oldest => items.isEmpty
+      ? null
+      : items.map((d) => d.publishedAt).reduce((a, b) => a.isBefore(b) ? a : b);
+}

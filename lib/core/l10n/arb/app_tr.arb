@@ -262,21 +262,35 @@
   "marketFundsRule": "Hafta içi 10:00-18:00 arasında, günde bir kez güncellenir (TEFAS fiyatları günlük açıklanır)",
   "marketSearchFunds": "Fon ara (kod veya ad)",
   "marketFundsNotLoaded": "Fon listesi ilk güncellemeyle gelir.",
-  "kapSectionTitle": "Son KAP bildirimleri",
   "kapAssetSectionTitle": "KAP bildirimleri",
-  "kapNoneRecent": "Son 7 günde bildirim yok.",
-  "kapNone": "Bu hisse için yakın tarihli bildirim yok.",
-  "kapNotLoaded": "Bildirimler henüz yüklenmedi. Günde bir kez otomatik güncellenir.",
+  "kapNone": "Son 30 günde bu hisse için bildirim yok.",
   "kapLoading": "Bildirimler yükleniyor…",
-  "kapPortfolioFooter": "Kaynak: KAP, Bürküt üzerinden. Portföydeki değeri en yüksek 5 hisse için günde bir kez güncellenir; diğer hisselerin bildirimleri detay ekranında.",
   "kapAssetFooter": "Kaynak: KAP, Bürküt üzerinden. Günde bir kez güncellenir.",
   "kapOpenOnKap": "Bildirimi KAP'ta aç",
   "linkOpenFailed": "Bağlantı açılamadı.",
-  "kapShowAll": "{count} bildirimin tümünü göster",
-  "@kapShowAll": {
+  "kapScreenTitle": "KAP bildirimleri",
+  "kapIconTooltip": "KAP bildirimleri",
+  "kapFilterAll": "Tümü",
+  "kapEmptyTitle": "Henüz bildirim yok",
+  "kapEmptyMessage": "Portföyündeki hisselerin KAP bildirimleri günde bir kez, 08:00'den sonra otomatik güncellenir.",
+  "kapScreenFooter": "Kaynak: KAP, Bürküt üzerinden. Yalnızca portföydeki hisseler, son 30 gün. Günde bir kez tek istekle güncellenir. Aylık kotanın yarısı dolunca otomatik güncelleme durur; o zaman bildirimler hisse detayı açılınca güncellenir.",
+  "kapNewBadge": "KAP",
+  "kapNewBadgeSemantics": "Son 24 saatte KAP bildirimi var",
+  "assetDetailPrice": "Güncel fiyat",
+  "assetDetailDailyChange": "Günlük değişim",
+  "assetDetailUpdated": "Son güncelleme",
+  "portfolioPricesAsOf": "Son fiyat güncellemesi: {time}",
+  "@portfolioPricesAsOf": {
     "placeholders": {
-      "count": {"type": "String"}
+      "time": {
+        "type": "String"
+      }
     }
   },
-  "kapShowLess": "Daha az göster"
+  "portfolioKeyTitle": "Fiyatlar için API anahtarı gerekli",
+  "portfolioKeyMessage": "Güncel fiyatlar ve KAP bildirimleri için Bürküt API anahtarını Ayarlar'dan gir.",
+  "portfolioKeyAction": "Ayarlara git",
+  "allocationByCategory": "Tür",
+  "allocationByAsset": "Varlık",
+  "allocationOther": "Diğer"
 }

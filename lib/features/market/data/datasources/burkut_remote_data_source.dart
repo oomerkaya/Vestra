@@ -59,14 +59,25 @@ class BurkutRemoteDataSource {
     String apiKey,
     String symbol, {
     int size = 5,
-  }) async {
-    final response = await _raw(
-      '/kap',
-      apiKey,
-      query: {'symbol': symbol.toUpperCase(), 'size': '$size'},
-    );
+  }) => _kap(apiKey, {'symbol': symbol.toUpperCase(), 'size': '$size'});
+
+  /// Largest page the API serves (`size=1000` still returns 500).
+  static const int kapFeedPageSize = 500;
+
+  /// One page of the general KAP feed, all companies, newest first. On
+  /// 2026-11-19 one page (~190 KB) covered the last ~29 hours (~250
+  /// disclosures per weekday).
+  Future<BurkutKapResponse> getKapFeed(String apiKey, {int page = 0}) =>
+      _kap(apiKey, {'size': '$kapFeedPageSize', 'page': '$page'});
+
+  Future<BurkutKapResponse> _kap(
+    String apiKey,
+    Map<String, String> query,
+  ) async {
+    final response = await _raw('/kap', apiKey, query: query);
     return BurkutKapResponse(
       KapDisclosureDto.listFrom(response.data),
+      isLastPage: KapDisclosureDto.isLastPage(response.data),
       quotaRemaining: _intHeader(response, quotaHeader),
       quotaLimit: _intHeader(response, quotaLimitHeader),
     );

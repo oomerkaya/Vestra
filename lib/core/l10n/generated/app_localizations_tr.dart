@@ -558,27 +558,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get marketFundsNotLoaded => 'Fon listesi ilk güncellemeyle gelir.';
 
   @override
-  String get kapSectionTitle => 'Son KAP bildirimleri';
-
-  @override
   String get kapAssetSectionTitle => 'KAP bildirimleri';
 
   @override
-  String get kapNoneRecent => 'Son 7 günde bildirim yok.';
-
-  @override
-  String get kapNone => 'Bu hisse için yakın tarihli bildirim yok.';
-
-  @override
-  String get kapNotLoaded =>
-      'Bildirimler henüz yüklenmedi. Günde bir kez otomatik güncellenir.';
+  String get kapNone => 'Son 30 günde bu hisse için bildirim yok.';
 
   @override
   String get kapLoading => 'Bildirimler yükleniyor…';
-
-  @override
-  String get kapPortfolioFooter =>
-      'Kaynak: KAP, Bürküt üzerinden. Portföydeki değeri en yüksek 5 hisse için günde bir kez güncellenir; diğer hisselerin bildirimleri detay ekranında.';
 
   @override
   String get kapAssetFooter =>
@@ -591,10 +577,61 @@ class AppLocalizationsTr extends AppLocalizations {
   String get linkOpenFailed => 'Bağlantı açılamadı.';
 
   @override
-  String kapShowAll(String count) {
-    return '$count bildirimin tümünü göster';
+  String get kapScreenTitle => 'KAP bildirimleri';
+
+  @override
+  String get kapIconTooltip => 'KAP bildirimleri';
+
+  @override
+  String get kapFilterAll => 'Tümü';
+
+  @override
+  String get kapEmptyTitle => 'Henüz bildirim yok';
+
+  @override
+  String get kapEmptyMessage =>
+      'Portföyündeki hisselerin KAP bildirimleri günde bir kez, 08:00\'den sonra otomatik güncellenir.';
+
+  @override
+  String get kapScreenFooter =>
+      'Kaynak: KAP, Bürküt üzerinden. Yalnızca portföydeki hisseler, son 30 gün. Günde bir kez tek istekle güncellenir. Aylık kotanın yarısı dolunca otomatik güncelleme durur; o zaman bildirimler hisse detayı açılınca güncellenir.';
+
+  @override
+  String get kapNewBadge => 'KAP';
+
+  @override
+  String get kapNewBadgeSemantics => 'Son 24 saatte KAP bildirimi var';
+
+  @override
+  String get assetDetailPrice => 'Güncel fiyat';
+
+  @override
+  String get assetDetailDailyChange => 'Günlük değişim';
+
+  @override
+  String get assetDetailUpdated => 'Son güncelleme';
+
+  @override
+  String portfolioPricesAsOf(String time) {
+    return 'Son fiyat güncellemesi: $time';
   }
 
   @override
-  String get kapShowLess => 'Daha az göster';
+  String get portfolioKeyTitle => 'Fiyatlar için API anahtarı gerekli';
+
+  @override
+  String get portfolioKeyMessage =>
+      'Güncel fiyatlar ve KAP bildirimleri için Bürküt API anahtarını Ayarlar\'dan gir.';
+
+  @override
+  String get portfolioKeyAction => 'Ayarlara git';
+
+  @override
+  String get allocationByCategory => 'Tür';
+
+  @override
+  String get allocationByAsset => 'Varlık';
+
+  @override
+  String get allocationOther => 'Diğer';
 }

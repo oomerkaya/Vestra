@@ -1,5 +1,12 @@
+import 'package:decimal/decimal.dart';
 import 'package:vestra/core/domain/instrument.dart';
 import 'package:vestra/core/l10n/l10n.dart';
+
+/// Decimals to show for a unit price. Small prices (funds, JPY) need more
+/// digits, but only as many as the value has: 0.1127 -> 4, 0.000123 -> 6;
+/// at least 2.
+int priceDecimals(Decimal price) =>
+    price < Decimal.fromInt(10) ? price.scale.clamp(2, 6) : 2;
 
 /// Display name for an instrument: localized for currencies/metals, the
 /// ticker for stocks; otherwise the provider's name or the raw code.

@@ -35,6 +35,16 @@ abstract final class AppPalette {
   static const Color silver = Color(0xFF94A3B8);
   static const Color stock = Color(0xFF8B5CF6);
   static const Color fund = Color(0xFF14B8A6);
+
+  /// Slices of the allocation chart by asset. No green/red: those mean
+  /// gain/loss only.
+  static const List<Color> chart = [
+    accent,
+    Color(0xFF0EA5E9),
+    stock,
+    fund,
+    gold,
+  ];
 }
 
 /// Colors that Material's [ColorScheme] does not cover.

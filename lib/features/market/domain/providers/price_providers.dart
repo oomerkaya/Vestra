@@ -36,12 +36,16 @@ abstract interface class FundPriceProvider {
   Future<Result<List<Quote>>> fetchFunds();
 }
 
-/// KAP disclosures. One call = one stock = one request (Bürküt does not
-/// accept several symbols at once, verified 2026-11-19).
+/// KAP disclosures. Every call is one request.
 abstract interface class DisclosureProvider {
-  /// Latest [limit] disclosures of [symbol], newest first.
+  /// Latest [limit] disclosures of one stock, newest first (Bürküt does
+  /// not accept several symbols at once, verified 2026-11-19).
   Future<Result<List<KapDisclosure>>> fetchDisclosures(
     String symbol, {
     int limit,
   });
+
+  /// One page of the general feed: every company's disclosures, newest
+  /// first; page 0 is the latest.
+  Future<Result<DisclosureFeedPage>> fetchDisclosureFeed({int page});
 }

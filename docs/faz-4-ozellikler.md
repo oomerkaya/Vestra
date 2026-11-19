@@ -221,9 +221,47 @@ Kullanıcı geri bildirimleriyle sırayla yapıldı; son durum aşağıda.
 - Presentation: `portfolio/presentation/kap_refresh_controller.dart`, `portfolio/presentation/widgets/kap_sections.dart`, `market/presentation/widgets/kap_disclosure_tile.dart`, `core/widgets/external_link.dart`, `DateFormatters.date`.
 - Testler: `disclosure_policy_test.dart`, `disclosure_repository_impl_test.dart`, `kap_refresh_controller_test.dart`, canlı fixture testi, v2→v3 migration testi.
 
+### 10. KAP: günlük genel akış, ayrı sayfa; arayüz iyileştirmeleri (2026-11-19)
+
+**Kullanıcı istekleri:**
+- Sadece portföydeki hisseler; ağırlığı en büyük 5 hisse günlük çekilsin; diğerleri için istek yok, **ama tek istekle hepsi geliyorsa olabilir**.
+- Kotanın **yarısı** dolunca otomatik çekme dursun; o zaman kullanıcı hisse detayına girince görsün.
+- Bildirimler portföy ekranında bölüm olarak değil, **sağ üstte bir ikon** ve ayrı sayfada.
+- Geliştirme önerilerinden 2-7 yapılsın.
+
+**Canlı araştırma (2 istek):**
+- `GET /kap?size=500` (sembolsüz) → 200. `totalElements` 13.737, 28 sayfa. Bir sayfa 500 bildirim, ~190 KB, **~29 saati** kapsıyor (hafta içi günde ~250-265 bildirim).
+- `GET /kap?size=1000` → yine 500 dönüyor; **sayfa üst sınırı 500**.
+- `symbol` alanı bazen birden çok şirket içeriyor ("GARAN, TGB", "OYA, OYYAT"), piyasa geneli duyurularda boş (500'de 38).
+- Kırpılmış gerçek örnek: `test/fixtures/burkut/kap_feed.json` (31 kayıt).
+
+**Karar:** Genel akış tek istekte tüm tutulan hisseleri kapsadığı için kullanıcının koşulu sağlanıyor.
+- **Günlük akış:** İstanbul günü başına bir kez, 08:00'den sonra, 1 istek. Önceki okumadan bu yana bir sayfadan uzun süre geçtiyse (uygulama açılmadıysa) eski sayfalar okunuyor, en fazla 3. İlk okuma tek sayfa.
+- **İlk kez geçmiş:** Akış yalnızca ~1 günü kapsadığı için değeri en yüksek 5 hisseden hiç çekilmemiş olanlara bir kez `?symbol=X&size=5`. Sonradan ilk 5'e giren hisse de bir kez.
+- **Kota:** aylık kullanım %50'ye ulaşınca otomatik çekme yok. Hisse detayı açılınca, o gün akış ya da tek hisse isteğiyle güncellenmemişse o hisse çekiliyor.
+- **Maliyet:** ilk gün en fazla 6, sonra günde 1 → ayda ~30-40 istek (önceki tasarımda en fazla 150).
+- Çok şirketli bildirim her şirkete ayrı satır (id `<id>:<SEMBOL>`), şema değişmedi. Saklama 30 gün; portföyden çıkan hissenin kayıtları siliniyor.
+
+**Arayüz:**
+- Portföy ekranının sağ üstünde megafon ikonu (yalnızca hisse varsa); rozet, sayfa son açıldığından beri gelen bildirim sayısı (`kap_seen_at`). Sayfa: hisse filtresi (çipler), liste, kaynak notu, boş durum.
+- Portföydeki "Son KAP bildirimleri" bölümü kaldırıldı.
+- Detay ekranındaki KAP bölümü yalnızca portföyde duran hisselerde.
+
+**Geliştirme önerileri (2-7):**
+2. Varlık satırında hisse/fon için şirket/fon adı (önce kayıtlı ad, yoksa fiyat önbelleğindeki ad); detay ekranında "Borsa İstanbul" yerine şirket adı (`companyName`).
+3. Detay ekranında güncel birim fiyat (küçük fiyatlarda gereken basamak, `priceDecimals` ortak oldu), günlük değişim çipi ve son güncelleme saati.
+4. Özet kartında "Son fiyat güncellemesi: HH:mm" (tutulan varlıkların en yeni fiyatı).
+5. API anahtarı yoksa portföy ekranının üstünde "Fiyatlar için API anahtarı gerekli" kartı ve "Ayarlara git".
+6. Dağılımda Tür / Varlık geçişi (`SegmentedButton`). Varlık modunda en büyük 4 varlık + "Diğer" (5 veya daha az varlıkta hepsi). Renkler `AppPalette.chart` (yeşil/kırmızı yok).
+7. Son 24 saatte bildirimi olan hissenin satırında küçük "KAP" etiketi.
+
+**Dosyalar:** `DisclosurePolicy` (yeniden), `DisclosureFeedPage`, `DisclosureProvider.fetchDisclosureFeed`, `BurkutRemoteDataSource.getKapFeed`, `KapDisclosureDto.symbols`, `DisclosureRepository.refreshFeed/lastFeedAt/watchSeenAt/markSeen`, `KapRefreshController` (yeniden), `screens/kap_screen.dart`, `AppRoutes.kap`, `portfolio_providers.dart` (`heldStockSymbolsProvider`, `heldDisclosuresProvider`, `kapUnseenCountProvider`, `newDisclosureSymbolsProvider`), `allocation_card.dart` (`AllocationView`), `holding_tile.dart`, `portfolio_summary_card.dart`, `asset_detail_screen.dart`, `portfolio_screen.dart`.
+
+**Testler:** `kap_flow_test.dart` (rozet ve sayfa, detay fiyatı, anahtar kartı, dağılım geçişi), depo testleri (akış sayfalama, 3 sayfa sınırı, yarım kalan akış), denetleyici testleri (ilk gün 5+1, sonraki günler 1, %50 kota, detay ekranı), politika testleri, akış fixture testi.
+
 ### Testler
 
-186 test. Kapsananlar:
+202 test. Kapsananlar:
 - İlk çekmenin her saatte izinli olması.
 - Sonrasında hisselerin seansı beklemesi.
 - Ons'un aynı yenilemedeki ya da önbellekteki kurla TL'ye çevrilmesi, kur yoksa atlanması.

@@ -10,9 +10,16 @@ import 'package:vestra/features/portfolio/domain/entities/portfolio_summary.dart
 
 /// Total value, unrealized P/L and today's change.
 class PortfolioSummaryCard extends StatelessWidget {
-  const PortfolioSummaryCard({required this.summary, super.key});
+  const PortfolioSummaryCard({
+    required this.summary,
+    this.pricesAsOf,
+    super.key,
+  });
 
   final PortfolioSummary summary;
+
+  /// Newest price behind the values; `null` hides the line.
+  final DateTime? pricesAsOf;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +59,13 @@ class PortfolioSummaryCard extends StatelessWidget {
                     percent: summary.dailyChangePercent,
                   ),
               ],
+            ),
+          ],
+          if (pricesAsOf case final asOf?) ...[
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              l10n.portfolioPricesAsOf(DateFormatters.shortDateTime(asOf)),
+              style: text.bodySmall,
             ),
           ],
         ],

@@ -106,10 +106,23 @@ class BurkutPriceProvider
     await _syncQuota(response.quotaRemaining, response.quotaLimit);
     return [
       for (final dto in response.items)
-        // The symbol filter is honoured by the API; keep it as a safeguard.
-        if (dto.symbol == symbol.toUpperCase()) dto.toEntity(),
+        for (final d in dto.toEntities())
+          // The symbol filter is honoured by the API; keep it as a
+          // safeguard.
+          if (d.symbol == symbol.toUpperCase()) d,
     ];
   });
+
+  @override
+  Future<Result<DisclosureFeedPage>> fetchDisclosureFeed({int page = 0}) =>
+      _call('kap feed', (key) async {
+        final response = await _remote.getKapFeed(key, page: page);
+        await _syncQuota(response.quotaRemaining, response.quotaLimit);
+        return DisclosureFeedPage(
+          items: [for (final dto in response.items) ...dto.toEntities()],
+          isLast: response.isLastPage,
+        );
+      });
 
   /// Validates a key with one cheap request (counts against the quota).
   @override

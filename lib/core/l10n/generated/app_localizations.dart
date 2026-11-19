@@ -1108,47 +1108,23 @@ abstract class AppLocalizations {
   /// **'Fon listesi ilk güncellemeyle gelir.'**
   String get marketFundsNotLoaded;
 
-  /// No description provided for @kapSectionTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Son KAP bildirimleri'**
-  String get kapSectionTitle;
-
   /// No description provided for @kapAssetSectionTitle.
   ///
   /// In tr, this message translates to:
   /// **'KAP bildirimleri'**
   String get kapAssetSectionTitle;
 
-  /// No description provided for @kapNoneRecent.
-  ///
-  /// In tr, this message translates to:
-  /// **'Son 7 günde bildirim yok.'**
-  String get kapNoneRecent;
-
   /// No description provided for @kapNone.
   ///
   /// In tr, this message translates to:
-  /// **'Bu hisse için yakın tarihli bildirim yok.'**
+  /// **'Son 30 günde bu hisse için bildirim yok.'**
   String get kapNone;
-
-  /// No description provided for @kapNotLoaded.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bildirimler henüz yüklenmedi. Günde bir kez otomatik güncellenir.'**
-  String get kapNotLoaded;
 
   /// No description provided for @kapLoading.
   ///
   /// In tr, this message translates to:
   /// **'Bildirimler yükleniyor…'**
   String get kapLoading;
-
-  /// No description provided for @kapPortfolioFooter.
-  ///
-  /// In tr, this message translates to:
-  /// **'Kaynak: KAP, Bürküt üzerinden. Portföydeki değeri en yüksek 5 hisse için günde bir kez güncellenir; diğer hisselerin bildirimleri detay ekranında.'**
-  String get kapPortfolioFooter;
 
   /// No description provided for @kapAssetFooter.
   ///
@@ -1168,17 +1144,113 @@ abstract class AppLocalizations {
   /// **'Bağlantı açılamadı.'**
   String get linkOpenFailed;
 
-  /// No description provided for @kapShowAll.
+  /// No description provided for @kapScreenTitle.
   ///
   /// In tr, this message translates to:
-  /// **'{count} bildirimin tümünü göster'**
-  String kapShowAll(String count);
+  /// **'KAP bildirimleri'**
+  String get kapScreenTitle;
 
-  /// No description provided for @kapShowLess.
+  /// No description provided for @kapIconTooltip.
   ///
   /// In tr, this message translates to:
-  /// **'Daha az göster'**
-  String get kapShowLess;
+  /// **'KAP bildirimleri'**
+  String get kapIconTooltip;
+
+  /// No description provided for @kapFilterAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümü'**
+  String get kapFilterAll;
+
+  /// No description provided for @kapEmptyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz bildirim yok'**
+  String get kapEmptyTitle;
+
+  /// No description provided for @kapEmptyMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Portföyündeki hisselerin KAP bildirimleri günde bir kez, 08:00\'den sonra otomatik güncellenir.'**
+  String get kapEmptyMessage;
+
+  /// No description provided for @kapScreenFooter.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaynak: KAP, Bürküt üzerinden. Yalnızca portföydeki hisseler, son 30 gün. Günde bir kez tek istekle güncellenir. Aylık kotanın yarısı dolunca otomatik güncelleme durur; o zaman bildirimler hisse detayı açılınca güncellenir.'**
+  String get kapScreenFooter;
+
+  /// No description provided for @kapNewBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'KAP'**
+  String get kapNewBadge;
+
+  /// No description provided for @kapNewBadgeSemantics.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son 24 saatte KAP bildirimi var'**
+  String get kapNewBadgeSemantics;
+
+  /// No description provided for @assetDetailPrice.
+  ///
+  /// In tr, this message translates to:
+  /// **'Güncel fiyat'**
+  String get assetDetailPrice;
+
+  /// No description provided for @assetDetailDailyChange.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük değişim'**
+  String get assetDetailDailyChange;
+
+  /// No description provided for @assetDetailUpdated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son güncelleme'**
+  String get assetDetailUpdated;
+
+  /// No description provided for @portfolioPricesAsOf.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son fiyat güncellemesi: {time}'**
+  String portfolioPricesAsOf(String time);
+
+  /// No description provided for @portfolioKeyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fiyatlar için API anahtarı gerekli'**
+  String get portfolioKeyTitle;
+
+  /// No description provided for @portfolioKeyMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Güncel fiyatlar ve KAP bildirimleri için Bürküt API anahtarını Ayarlar\'dan gir.'**
+  String get portfolioKeyMessage;
+
+  /// No description provided for @portfolioKeyAction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ayarlara git'**
+  String get portfolioKeyAction;
+
+  /// No description provided for @allocationByCategory.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tür'**
+  String get allocationByCategory;
+
+  /// No description provided for @allocationByAsset.
+  ///
+  /// In tr, this message translates to:
+  /// **'Varlık'**
+  String get allocationByAsset;
+
+  /// No description provided for @allocationOther.
+  ///
+  /// In tr, this message translates to:
+  /// **'Diğer'**
+  String get allocationOther;
 }
 
 class _AppLocalizationsDelegate

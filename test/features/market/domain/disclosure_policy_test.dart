@@ -77,12 +77,12 @@ void main() {
     });
   });
 
-  test('automatic fetching stops below 20 % of the quota', () {
+  test('automatic fetching stops once half of the quota is used', () {
     QuotaUsage used(int n) =>
         QuotaUsage(period: '2026-11', used: n, limit: 1000);
 
-    expect(DisclosurePolicy.autoAllowed(used(800)), isTrue);
-    expect(DisclosurePolicy.autoAllowed(used(801)), isFalse);
+    expect(DisclosurePolicy.autoAllowed(used(499)), isTrue);
+    expect(DisclosurePolicy.autoAllowed(used(500)), isFalse);
     expect(
       DisclosurePolicy.autoAllowed(
         const QuotaUsage(
@@ -94,5 +94,68 @@ void main() {
       ),
       isFalse,
     );
+  });
+
+  test('freshToday: by the feed or on its own, same Istanbul day', () {
+    final now = ist(2026, 11, 19, 9);
+    expect(DisclosurePolicy.freshToday(now: now), isFalse);
+    expect(
+      DisclosurePolicy.freshToday(now: now, feedAt: ist(2026, 11, 19, 0, 5)),
+      isTrue,
+    );
+    expect(
+      DisclosurePolicy.freshToday(now: now, symbolAt: ist(2026, 11, 18, 23)),
+      isFalse,
+    );
+  });
+
+  group('needsOlderPage', () {
+    final last = ist(2026, 11, 18, 9);
+
+    test('first read: one page only', () {
+      expect(
+        DisclosurePolicy.needsOlderPage(
+          pagesRead: 1,
+          oldestOnPage: ist(2026, 11, 19, 1),
+          isLast: false,
+          lastFeedAt: null,
+        ),
+        isFalse,
+      );
+    });
+
+    test('more while the page does not reach the previous read', () {
+      expect(
+        DisclosurePolicy.needsOlderPage(
+          pagesRead: 1,
+          oldestOnPage: ist(2026, 11, 18, 12),
+          isLast: false,
+          lastFeedAt: last,
+        ),
+        isTrue,
+      );
+      expect(
+        DisclosurePolicy.needsOlderPage(
+          pagesRead: 1,
+          oldestOnPage: ist(2026, 11, 18, 8),
+          isLast: false,
+          lastFeedAt: last,
+        ),
+        isFalse,
+      );
+    });
+
+    test('stops at the last page and after 3 pages', () {
+      bool more({required int pages, bool isLast = false}) =>
+          DisclosurePolicy.needsOlderPage(
+            pagesRead: pages,
+            oldestOnPage: ist(2026, 11, 18, 12),
+            isLast: isLast,
+            lastFeedAt: last,
+          );
+      expect(more(pages: 1, isLast: true), isFalse);
+      expect(more(pages: 2), isTrue);
+      expect(more(pages: 3), isFalse);
+    });
   });
 }

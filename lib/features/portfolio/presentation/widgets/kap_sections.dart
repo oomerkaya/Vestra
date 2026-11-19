@@ -8,79 +8,12 @@ import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
 import 'package:vestra/features/market/domain/services/disclosure_policy.dart';
 import 'package:vestra/features/market/market_providers.dart';
 import 'package:vestra/features/market/presentation/widgets/kap_disclosure_tile.dart';
+import 'package:vestra/features/portfolio/portfolio_providers.dart';
 import 'package:vestra/features/portfolio/presentation/kap_refresh_controller.dart';
 
-/// Portfolio screen: the last 7 days' disclosures of the held stocks.
-class PortfolioKapSection extends ConsumerStatefulWidget {
-  const PortfolioKapSection({required this.symbols, super.key});
-
-  /// Held stock symbols.
-  final Set<String> symbols;
-
-  @override
-  ConsumerState<PortfolioKapSection> createState() =>
-      _PortfolioKapSectionState();
-}
-
-class _PortfolioKapSectionState extends ConsumerState<PortfolioKapSection> {
-  static const int _collapsedCount = 5;
-  bool _showAll = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final all = ref.watch(kapDisclosuresProvider).value ?? const [];
-    final loading = ref.watch(kapRefreshControllerProvider).isNotEmpty;
-    final held = [
-      for (final d in all)
-        if (widget.symbols.contains(d.symbol)) d,
-    ];
-    final since = DateTime.now().subtract(DisclosurePolicy.recentWindow);
-    final recent = [
-      for (final d in held)
-        if (d.publishedAt.isAfter(since)) d,
-    ];
-    final visible = _showAll ? recent : recent.take(_collapsedCount).toList();
-
-    return CollapsibleSection(
-      title: l10n.kapSectionTitle,
-      storageKey: 'portfolio-kap',
-      trailing: recent.isEmpty ? null : '${recent.length}',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (recent.isEmpty)
-            KapMessage(
-              loading
-                  ? l10n.kapLoading
-                  : held.isEmpty
-                  ? l10n.kapNotLoaded
-                  : l10n.kapNoneRecent,
-            )
-          else
-            _DisclosureList(visible),
-          if (recent.length > _collapsedCount)
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton(
-                onPressed: () => setState(() => _showAll = !_showAll),
-                child: Text(
-                  _showAll
-                      ? l10n.kapShowLess
-                      : l10n.kapShowAll('${recent.length}'),
-                ),
-              ),
-            ),
-          KapFooter(l10n.kapPortfolioFooter),
-        ],
-      ),
-    );
-  }
-}
-
-/// Asset detail screen: the latest disclosures of one stock. Fetches them
-/// when the screen opens, if they are due (also for stocks outside the
-/// automatic top 5).
+/// Asset detail screen of a held stock: its latest disclosures. Once half
+/// of the monthly quota is used, opening the screen fetches this stock if
+/// nothing updated it today.
 class AssetKapSection extends ConsumerStatefulWidget {
   const AssetKapSection({required this.symbol, super.key});
 
@@ -109,10 +42,12 @@ class _AssetKapSectionState extends ConsumerState<AssetKapSection> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final symbol = widget.symbol.toUpperCase();
-    final all = ref.watch(kapDisclosuresProvider).value ?? const [];
-    final loading = ref.watch(kapRefreshControllerProvider).contains(symbol);
+    final loading = ref
+        .watch(kapRefreshControllerProvider)
+        .loading
+        .contains(symbol);
     final mine = [
-      for (final d in all)
+      for (final d in ref.watch(heldDisclosuresProvider))
         if (d.symbol == symbol) d,
     ].take(DisclosurePolicy.perStock).toList();
 
@@ -125,7 +60,7 @@ class _AssetKapSectionState extends ConsumerState<AssetKapSection> {
           if (mine.isEmpty)
             KapMessage(loading ? l10n.kapLoading : l10n.kapNone)
           else
-            _DisclosureList(mine, showSymbol: false),
+            KapDisclosureList(mine, showSymbol: false),
           KapFooter(l10n.kapAssetFooter),
         ],
       ),
@@ -133,8 +68,9 @@ class _AssetKapSectionState extends ConsumerState<AssetKapSection> {
   }
 }
 
-class _DisclosureList extends StatelessWidget {
-  const _DisclosureList(this.items, {this.showSymbol = true});
+/// Disclosure tiles separated by dividers.
+class KapDisclosureList extends StatelessWidget {
+  const KapDisclosureList(this.items, {this.showSymbol = true, super.key});
 
   final List<KapDisclosure> items;
   final bool showSymbol;

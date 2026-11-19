@@ -10,6 +10,7 @@ import 'package:vestra/features/portfolio/portfolio_providers.dart';
 import 'package:vestra/features/portfolio/presentation/portfolio_screen.dart';
 import 'package:vestra/features/portfolio/presentation/screens/asset_detail_screen.dart';
 import 'package:vestra/features/portfolio/presentation/screens/edit_transaction_route.dart';
+import 'package:vestra/features/portfolio/presentation/screens/kap_screen.dart';
 import 'package:vestra/features/portfolio/presentation/screens/transaction_form_screen.dart';
 import 'package:vestra/features/settings/presentation/settings_screen.dart';
 
@@ -37,6 +38,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     path: 'add',
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (context, state) => _addForm(state),
+                  ),
+                  GoRoute(
+                    path: 'kap',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => const KapScreen(),
                   ),
                   GoRoute(
                     path: 'asset/:assetId',

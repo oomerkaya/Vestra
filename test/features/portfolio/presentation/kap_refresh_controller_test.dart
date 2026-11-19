@@ -15,13 +15,16 @@ import 'package:vestra/features/portfolio/presentation/kap_refresh_controller.da
 
 import '../../../helpers/fixtures.dart';
 
+/// Records every request; "fetches" at the test clock.
 class _FakeKap implements DisclosureRepository {
   _FakeKap(this.clock);
 
   final DateTime Function() clock;
   final Map<String, DateTime> fetched = {};
+  DateTime? feedAt;
   final List<String> calls = [];
   Set<String>? kept;
+  Set<String>? feedHeld;
   Failure? failWith;
 
   @override
@@ -30,6 +33,9 @@ class _FakeKap implements DisclosureRepository {
 
   @override
   Future<DateTime?> lastFetchedAt(String symbol) async => fetched[symbol];
+
+  @override
+  Future<DateTime?> lastFeedAt() async => feedAt;
 
   @override
   Future<Result<int>> refresh(String symbol) async {
@@ -41,10 +47,26 @@ class _FakeKap implements DisclosureRepository {
   }
 
   @override
+  Future<Result<int>> refreshFeed(Set<String> held) async {
+    calls.add('feed');
+    feedHeld = held;
+    final f = failWith;
+    if (f != null) return Err(f);
+    feedAt = clock();
+    return const Success(0);
+  }
+
+  @override
   Future<Result<void>> keepOnly(Set<String> symbols) async {
     kept = symbols;
     return const Success(null);
   }
+
+  @override
+  Stream<DateTime?> watchSeenAt() => Stream.value(null);
+
+  @override
+  Future<Result<void>> markSeen(DateTime at) async => const Success(null);
 }
 
 /// Istanbul wall-clock time as an instant (Istanbul = UTC+3).
@@ -87,6 +109,7 @@ void main() {
       _quote(AssetType.stock, c, '100'),
     _quote(AssetType.currency, 'USD', '42'),
   ];
+  const allHeld = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
 
   setUp(() {
     now = ist(2026, 11, 19, 9);
@@ -114,36 +137,75 @@ void main() {
   KapRefreshController controller() =>
       container.read(kapRefreshControllerProvider.notifier);
 
-  test('fetches the 5 most valuable held stocks, one request each', () async {
-    final requested = await controller().refreshAuto();
-
-    expect(requested, ['G', 'F', 'E', 'D', 'C']);
-    expect(kap.calls, hasLength(5));
-    expect(kap.kept, {'A', 'B', 'C', 'D', 'E', 'F', 'G'});
-  });
-
-  test('only once per day', () async {
-    await controller().refreshAuto();
-    now = ist(2026, 11, 19, 17);
-    expect(await controller().refreshAuto(), isEmpty);
-
-    now = ist(2026, 11, 20, 8, 30);
-    expect(await controller().refreshAuto(), hasLength(5));
-    expect(kap.calls, hasLength(10));
-  });
-
-  test('nothing automatic below 20 % of the quota', () async {
-    used = 850;
+  void setUsed(int value) {
+    used = value;
     container.invalidate(quotaUsageProvider);
+  }
 
-    expect(await controller().refreshAuto(), isEmpty);
+  test('first day: history for the top 5, then one feed for all', () async {
+    final started = await controller().refreshAuto();
+
+    expect(kap.calls, ['G', 'F', 'E', 'D', 'C', 'feed']);
+    expect(started, 6);
+    expect(kap.feedHeld, allHeld, reason: 'feed covers every held stock');
+    expect(kap.kept, allHeld);
+  });
+
+  test('later days: only the feed, one request', () async {
+    await controller().refreshAuto();
+    kap.calls.clear();
+
+    now = ist(2026, 11, 19, 17);
+    expect(await controller().refreshAuto(), 0, reason: 'same day');
+
+    now = ist(2026, 11, 20, 7, 59);
+    expect(await controller().refreshAuto(), 0, reason: 'before 08:00');
+
+    now = ist(2026, 11, 20, 8);
+    expect(await controller().refreshAuto(), 1);
+    expect(kap.calls, ['feed']);
+  });
+
+  test('a stock that enters the top 5 gets its history once', () async {
+    await controller().refreshAuto();
+    kap.calls.clear();
+    kap.fetched.remove('C'); // e.g. C was bought later
+
+    now = ist(2026, 11, 19, 12);
+    await controller().refreshAuto();
+
+    expect(kap.calls, ['C']);
+  });
+
+  test('nothing automatic once half of the quota is used', () async {
+    setUsed(500);
+
+    expect(await controller().refreshAuto(), 0);
     expect(kap.calls, isEmpty);
   });
 
-  test('detail screen fetches a stock outside the top 5, once a day', () async {
-    expect(await controller().ensureFresh('a'), isTrue);
-    expect(await controller().ensureFresh('A'), isFalse);
-    expect(kap.calls, ['A']);
+  group('detail screen', () {
+    test('no request while automatic fetching runs', () async {
+      expect(await controller().ensureFresh('A'), isFalse);
+      expect(kap.calls, isEmpty);
+    });
+
+    test('after half the quota: fetches once a day', () async {
+      setUsed(600);
+
+      expect(await controller().ensureFresh('a'), isTrue);
+      expect(await controller().ensureFresh('A'), isFalse);
+      expect(kap.calls, ['A']);
+    });
+
+    test('after half the quota: nothing if the feed ran today', () async {
+      await controller().refreshAuto();
+      kap.calls.clear();
+      setUsed(600);
+
+      expect(await controller().ensureFresh('A'), isFalse);
+      expect(kap.calls, isEmpty);
+    });
   });
 
   test('stops after a missing key instead of trying every stock', () async {

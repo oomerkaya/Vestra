@@ -111,7 +111,8 @@ class AssetDetailScreen extends ConsumerWidget {
               ),
             ],
           ),
-          if (asset.type == AssetType.stock) ...[
+          // KAP only for stocks still in the portfolio.
+          if (asset.type == AssetType.stock && !holding.isClosed) ...[
             const SizedBox(height: AppSpacing.lg),
             AssetKapSection(symbol: asset.code),
           ],
@@ -185,6 +186,8 @@ class _PositionCard extends StatelessWidget {
     final pnlPct = valued?.unrealizedPnlPercent;
     final avg = holding.averageCostTry;
     final realized = holding.realizedPnlTry;
+    final quote = valued?.quote;
+    final change = quote?.changePercent;
 
     return AppCard(
       padding: const EdgeInsets.all(AppSpacing.xl),
@@ -203,7 +206,7 @@ class _PositionCard extends StatelessWidget {
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Text(
-                  assetSubtitle(l10n, asset),
+                  assetSubtitle(l10n, asset, quote: quote),
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
@@ -232,6 +235,23 @@ class _PositionCard extends StatelessWidget {
           ],
           const SizedBox(height: AppSpacing.lg),
           const Divider(),
+          if (quote != null) ...[
+            _Row(
+              label: l10n.assetDetailPrice,
+              value: Formatters.currencyTry(
+                quote.priceTry,
+                decimals: priceDecimals(quote.priceTry),
+              ),
+            ),
+            if (change != null)
+              _Row(
+                label: l10n.assetDetailDailyChange,
+                trailing: ChangeChip(
+                  label: Formatters.percent(change, signed: true),
+                  direction: directionOf(change),
+                ),
+              ),
+          ],
           _Row(
             label: l10n.assetDetailQuantity,
             value: formatQuantity(l10n, asset, holding.quantity),
@@ -247,6 +267,12 @@ class _PositionCard extends StatelessWidget {
               label: l10n.assetDetailRealized,
               value: Formatters.signedCurrencyTry(realized),
             ),
+          if (quote != null)
+            _Row(
+              label: l10n.assetDetailUpdated,
+              value: DateFormatters.shortDateTime(quote.fetchedAt),
+              muted: true,
+            ),
         ],
       ),
     );
@@ -254,26 +280,41 @@ class _PositionCard extends StatelessWidget {
 }
 
 class _Row extends StatelessWidget {
-  const _Row({required this.label, required this.value});
+  const _Row({
+    required this.label,
+    this.value,
+    this.trailing,
+    this.muted = false,
+  });
 
   final String label;
-  final String value;
+  final String? value;
+
+  /// Shown instead of [value], e.g. a change chip.
+  final Widget? trailing;
+
+  /// Secondary information such as the update time.
+  final bool muted;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final style = muted
+        ? theme.textTheme.bodySmall
+        : theme.textTheme.bodyMedium;
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.md),
       child: Row(
         children: [
-          Expanded(child: Text(label, style: theme.textTheme.bodyMedium)),
-          Text(
-            value,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              fontFeatures: AppTypography.tabular,
-            ),
-          ),
+          Expanded(child: Text(label, style: style)),
+          trailing ??
+              Text(
+                value ?? '',
+                style: style?.copyWith(
+                  fontWeight: muted ? null : FontWeight.w600,
+                  fontFeatures: AppTypography.tabular,
+                ),
+              ),
         ],
       ),
     );

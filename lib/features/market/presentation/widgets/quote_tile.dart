@@ -21,11 +21,7 @@ class QuoteTile extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = context.l10n;
     final change = quote.changePercent;
-    // Small prices (funds, JPY) need more digits, but only as many as the
-    // value has: 0.1127 -> 4, 0.000123 -> 6; at least 2.
-    final decimals = quote.priceTry < Decimal.fromInt(10)
-        ? quote.priceTry.scale.clamp(2, 6)
-        : 2;
+    final decimals = priceDecimals(quote.priceTry);
 
     return Padding(
       padding: const EdgeInsets.symmetric(

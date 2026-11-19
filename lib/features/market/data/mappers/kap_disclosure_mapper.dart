@@ -4,14 +4,19 @@ import 'package:vestra/features/market/data/dto/kap_disclosure_dto.dart';
 import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
 
 extension KapDisclosureDtoMapper on KapDisclosureDto {
-  KapDisclosure toEntity() => KapDisclosure(
-    id: id,
-    symbol: symbol,
-    title: title,
-    summary: summary,
-    url: url,
-    publishedAt: publishedAt,
-  );
+  /// One entity per company: a disclosure naming "GARAN, TGB" is shown
+  /// under both. The id is made unique per company.
+  List<KapDisclosure> toEntities() => [
+    for (final symbol in symbols)
+      KapDisclosure(
+        id: '$id:$symbol',
+        symbol: symbol,
+        title: title,
+        summary: summary,
+        url: url,
+        publishedAt: publishedAt,
+      ),
+  ];
 }
 
 extension KapDisclosureRowMapper on KapDisclosureRow {

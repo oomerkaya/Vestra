@@ -41,7 +41,10 @@ void main() {
         overrides: [
           appDatabaseProvider.overrideWithValue(db),
           autoRefreshEnabledProvider.overrideWithValue(false),
-          apiKeyRepositoryProvider.overrideWithValue(FakeApiKeyRepository()),
+          // A saved (fake) key: no "key needed" card above the list.
+          apiKeyRepositoryProvider.overrideWithValue(
+            FakeApiKeyRepository('bk_test_fake'),
+          ),
         ],
         child: const VestraApp(),
       ),

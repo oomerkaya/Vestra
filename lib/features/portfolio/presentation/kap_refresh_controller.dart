@@ -10,25 +10,38 @@ import 'package:vestra/features/market/market_providers.dart';
 import 'package:vestra/features/portfolio/domain/services/portfolio_valuator.dart';
 import 'package:vestra/features/portfolio/portfolio_providers.dart';
 
-/// Keeps KAP disclosures of held stocks up to date, following
-/// [DisclosurePolicy]. State: symbols with a request in flight.
+/// What the KAP refresher is doing right now.
+@immutable
+class KapRefreshState {
+  const KapRefreshState({this.loading = const {}, this.feedLoading = false});
+
+  /// Single stocks with a request in flight.
+  final Set<String> loading;
+  final bool feedLoading;
+
+  bool get isBusy => feedLoading || loading.isNotEmpty;
+}
+
+/// Keeps KAP disclosures of held stocks up to date ([DisclosurePolicy]).
 ///
-/// - Automatically (shortly after start, every 15 minutes and when the app
-///   is resumed): the [DisclosurePolicy.autoLimit] most valuable held
-///   stocks, each once per day, and only while enough quota is left.
-/// - [KapRefreshController.ensureFresh]: one stock, when its detail screen
-///   opens (same daily rule, no quota threshold).
+/// - Automatically (20 s after start, every 15 minutes and when the app is
+///   resumed), while less than half of the monthly quota is used:
+///   1. the 5 most valuable held stocks that were never fetched, one
+///      request each, for their recent history;
+///   2. the general feed once a day, one request for all held stocks.
+/// - [KapRefreshController.ensureFresh]: a held stock's detail screen,
+///   only once automatic fetching has stopped for the quota.
 /// - Nothing runs while the app is in the background.
 final kapRefreshControllerProvider =
-    NotifierProvider<KapRefreshController, Set<String>>(
+    NotifierProvider<KapRefreshController, KapRefreshState>(
       KapRefreshController.new,
     );
 
-class KapRefreshController extends Notifier<Set<String>> {
+class KapRefreshController extends Notifier<KapRefreshState> {
   static const Duration _tick = Duration(minutes: 15);
 
-  /// The price refresh runs first at start-up; with up to 4 price requests
-  /// plus 5 KAP requests the 10 requests/minute limit is never reached.
+  /// The price refresh runs first at start-up, so the 10 requests/minute
+  /// limit is never reached (4 price + at most 6 KAP requests).
   static const Duration _startDelay = Duration(seconds: 20);
 
   Timer? _timer;
@@ -36,6 +49,7 @@ class KapRefreshController extends Notifier<Set<String>> {
   AppLifecycleListener? _lifecycle;
   bool _foreground = true;
   bool _autoRunning = false;
+  DateTime? _feedAttempt;
   final Map<String, DateTime> _lastAttempt = {};
 
   /// Clock override for tests.
@@ -43,7 +57,7 @@ class KapRefreshController extends Notifier<Set<String>> {
   DateTime Function() clock = DateTime.now;
 
   @override
-  Set<String> build() {
+  KapRefreshState build() {
     // Keep the inputs alive: unlistened providers are paused and reading
     // their `.future` would never complete.
     ref
@@ -68,49 +82,97 @@ class KapRefreshController extends Notifier<Set<String>> {
       _timer?.cancel();
       _lifecycle?.dispose();
     });
-    return const {};
+    return const KapRefreshState();
   }
 
-  /// Fetches the due stocks among the most valuable held ones. Returns the
-  /// symbols that were requested.
-  Future<List<String>> refreshAuto() async {
-    if (_autoRunning) return const [];
+  /// Runs the automatic steps that are due. Returns the number of requests
+  /// started (each single stock and each feed run counts once).
+  Future<int> refreshAuto() async {
+    if (_autoRunning) return 0;
     _autoRunning = true;
     try {
       final holdings = await ref.read(holdingsProvider.future);
       final quotes = await ref.read(quotesProvider.future);
       final usage = await ref.read(quotaUsageProvider.future);
-      if (!ref.mounted) return const [];
+      if (!ref.mounted) return 0;
 
       final stocks = [
         for (final v in PortfolioValuator.value(holdings, quotes).holdings)
           if (v.holding.asset.type == AssetType.stock)
             (symbol: v.holding.asset.code, value: v.marketValue),
       ];
+      final held = {for (final s in stocks) s.symbol};
       final repository = ref.read(disclosureRepositoryProvider);
-      await repository.keepOnly({for (final s in stocks) s.symbol});
+      await repository.keepOnly(held);
+      if (held.isEmpty || usage == null) return 0;
+      if (!DisclosurePolicy.autoAllowed(usage)) return 0;
 
-      if (usage == null || !DisclosurePolicy.autoAllowed(usage)) {
-        return const [];
+      // 1. History for top stocks never fetched on their own.
+      final firstTime = <String>[
+        for (final s in DisclosurePolicy.autoSymbols(stocks))
+          if (await repository.lastFetchedAt(s) == null) s,
+      ];
+      final (started, stop) = await _fetchSymbols(firstTime);
+      if (stop || !ref.mounted) return started;
+
+      // 2. The daily feed for all held stocks.
+      final now = clock();
+      final feedDue = DisclosurePolicy.isDue(
+        now: now,
+        lastFetched: await repository.lastFeedAt(),
+        lastAttempt: _feedAttempt,
+      );
+      if (!feedDue || !ref.mounted) return started;
+      _feedAttempt = now;
+      state = KapRefreshState(loading: state.loading, feedLoading: true);
+      await repository.refreshFeed(held);
+      if (ref.mounted) {
+        state = KapRefreshState(loading: state.loading);
+        ref.invalidate(quotaUsageProvider);
       }
-      return await _fetchDue(DisclosurePolicy.autoSymbols(stocks));
+      return started + 1;
     } on Object {
-      return const [];
+      return 0;
     } finally {
       _autoRunning = false;
     }
   }
 
-  /// Fetches [symbol] if it is due (detail screen). Returns whether a
-  /// request was sent.
-  Future<bool> ensureFresh(String symbol) async =>
-      (await _fetchDue([symbol.toUpperCase()])).isNotEmpty;
+  /// Detail screen of a held stock. Fetches it only when automatic
+  /// fetching has stopped (half the quota used) and nothing updated it
+  /// today. Returns whether a request was sent.
+  Future<bool> ensureFresh(String symbol) async {
+    final code = symbol.toUpperCase();
+    try {
+      final usage = await ref.read(quotaUsageProvider.future);
+      if (!ref.mounted || usage == null) return false;
+      if (DisclosurePolicy.autoAllowed(usage)) return false;
+      final repository = ref.read(disclosureRepositoryProvider);
+      final fresh = DisclosurePolicy.freshToday(
+        now: clock(),
+        feedAt: await repository.lastFeedAt(),
+        symbolAt: await repository.lastFetchedAt(code),
+      );
+      if (fresh) return false;
+      final (started, _) = await _fetchSymbols([code]);
+      return started > 0;
+    } on Object {
+      return false;
+    }
+  }
 
-  Future<List<String>> _fetchDue(List<String> symbols) async {
+  /// Marks every disclosure as seen (the list was opened).
+  Future<void> markSeen() =>
+      ref.read(disclosureRepositoryProvider).markSeen(clock());
+
+  /// One request per due symbol. Returns how many were started and whether
+  /// to stop (no key, no quota or rate limited).
+  Future<(int, bool)> _fetchSymbols(List<String> symbols) async {
     final repository = ref.read(disclosureRepositoryProvider);
-    final requested = <String>[];
+    var started = 0;
     for (final symbol in symbols) {
-      if (!ref.mounted || state.contains(symbol)) continue;
+      if (!ref.mounted) return (started, true);
+      if (state.loading.contains(symbol)) continue;
       final now = clock();
       final due = DisclosurePolicy.isDue(
         now: now,
@@ -120,20 +182,25 @@ class KapRefreshController extends Notifier<Set<String>> {
       if (!due || !ref.mounted) continue;
 
       _lastAttempt[symbol] = now;
-      requested.add(symbol);
-      state = {...state, symbol};
+      started++;
+      state = KapRefreshState(
+        loading: {...state.loading, symbol},
+        feedLoading: state.feedLoading,
+      );
       final result = await repository.refresh(symbol);
-      if (!ref.mounted) break;
-      state = {...state}..remove(symbol);
-      // No point in further requests without a key, quota or while rate
-      // limited; the next run tries again.
+      if (!ref.mounted) return (started, true);
+      state = KapRefreshState(
+        loading: {...state.loading}..remove(symbol),
+        feedLoading: state.feedLoading,
+      );
       if (result case Err(
         failure: AuthFailure() || QuotaExceededFailure() || RateLimitFailure(),
       )) {
-        break;
+        ref.invalidate(quotaUsageProvider);
+        return (started, true);
       }
     }
-    if (requested.isNotEmpty && ref.mounted) ref.invalidate(quotaUsageProvider);
-    return requested;
+    if (started > 0 && ref.mounted) ref.invalidate(quotaUsageProvider);
+    return (started, false);
   }
 }

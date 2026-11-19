@@ -10,12 +10,20 @@ import 'package:vestra/features/portfolio/domain/entities/portfolio_summary.dart
 import 'package:vestra/features/portfolio/presentation/portfolio_labels.dart';
 import 'package:vestra/features/portfolio/presentation/widgets/portfolio_summary_card.dart';
 
-/// One holding: avatar, name, quantity · avg cost, value and P/L.
+/// One holding: avatar, name (and company name for stocks/funds),
+/// quantity · avg cost, value and P/L. A small "KAP" pill marks a stock
+/// with a disclosure in the last 24 hours.
 class HoldingTile extends StatelessWidget {
-  const HoldingTile({required this.valued, this.onTap, super.key});
+  const HoldingTile({
+    required this.valued,
+    this.onTap,
+    this.hasNewDisclosure = false,
+    super.key,
+  });
 
   final ValuedHolding valued;
   final VoidCallback? onTap;
+  final bool hasNewDisclosure;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +39,7 @@ class HoldingTile extends StatelessWidget {
     final value = valued.marketValue;
     final pnl = valued.unrealizedPnl;
     final pnlPct = valued.unrealizedPnlPercent;
+    final company = companyName(asset, valued.quote);
 
     return InkWell(
       onTap: onTap,
@@ -50,14 +59,33 @@ class HoldingTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    assetDisplayName(l10n, asset),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          assetDisplayName(l10n, asset),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      if (hasNewDisclosure) ...[
+                        const SizedBox(width: AppSpacing.sm),
+                        _KapPill(semanticsLabel: l10n.kapNewBadgeSemantics),
+                      ],
+                    ],
                   ),
+                  if (company != null)
+                    Text(
+                      company,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
                   const SizedBox(height: AppSpacing.xxs),
                   Text(
                     subtitle,
@@ -96,6 +124,39 @@ class HoldingTile extends StatelessWidget {
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Small accent pill: "KAP".
+class _KapPill extends StatelessWidget {
+  const _KapPill({required this.semanticsLabel});
+
+  final String semanticsLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Semantics(
+      label: semanticsLabel,
+      excludeSemantics: true,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.xs + AppSpacing.xxs,
+          vertical: AppSpacing.xxs,
+        ),
+        decoration: BoxDecoration(
+          color: scheme.primaryContainer,
+          borderRadius: AppRadius.pillAll,
+        ),
+        child: Text(
+          context.l10n.kapNewBadge,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: scheme.onPrimaryContainer,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     );
