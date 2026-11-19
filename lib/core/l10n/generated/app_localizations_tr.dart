@@ -702,4 +702,18 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get errorLoadMessage =>
       'Telefondaki kayıtlara erişilemedi. Uygulamayı kapatıp yeniden aç.';
+
+  @override
+  String get displayCurrencyLabel => 'Para birimi';
+
+  @override
+  String portfolioConvertedAt(String symbol, String rate) {
+    return 'Güncel kurla çevrildi · 1 $symbol = $rate';
+  }
+
+  @override
+  String get privacyHide => 'Tutarları gizle';
+
+  @override
+  String get privacyShow => 'Tutarları göster';
 }

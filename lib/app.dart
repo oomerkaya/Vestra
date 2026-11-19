@@ -1,7 +1,9 @@
 import 'package:capira/core/l10n/l10n.dart';
 import 'package:capira/core/router/app_router.dart';
 import 'package:capira/core/theme/app_theme.dart';
+import 'package:capira/core/widgets/amount_display.dart';
 import 'package:capira/features/market/presentation/price_refresh_controller.dart';
+import 'package:capira/features/portfolio/portfolio_providers.dart';
 import 'package:capira/features/portfolio/presentation/kap_refresh_controller.dart';
 import 'package:capira/features/settings/presentation/theme_mode_provider.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +28,11 @@ class CapiraApp extends ConsumerWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       routerConfig: ref.watch(appRouterProvider),
+      // Currency and privacy mode for every personal amount.
+      builder: (context, child) => AmountDisplay(
+        format: ref.watch(amountFormatProvider),
+        child: child ?? const SizedBox.shrink(),
+      ),
     );
   }
 }

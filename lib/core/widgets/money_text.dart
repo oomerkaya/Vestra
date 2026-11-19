@@ -1,10 +1,11 @@
 import 'package:capira/core/theme/app_typography.dart';
-import 'package:capira/core/utils/formatters.dart';
+import 'package:capira/core/widgets/amount_display.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 
-/// A TRY amount with tabular digits. The fractional part is rendered
-/// smaller and dimmer when [emphasizeInteger] is set (for big totals).
+/// A personal TRY amount with tabular digits, shown in the selected
+/// currency and masked in privacy mode ([AmountDisplay]). The fractional
+/// part is rendered smaller and dimmer when [emphasizeInteger] is set.
 class MoneyText extends StatelessWidget {
   const MoneyText(
     this.value, {
@@ -22,10 +23,10 @@ class MoneyText extends StatelessWidget {
     final base = (style ?? DefaultTextStyle.of(context).style).copyWith(
       fontFeatures: AppTypography.tabular,
     );
-    final text = Formatters.currencyTry(value);
-    if (!emphasizeInteger) return Text(text, style: base);
-
+    final text = AmountDisplay.of(context).money(value);
     final comma = text.lastIndexOf(',');
+    if (!emphasizeInteger || comma < 0) return Text(text, style: base);
+
     final fraction = base.copyWith(
       fontSize: (base.fontSize ?? 14) * 0.6,
       color: base.color?.withValues(alpha: 0.55),

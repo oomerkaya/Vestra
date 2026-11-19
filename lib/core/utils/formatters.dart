@@ -9,17 +9,35 @@ abstract final class Formatters {
   static const String _minus = '−'; // U+2212, typographic minus
 
   /// `₺1.234,50`. Negative values: `−₺1.234,50`.
-  static String currencyTry(Decimal value, {int decimals = 2}) {
-    final body = number(value.abs(), decimals: decimals, trimZeros: false);
-    return value < Decimal.zero ? '$_minus₺$body' : '₺$body';
-  }
+  static String currencyTry(Decimal value, {int decimals = 2}) =>
+      money(value, decimals: decimals);
 
   /// Signed amount for changes: `+₺120,00` / `−₺35,10` / `₺0,00`.
-  static String signedCurrencyTry(Decimal value, {int decimals = 2}) {
+  static String signedCurrencyTry(Decimal value, {int decimals = 2}) =>
+      signedMoney(value, decimals: decimals);
+
+  /// Amount with any currency symbol in front: `$1.234,50`, `−€12,00`.
+  static String money(
+    Decimal value, {
+    String symbol = '₺',
+    int decimals = 2,
+  }) {
+    final body = number(value.abs(), decimals: decimals, trimZeros: false);
+    return value < Decimal.zero ? '$_minus$symbol$body' : '$symbol$body';
+  }
+
+  /// Signed [money]: `+$120,00` / `−$35,10` / `$0,00`.
+  static String signedMoney(
+    Decimal value, {
+    String symbol = '₺',
+    int decimals = 2,
+  }) {
     final rounded = value.round(scale: decimals);
-    if (rounded == Decimal.zero) return currencyTry(Decimal.zero);
+    if (rounded == Decimal.zero) {
+      return money(Decimal.zero, symbol: symbol, decimals: decimals);
+    }
     final body = number(rounded.abs(), decimals: decimals, trimZeros: false);
-    return rounded > Decimal.zero ? '+₺$body' : '$_minus₺$body';
+    return rounded > Decimal.zero ? '+$symbol$body' : '$_minus$symbol$body';
   }
 
   /// `%1,27` / `+%1,27` with [signed].

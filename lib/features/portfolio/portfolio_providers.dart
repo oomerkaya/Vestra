@@ -1,6 +1,8 @@
 import 'package:capira/core/di/database_provider.dart';
+import 'package:capira/core/domain/display_currency.dart';
 import 'package:capira/core/domain/instrument.dart';
 import 'package:capira/core/error/result.dart';
+import 'package:capira/core/widgets/amount_display.dart';
 import 'package:capira/features/market/domain/entities/kap_disclosure.dart';
 import 'package:capira/features/market/domain/entities/quote.dart';
 import 'package:capira/features/market/domain/services/disclosure_policy.dart';
@@ -21,6 +23,7 @@ import 'package:capira/features/portfolio/domain/usecases/delete_transaction.dar
 import 'package:capira/features/portfolio/domain/usecases/update_transaction.dart';
 import 'package:capira/features/portfolio/domain/usecases/watch_asset_transactions.dart';
 import 'package:capira/features/portfolio/domain/usecases/watch_holdings.dart';
+import 'package:capira/features/settings/presentation/display_preferences.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
@@ -169,4 +172,37 @@ final newDisclosureSymbolsProvider = Provider<Set<String>>((ref) {
         in ref.watch(heldDisclosuresProvider).value ?? const <KapDisclosure>[])
       if (d.publishedAt.isAfter(since)) d.symbol,
   };
+});
+
+/// How personal amounts are shown: selected currency (converted with the
+/// cached buying rate) and privacy mode. Falls back to TRY while the
+/// currency's rate is unknown.
+final amountFormatProvider = Provider<AmountFormat>((ref) {
+  final hidden = ref.watch(privacyModeProvider);
+  final currency = ref.watch(displayCurrencyProvider);
+  final code = currency.currencyCode;
+  if (code == null) return AmountFormat(hidden: hidden);
+  final quote = (ref.watch(quotesProvider).value ?? const <Quote>[])
+      .where((q) => q.instrument == (type: AssetType.currency, code: code))
+      .firstOrNull;
+  if (quote == null) return AmountFormat(hidden: hidden);
+  return AmountFormat(
+    currency: currency,
+    rateTry: quote.priceTry,
+    hidden: hidden,
+  );
+});
+
+/// Display currencies whose rate is cached (TRY always).
+final availableDisplayCurrenciesProvider = Provider<List<DisplayCurrency>>((
+  ref,
+) {
+  final codes = {
+    for (final q in ref.watch(quotesProvider).value ?? const <Quote>[])
+      if (q.instrument.type == AssetType.currency) q.instrument.code,
+  };
+  return [
+    for (final c in DisplayCurrency.values)
+      if (c.currencyCode == null || codes.contains(c.currencyCode)) c,
+  ];
 });

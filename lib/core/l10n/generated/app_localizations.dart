@@ -1369,6 +1369,30 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Telefondaki kayıtlara erişilemedi. Uygulamayı kapatıp yeniden aç.'**
   String get errorLoadMessage;
+
+  /// No description provided for @displayCurrencyLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Para birimi'**
+  String get displayCurrencyLabel;
+
+  /// No description provided for @portfolioConvertedAt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Güncel kurla çevrildi · 1 {symbol} = {rate}'**
+  String portfolioConvertedAt(String symbol, String rate);
+
+  /// No description provided for @privacyHide.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tutarları gizle'**
+  String get privacyHide;
+
+  /// No description provided for @privacyShow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tutarları göster'**
+  String get privacyShow;
 }
 
 class _AppLocalizationsDelegate

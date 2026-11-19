@@ -2,6 +2,7 @@ import 'package:capira/core/l10n/l10n.dart';
 import 'package:capira/core/theme/app_tokens.dart';
 import 'package:capira/core/theme/app_typography.dart';
 import 'package:capira/core/utils/formatters.dart';
+import 'package:capira/core/widgets/amount_display.dart';
 import 'package:capira/core/widgets/change_chip.dart';
 import 'package:capira/core/widgets/instrument_avatar.dart';
 import 'package:capira/core/widgets/trailing_figures.dart';
@@ -34,9 +35,12 @@ class HoldingTile extends StatelessWidget {
     final asset = h.asset;
     final avg = h.averageCostTry;
     final quantity = formatQuantity(l10n, asset, h.quantity);
-    final subtitle = avg == null
-        ? quantity
-        : l10n.holdingQuantityAvg(quantity, Formatters.currencyTry(avg));
+    final format = AmountDisplay.of(context);
+    final subtitle = format.private(
+      avg == null
+          ? quantity
+          : l10n.holdingQuantityAvg(quantity, Formatters.currencyTry(avg)),
+    );
     final value = valued.marketValue;
     final pnl = valued.unrealizedPnl;
     final pnlPct = valued.unrealizedPnlPercent;
@@ -105,9 +109,7 @@ class HoldingTile extends StatelessWidget {
             TrailingFigures(
               children: [
                 Text(
-                  value == null
-                      ? l10n.portfolioNoPrice
-                      : Formatters.currencyTry(value),
+                  value == null ? l10n.portfolioNoPrice : format.money(value),
                   style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w600,
                     fontFeatures: AppTypography.tabular,
@@ -120,7 +122,7 @@ class HoldingTile extends StatelessWidget {
                   const SizedBox(height: AppSpacing.xs),
                   ChangeChip(
                     label: pnlPct == null
-                        ? Formatters.signedCurrencyTry(pnl)
+                        ? format.signedMoney(pnl)
                         : Formatters.percent(pnlPct, signed: true),
                     direction: directionOf(pnl),
                   ),

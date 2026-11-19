@@ -7,6 +7,7 @@ import 'package:capira/core/router/app_routes.dart';
 import 'package:capira/core/theme/app_tokens.dart';
 import 'package:capira/core/theme/app_typography.dart';
 import 'package:capira/core/utils/formatters.dart';
+import 'package:capira/core/widgets/amount_display.dart';
 import 'package:capira/core/widgets/app_card.dart';
 import 'package:capira/core/widgets/change_chip.dart';
 import 'package:capira/core/widgets/confirm_dialog.dart';
@@ -194,6 +195,7 @@ class _PositionCard extends StatelessWidget {
     final pnlPct = valued?.unrealizedPnlPercent;
     final avg = holding.averageCostTry;
     final realized = holding.realizedPnlTry;
+    final format = AmountDisplay.of(context);
     final quote = valued?.quote;
     final change = quote?.changePercent;
 
@@ -224,9 +226,7 @@ class _PositionCard extends StatelessWidget {
           Text(l10n.assetDetailValue, style: theme.textTheme.labelMedium),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            value == null
-                ? l10n.portfolioNoPrice
-                : Formatters.currencyTry(value),
+            value == null ? l10n.portfolioNoPrice : format.money(value),
             style: theme.textTheme.headlineMedium?.copyWith(
               fontFeatures: AppTypography.tabular,
             ),
@@ -235,8 +235,8 @@ class _PositionCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             ChangeChip(
               label: pnlPct == null
-                  ? Formatters.signedCurrencyTry(pnl)
-                  : '${Formatters.signedCurrencyTry(pnl)} '
+                  ? format.signedMoney(pnl)
+                  : '${format.signedMoney(pnl)} '
                         '(${Formatters.percent(pnlPct, signed: true)})',
               direction: directionOf(pnl),
             ),
@@ -262,18 +262,20 @@ class _PositionCard extends StatelessWidget {
           ],
           _Row(
             label: l10n.assetDetailQuantity,
-            value: formatQuantity(l10n, asset, holding.quantity),
+            value: format.private(
+              formatQuantity(l10n, asset, holding.quantity),
+            ),
           ),
           _Row(
             label: l10n.assetDetailAvgCost,
             value: avg == null
                 ? l10n.portfolioCostUnknown
-                : Formatters.currencyTry(avg),
+                : format.money(avg, convert: false),
           ),
           if (realized != null && realized != Decimal.zero)
             _Row(
               label: l10n.assetDetailRealized,
-              value: Formatters.signedCurrencyTry(realized),
+              value: format.signedMoney(realized, convert: false),
             ),
           if (quote != null)
             _Row(
@@ -345,6 +347,7 @@ class _TransactionTile extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final tx = transaction;
+    final format = AmountDisplay.of(context);
     final isBuy = tx.kind == TransactionKind.buy;
     final price = tx.unitPriceTry;
     final quantity = formatQuantity(l10n, holding.asset, tx.quantity);
@@ -365,14 +368,16 @@ class _TransactionTile extends StatelessWidget {
         style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
       ),
       subtitle: Text(
-        price == null
-            ? quantity
-            : l10n.txLine(quantity, Formatters.currencyTry(price)),
+        format.private(
+          price == null
+              ? quantity
+              : l10n.txLine(quantity, Formatters.currencyTry(price)),
+        ),
       ),
       trailing: total == null
           ? null
           : Text(
-              Formatters.currencyTry(total),
+              format.money(total, convert: false),
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 fontFeatures: AppTypography.tabular,

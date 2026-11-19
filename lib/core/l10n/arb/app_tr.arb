@@ -331,5 +331,19 @@
   "backupErrorNewer": "Bu yedek daha yeni bir Capira sürümüyle oluşturulmuş. Önce uygulamayı güncelle.",
   "backupErrorInvalid": "Yedek dosyası bozuk ya da tutarsız; portföyün değişmedi.",
   "errorLoadTitle": "Veriler okunamadı",
-  "errorLoadMessage": "Telefondaki kayıtlara erişilemedi. Uygulamayı kapatıp yeniden aç."
+  "errorLoadMessage": "Telefondaki kayıtlara erişilemedi. Uygulamayı kapatıp yeniden aç.",
+  "displayCurrencyLabel": "Para birimi",
+  "portfolioConvertedAt": "Güncel kurla çevrildi · 1 {symbol} = {rate}",
+  "@portfolioConvertedAt": {
+    "placeholders": {
+      "symbol": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyHide": "Tutarları gizle",
+  "privacyShow": "Tutarları göster"
 }

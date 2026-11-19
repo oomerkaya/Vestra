@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:capira/core/l10n/l10n.dart';
 import 'package:capira/core/router/app_routes.dart';
 import 'package:capira/core/theme/app_tokens.dart';
@@ -12,6 +14,7 @@ import 'package:capira/features/portfolio/portfolio_providers.dart';
 import 'package:capira/features/portfolio/presentation/widgets/allocation_card.dart';
 import 'package:capira/features/portfolio/presentation/widgets/holding_tile.dart';
 import 'package:capira/features/portfolio/presentation/widgets/portfolio_summary_card.dart';
+import 'package:capira/features/settings/presentation/display_preferences.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,6 +35,7 @@ class PortfolioScreen extends ConsumerWidget {
     }
     final summary = summaryAsync.value ?? PortfolioSummary.empty;
     final hasStocks = ref.watch(heldStockSymbolsProvider).isNotEmpty;
+    final hidden = ref.watch(privacyModeProvider);
     final unseen = ref.watch(kapUnseenCountProvider);
     final withNews = ref.watch(newDisclosureSymbolsProvider);
     final key = ref.watch(burkutKeyProvider);
@@ -48,6 +52,16 @@ class PortfolioScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.navPortfolio),
         actions: [
+          IconButton(
+            tooltip: hidden ? l10n.privacyShow : l10n.privacyHide,
+            onPressed: () =>
+                unawaited(ref.read(privacyModeProvider.notifier).toggle()),
+            icon: Icon(
+              hidden
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+            ),
+          ),
           if (hasStocks)
             IconButton(
               tooltip: l10n.kapIconTooltip,
@@ -81,7 +95,13 @@ class PortfolioScreen extends ConsumerWidget {
             const _MissingKeyCard(),
             const SizedBox(height: AppSpacing.lg),
           ],
-          PortfolioSummaryCard(summary: summary, pricesAsOf: pricesAsOf),
+          PortfolioSummaryCard(
+            summary: summary,
+            pricesAsOf: pricesAsOf,
+            currencies: ref.watch(availableDisplayCurrenciesProvider),
+            onCurrencyChanged: (c) =>
+                unawaited(ref.read(displayCurrencyProvider.notifier).select(c)),
+          ),
           if (summary.totalValue > Decimal.zero) ...[
             const SizedBox(height: AppSpacing.lg),
             CollapsibleSection(
