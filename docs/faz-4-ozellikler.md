@@ -181,6 +181,12 @@ Kullanıcı geri bildirimleriyle sırayla yapıldı; son durum aşağıda.
 - **Portföy:** Varlık eklemede 4. tür **Fonlar**, fon seçici günlük anlık görüntüden aramalı. Dağılımda yeni dilim.
 - **Fiyat gösterimi:** 10 TL'nin altındaki fiyatlarda değerin kendi basamak sayısı kullanılıyor (2-6): ₺0,1127, ₺0,000123.
 
+### 7. Güncelleme aralığı 60 dakika (2026-11-19)
+
+- **Karar:** Kullanıcı isteğiyle döviz, madenler ve hisseler artık en az **60 dakikada** bir güncelleniyor (önceden 30). Fonlar yine günde bir.
+- **Gerekçe:** Uygulamayı iş saatlerinde 8 saat açık bırakan kullanıcı 30 dakikalık aralıkla ayda ~1.340 istekle kotayı (1.000) aşıyordu. 60 dakikayla bu ~690'a iniyor; KAP gibi ek özelliklere de yer kalıyor.
+- **Değişenler:** `RefreshPolicy.interval` 60 dk (otomatik yeniden deneme beklemesi de bununla birlikte 60 dk). 429 backoff üst sınırı 30 dk olarak kaldı. Piyasa ve ayarlar metinleri "saatte bir". Testler yeni aralığa göre güncellendi.
+
 ### Testler
 
 166 test. Kapsananlar:

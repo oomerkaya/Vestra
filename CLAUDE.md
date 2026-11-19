@@ -70,11 +70,11 @@ Kaynaklar (ayrıntı ve araştırma: `docs/faz-3-piyasa-verisi.md`):
 - Döviz ve madenlerde değerleme için **alış (`buying`)** fiyatı kullanılır.
 
 Güncelleme kuralları (`RefreshPolicy`):
-- Her kategori (döviz, maden, hisse) **ayrı** takip edilir ve son başarılı güncellemesinden en az **30 dakika** sonra istenir. Yalnızca uygulama açıkken; arka plan servisi yok.
-- **Döviz ve madenler**: her gün, her saat (30 dk kuralıyla).
+- Her kategori (döviz, maden, hisse) **ayrı** takip edilir ve son başarılı güncellemesinden en az **60 dakika** sonra istenir (2026-11-19'da kota için 30'dan 60'a çıkarıldı). Yalnızca uygulama açıkken; arka plan servisi yok.
+- **Döviz ve madenler**: her gün, her saat (60 dk kuralıyla).
 - **Hisseler**: yalnızca hafta içi 10:00-18:00 (Europe/Istanbul, sabit UTC+3), yarım günlerde 12:30'a kadar, tatillerde hiç. Hisseler her zaman **tüm BIST piyasası** olarak tek istekle çekilir; portföye eklenen hissenin fiyatı son anlık görüntüden hazırdır, ayrıca istek atılmaz.
 - **İlk çekme**: bir kategori hiç çekilmemişse seans/saat fark etmeksizin hemen bir kez çekilir. Hisselerde "çekildi" sayılması için **tüm piyasa** anlık görüntüsü gerekir; zamanı `app_settings` → `stocks_snapshot_at`'te tutulur (eski sürümlerin sadece portföy hisselerini içeren önbelleği sayılmaz).
-- **Pull-to-refresh kuralları ATLAMAZ** (30 dk ve seans saati geçerli); yalnızca başarısız bir denemeden sonra beklemeden tekrar denemeye izin verir. Bir şey istenmediyse kullanıcıya "Veriler güncel · sonraki güncelleme HH:mm" / "Borsa şu an kapalı" gösterilir.
+- **Pull-to-refresh kuralları ATLAMAZ** (60 dk ve seans saati geçerli); yalnızca başarısız bir denemeden sonra beklemeden tekrar denemeye izin verir. Bir şey istenmediyse kullanıcıya "Veriler güncel · sonraki güncelleme HH:mm" / "Borsa şu an kapalı" gösterilir.
 - Tatil/yarım gün takvimi `assets/data/market_holidays.json`'dan okunur.
 - `/forex`, `/gold`, `/stocks`, `/funds` hepsi tek istekte tüm listeyi döner (634 hisse, ~280 KB). Bir kategori = bir istek; en fazla 4 Bürküt isteği. Endeks (BIST 30/100) verisi Bürküt'te yok ve elle tutulan listeler eskidiği için kullanılmıyor.
 - **Fonlar** (`/funds`, 2.441 TEFAS yatırım/emeklilik fonu, ~1,9 MB): İstanbul takvim günü başına **bir kez** (TEFAS fiyatları günlük), saat/seans fark etmez; ayda ~30 istek.

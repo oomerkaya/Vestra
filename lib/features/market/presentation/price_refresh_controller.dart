@@ -38,7 +38,7 @@ class PriceRefreshState {
 /// Drives price updates while the app is in the foreground, per category.
 ///
 /// - Checks [RefreshPolicy.isDue] every minute, when the app is resumed
-///   and on pull-to-refresh. Pull-to-refresh never bypasses the 30 minute
+///   and on pull-to-refresh. Pull-to-refresh never bypasses the 60 minute
 ///   rule or the stock session hours; it only skips the retry wait after a
 ///   failed attempt.
 /// - Nothing runs while the app is in the background.

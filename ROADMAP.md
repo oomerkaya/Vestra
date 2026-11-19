@@ -43,6 +43,7 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 ## Sıradaki (Faz 5'ten önce, 2026-11-20)
 - [x] Frankfurter'ı tamamen kaldır; uygulama yalnızca Bürküt API ile çalışsın
 - [x] TEFAS fonları (günde bir güncelleme)
+- [x] Güncelleme aralığı 30 dk → 60 dk (kota)
 - [ ] KAP bildirimleri: taslak öneri `docs/oneri-kap-bildirimleri.md`, karar bekliyor
 - [ ] Kullanıcının belirteceği diğer güncellemeler ve genel kontroller
 - [ ] Ardından Faz 5

@@ -20,15 +20,15 @@ Bildirim alanları: `id`, `symbol`, `title` (ör. "Özel Durum Açıklaması (Ge
 
 ## Mevcut istek bütçesi (KAP olmadan)
 
-Kurallar: döviz ve madenler 30 dakikada bir, hisseler seans içinde 30 dakikada bir, fonlar günde bir; yalnızca uygulama açıkken.
+Kurallar (2026-11-19'dan beri): döviz ve madenler **saatte bir**, hisseler seans içinde saatte bir, fonlar günde bir; yalnızca uygulama açıkken. Önceki 30 dakikalık değerler parantez içinde.
 
 | Kullanım | Döviz | Madenler | Hisseler | Fonlar | **Toplam / ay** |
 |---|---|---|---|---|---|
-| Hafif (günde 2-3 kez kısa açılış) | ~75 | ~75 | ~30 | ~30 | **~210** |
-| Orta (günde ~6 açılış, 2'si seans içinde) | ~180 | ~180 | ~45 | ~30 | **~435** |
-| Yoğun (iş saatlerinde 8 saat açık bırakılan) | ~480 | ~480 | ~350 | ~30 | **~1.340 ⚠️** |
+| Hafif (günde 2-3 kez kısa açılış) | ~75 | ~75 | ~30 | ~30 | **~210** (210) |
+| Orta (günde ~6 açılış, 2'si seans içinde) | ~150 | ~150 | ~40 | ~30 | **~370** (435) |
+| Yoğun (iş saatlerinde 8 saat açık bırakılan) | ~240 | ~240 | ~176 | ~30 | **~690** (1.340) |
 
-> ⚠️ **Yan bulgu:** Uygulamayı gün boyu açık bırakan biri KAP olmadan da ayın sonuna doğru kotayı aşar. Kota dolunca uygulama istek atmayı durduruyor ve son fiyatları göstermeye devam ediyor; yani bozulmuyor, ama fiyatlar ay sonuna kadar güncellenmez. Ayrıca karar verilebilecek bir iyileştirme: seans dışında döviz ve madenleri 60 dakikada bir güncellemek, yoğun kullanımı ~1.000'in altına çeker.
+> ✅ **Çözüldü:** 30 dakikalık aralıkla yoğun kullanım KAP olmadan da kotayı aşıyordu (~1.340). Aralık tüm kategorilerde 60 dakikaya çıkarıldı; yoğun kullanım ~690'a indi. Kota dolarsa uygulama yine bozulmaz, son fiyatları gösterir.
 
 ## Seçenekler
 
@@ -40,12 +40,12 @@ N = portföydeki farklı hisse sayısı.
 - Portföy ekranında açılır-kapanır bir **"Son bildirimler"** bölümü olur: son 7 günün bildirimleri, her satırda sembol, başlık/özet ve tarih. Dokununca KAP'taki asıl bildirim tarayıcıda açılır.
 - **Maliyet: N × 30 istek/ay.**
 
-| N | Ek istek / ay | Orta kullanımla toplam |
-|---|---|---|
-| 3 | 90 | ~525 |
-| 5 | 150 | ~585 |
-| 10 | 300 | ~735 |
-| 20 | 600 | ~1.035 ⚠️ |
+| N | Ek istek / ay | Orta kullanımla toplam | Yoğun kullanımla toplam |
+|---|---|---|---|
+| 3 | 90 | ~460 | ~780 |
+| 5 | 150 | ~520 | ~840 |
+| 10 | 300 | ~670 | ~990 ⚠️ |
+| 20 | 600 | ~970 ⚠️ | ~1.290 ⚠️ |
 
 ### B) Yalnızca detay ekranı açılınca (tembel)
 
@@ -96,4 +96,4 @@ Kaynak: KAP, Bürküt üzerinden · Günde bir kez güncellenir
 1. **Seçenek:** A, B, C ya da D (önerilen: D)?
 2. **Üst sınır:** Günlük kaç hisse (önerilen: 10)?
 3. **Link açma:** KAP linkleri için `url_launcher` paketi eklensin mi, yoksa bildirim metni sadece uygulama içinde mi gösterilsin?
-4. **Ayrı iyileştirme:** Yoğun kullanım kota bulgusu için döviz ve madenler seans dışında 60 dakikada bir mi güncellensin?
+4. ~~**Ayrı iyileştirme:** döviz ve madenler 60 dakikada bir mi?~~ **Karar verildi (2026-11-19):** tüm kategoriler 60 dakika.

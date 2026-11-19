@@ -83,7 +83,7 @@
     }
   },
   "settingsQuotaExhausted": "Kota doldu",
-  "settingsDataNote": "Fiyatlar Bürküt'ten gelir. Döviz ve altın/gümüş uygulama açıkken 30 dakikada bir, hisseler yalnızca hafta içi 10:00-18:00 arasında 30 dakikada bir, fonlar günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.",
+  "settingsDataNote": "Fiyatlar Bürküt'ten gelir. Döviz ve altın/gümüş uygulama açıkken saatte bir, hisseler yalnızca hafta içi 10:00-18:00 arasında saatte bir, fonlar günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.",
   "apiKeySheetTitle": "Bürküt API anahtarı",
   "apiKeySheetHelp": "burkutportfoy.com/developer adresinden ücretsiz hesap açıp anahtar oluşturabilirsin (ayda 1.000 istek). Anahtar yalnızca bu cihazda şifreli saklanır.",
   "apiKeyFieldLabel": "API anahtarı",
@@ -123,8 +123,8 @@
     }
   },
   "marketNotUpdatedYet": "Henüz güncellenmedi",
-  "marketUpdateRule": "30 dakikada bir güncellenir",
-  "marketStocksRule": "Hafta içi 10:00-18:00 arasında, 30 dakikada bir güncellenir",
+  "marketUpdateRule": "Saatte bir güncellenir",
+  "marketStocksRule": "Hafta içi 10:00-18:00 arasında, saatte bir güncellenir",
   "marketSessionClosed": "Borsa şu an kapalı",
   "marketUpToDate": "Veriler güncel · sonraki güncelleme {time}",
   "@marketUpToDate": {

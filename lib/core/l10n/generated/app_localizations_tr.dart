@@ -201,7 +201,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsDataNote =>
-      'Fiyatlar Bürküt\'ten gelir. Döviz ve altın/gümüş uygulama açıkken 30 dakikada bir, hisseler yalnızca hafta içi 10:00-18:00 arasında 30 dakikada bir, fonlar günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.';
+      'Fiyatlar Bürküt\'ten gelir. Döviz ve altın/gümüş uygulama açıkken saatte bir, hisseler yalnızca hafta içi 10:00-18:00 arasında saatte bir, fonlar günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.';
 
   @override
   String get apiKeySheetTitle => 'Bürküt API anahtarı';
@@ -304,11 +304,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get marketNotUpdatedYet => 'Henüz güncellenmedi';
 
   @override
-  String get marketUpdateRule => '30 dakikada bir güncellenir';
+  String get marketUpdateRule => 'Saatte bir güncellenir';
 
   @override
   String get marketStocksRule =>
-      'Hafta içi 10:00-18:00 arasında, 30 dakikada bir güncellenir';
+      'Hafta içi 10:00-18:00 arasında, saatte bir güncellenir';
 
   @override
   String get marketSessionClosed => 'Borsa şu an kapalı';

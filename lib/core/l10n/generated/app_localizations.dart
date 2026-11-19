@@ -451,7 +451,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsDataNote.
   ///
   /// In tr, this message translates to:
-  /// **'Fiyatlar Bürküt\'ten gelir. Döviz ve altın/gümüş uygulama açıkken 30 dakikada bir, hisseler yalnızca hafta içi 10:00-18:00 arasında 30 dakikada bir, fonlar günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.'**
+  /// **'Fiyatlar Bürküt\'ten gelir. Döviz ve altın/gümüş uygulama açıkken saatte bir, hisseler yalnızca hafta içi 10:00-18:00 arasında saatte bir, fonlar günde bir kez güncellenir. Hisse verileri Borsa İstanbul kuralları gereği en az 15 dakika gecikmelidir. Ekranı aşağı çekmek bu süreleri kısaltmaz. Vestra resmi bir Bürküt uygulaması değildir; Bürküt lisanslı bir veri dağıtıcısı değildir.'**
   String get settingsDataNote;
 
   /// No description provided for @apiKeySheetTitle.
@@ -649,13 +649,13 @@ abstract class AppLocalizations {
   /// No description provided for @marketUpdateRule.
   ///
   /// In tr, this message translates to:
-  /// **'30 dakikada bir güncellenir'**
+  /// **'Saatte bir güncellenir'**
   String get marketUpdateRule;
 
   /// No description provided for @marketStocksRule.
   ///
   /// In tr, this message translates to:
-  /// **'Hafta içi 10:00-18:00 arasında, 30 dakikada bir güncellenir'**
+  /// **'Hafta içi 10:00-18:00 arasında, saatte bir güncellenir'**
   String get marketStocksRule;
 
   /// No description provided for @marketSessionClosed.

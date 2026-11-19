@@ -103,16 +103,16 @@ void main() {
       backoffUntil: backoffUntil,
     );
 
-    test('FX, metals and stocks wait 30 minutes after an update', () {
+    test('FX, metals and stocks wait 60 minutes after an update', () {
       for (final c in QuoteCategory.values.where(
         (c) => c != QuoteCategory.funds,
       )) {
         expect(
-          due(c, now: open, sinceSuccess: const Duration(minutes: 29)),
+          due(c, now: open, sinceSuccess: const Duration(minutes: 59)),
           isFalse,
         );
         expect(
-          due(c, now: open, sinceSuccess: const Duration(minutes: 30)),
+          due(c, now: open, sinceSuccess: const Duration(minutes: 60)),
           isTrue,
         );
       }
@@ -145,7 +145,7 @@ void main() {
       );
     });
 
-    test('manual refresh does NOT bypass the 30 minute rule', () {
+    test('manual refresh does NOT bypass the 60 minute rule', () {
       for (final c in QuoteCategory.values) {
         expect(
           due(
@@ -196,7 +196,7 @@ void main() {
       );
     });
 
-    test('after a failed attempt, auto waits 30 min, manual may retry', () {
+    test('after a failed attempt, auto waits 60 min, manual may retry', () {
       const failedAgo = Duration(minutes: 3);
       expect(
         due(QuoteCategory.fx, now: open, sinceAttempt: failedAgo),
@@ -220,10 +220,10 @@ void main() {
       );
     });
 
-    test('nextUpdate is 30 minutes after the last success', () {
+    test('nextUpdate is 60 minutes after the last success', () {
       expect(
         RefreshPolicy.nextUpdate(DateTime(2026, 11, 16, 18, 14)),
-        DateTime(2026, 11, 16, 18, 44),
+        DateTime(2026, 11, 16, 19, 14),
       );
       expect(RefreshPolicy.nextUpdate(null), isNull);
     });

@@ -137,12 +137,12 @@ void main() {
     expect(market.calls, hasLength(1));
   });
 
-  test('pulling again within 30 minutes sends no request', () async {
+  test('pulling again within an hour sends no request', () async {
     await controller().refreshDue(manual: true);
 
     now = now.add(const Duration(minutes: 10));
     final second = await controller().refreshDue(manual: true);
-    now = now.add(const Duration(minutes: 19));
+    now = now.add(const Duration(minutes: 49));
     final third = await controller().refreshDue(manual: true);
 
     expect(second, isEmpty);
@@ -150,10 +150,10 @@ void main() {
     expect(market.calls, hasLength(1), reason: 'no extra quota used');
   });
 
-  test('after 30 minutes the intraday categories are fetched again', () async {
+  test('after an hour the intraday categories are fetched again', () async {
     await controller().refreshDue(manual: true);
 
-    now = now.add(const Duration(minutes: 30));
+    now = now.add(const Duration(minutes: 60));
     final again = await controller().refreshDue();
 
     // Funds: once per day, so not again the same afternoon.
@@ -174,13 +174,13 @@ void main() {
     expect(requested, {QuoteCategory.fx, QuoteCategory.metals});
   });
 
-  test('on a weekend FX and metals still update every 30 minutes', () async {
+  test('on a weekend FX and metals still update every hour', () async {
     await controller().refreshDue(); // Monday 14:00, THYAO gets a price
     market.calls.clear();
     now = ist(2026, 11, 21, 11);
     await controller().refreshDue();
 
-    now = now.add(const Duration(minutes: 31));
+    now = now.add(const Duration(minutes: 61));
     final requested = await controller().refreshDue();
 
     // Funds were already fetched at 11:00 that day.
@@ -200,7 +200,7 @@ void main() {
       QuoteCategory.metals,
     });
 
-    // Next morning 10:05: stocks due (session), FX/metals due (>30 min).
+    // Next morning 10:05: stocks due (session), FX/metals due (>60 min).
     now = ist(2026, 11, 17, 10, 5);
     expect(await controller().refreshDue(), QuoteCategory.values.toSet());
 

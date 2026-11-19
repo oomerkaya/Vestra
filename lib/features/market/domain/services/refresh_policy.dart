@@ -7,7 +7,7 @@ import 'package:vestra/features/market/domain/entities/quote.dart';
 ///
 /// Rules (CLAUDE.md, docs/faz-3-piyasa-verisi.md "Kategori bazlı
 /// yenileme"):
-/// - Every category is fetched at most every [interval] (30 min) after its
+/// - Every category is fetched at most every [interval] (60 min) after its
 ///   last successful update. Manual refresh (pull-to-refresh) follows the
 ///   same rule; it never forces a request.
 /// - FX and metals: any day, any time (while the app is open).
@@ -23,7 +23,7 @@ import 'package:vestra/features/market/domain/entities/quote.dart';
 /// - After a failed attempt, automatic retries wait [interval] too; a
 ///   manual refresh may retry right away (unless rate limited).
 abstract final class RefreshPolicy {
-  static const Duration interval = Duration(minutes: 30);
+  static const Duration interval = Duration(minutes: 60);
   static const Duration maxBackoff = Duration(minutes: 30);
 
   /// Turkey has used UTC+3 all year since 2016 (no DST).
