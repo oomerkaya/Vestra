@@ -82,6 +82,60 @@ class KapDisclosures extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Portfolio total once per Istanbul day (v4), for the value history and
+/// the weekly/monthly summary. The row of the current day is overwritten
+/// until the day ends, so it holds the day's last known value.
+@DataClassName('PortfolioSnapshotRow')
+class PortfolioSnapshots extends Table {
+  /// `YYYY-MM-DD` in Istanbul time.
+  TextColumn get day => text()();
+  TextColumn get valueTry => text().map(const DecimalConverter())();
+
+  /// Cost of the priced holdings whose cost is known.
+  TextColumn get costTry => text().map(const DecimalConverter()).nullable()();
+
+  /// TRY per USD / EUR that day, to draw the history in those currencies.
+  TextColumn get usdTry => text().map(const DecimalConverter()).nullable()();
+  TextColumn get eurTry => text().map(const DecimalConverter()).nullable()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {day};
+}
+
+/// Each held instrument's quantity and price per day (v4), for the best and
+/// worst performers in the summary.
+@DataClassName('AssetSnapshotRow')
+class AssetSnapshots extends Table {
+  TextColumn get day => text()();
+  TextColumn get type => text()();
+  TextColumn get code => text()();
+  TextColumn get quantity => text().map(const DecimalConverter())();
+  TextColumn get priceTry => text().map(const DecimalConverter())();
+
+  @override
+  Set<Column> get primaryKey => {day, type, code};
+}
+
+/// Savings goals (v4).
+@DataClassName('GoalRow')
+class Goals extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get title => text()();
+
+  /// portfolioValue | assetQuantity
+  TextColumn get kind => text()();
+  TextColumn get target => text().map(const DecimalConverter())();
+
+  /// Value goals: tryLira | usd | eur.
+  TextColumn get currency => text().nullable()();
+
+  /// Quantity goals: the instrument.
+  TextColumn get assetType => text().nullable()();
+  TextColumn get assetCode => text().nullable()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
+
 /// Simple key/value store for app preferences (non-secret only).
 @DataClassName('SettingRow')
 class AppSettings extends Table {

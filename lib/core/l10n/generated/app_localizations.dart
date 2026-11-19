@@ -1393,6 +1393,120 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Tutarları göster'**
   String get privacyShow;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Değer geçmişi'**
+  String get historyTitle;
+
+  /// No description provided for @historyRangeWeek.
+  ///
+  /// In tr, this message translates to:
+  /// **'1 hafta'**
+  String get historyRangeWeek;
+
+  /// No description provided for @historyRangeMonth.
+  ///
+  /// In tr, this message translates to:
+  /// **'1 ay'**
+  String get historyRangeMonth;
+
+  /// No description provided for @historyRangeQuarter.
+  ///
+  /// In tr, this message translates to:
+  /// **'3 ay'**
+  String get historyRangeQuarter;
+
+  /// No description provided for @historyRangeYear.
+  ///
+  /// In tr, this message translates to:
+  /// **'1 yıl'**
+  String get historyRangeYear;
+
+  /// No description provided for @historyRangeAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümü'**
+  String get historyRangeAll;
+
+  /// No description provided for @historyEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Grafik, uygulamayı açtığın her gün kaydedilen değerlerle oluşur. Birkaç gün sonra burada görünecek.'**
+  String get historyEmpty;
+
+  /// No description provided for @historyNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Uygulamanın açıldığı günlerin değeri kaydedilir. Alım ve satımlar da değeri değiştirir.'**
+  String get historyNote;
+
+  /// No description provided for @historyChartLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Portföy değeri grafiği, {from} ile {to} arası'**
+  String historyChartLabel(String from, String to);
+
+  /// No description provided for @summaryTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Özet'**
+  String get summaryTitle;
+
+  /// No description provided for @summaryWeek.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son 7 gün'**
+  String get summaryWeek;
+
+  /// No description provided for @summaryMonth.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son 30 gün'**
+  String get summaryMonth;
+
+  /// No description provided for @summaryMarketEffect.
+  ///
+  /// In tr, this message translates to:
+  /// **'Piyasa etkisi'**
+  String get summaryMarketEffect;
+
+  /// No description provided for @summaryChange.
+  ///
+  /// In tr, this message translates to:
+  /// **'Toplam değişim'**
+  String get summaryChange;
+
+  /// No description provided for @summaryNetInvested.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alım/satım'**
+  String get summaryNetInvested;
+
+  /// No description provided for @summaryBest.
+  ///
+  /// In tr, this message translates to:
+  /// **'En çok yükselen'**
+  String get summaryBest;
+
+  /// No description provided for @summaryWorst.
+  ///
+  /// In tr, this message translates to:
+  /// **'En çok düşen'**
+  String get summaryWorst;
+
+  /// No description provided for @summarySince.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kayıtlar {date} tarihinden beri tutuluyor.'**
+  String summarySince(String date);
+
+  /// No description provided for @summaryEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Özet için önceki günlerin değeri gerekiyor; uygulamayı yarın açtığında burada olacak.'**
+  String get summaryEmpty;
 }
 
 class _AppLocalizationsDelegate

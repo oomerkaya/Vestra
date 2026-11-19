@@ -10,16 +10,21 @@ import 'package:capira/features/market/market_providers.dart';
 import 'package:capira/features/portfolio/data/datasources/portfolio_local_data_source.dart';
 import 'package:capira/features/portfolio/data/repositories/backup_repository_impl.dart';
 import 'package:capira/features/portfolio/data/repositories/portfolio_repository_impl.dart';
+import 'package:capira/features/portfolio/data/repositories/snapshot_repository_impl.dart';
 import 'package:capira/features/portfolio/domain/entities/asset_transaction.dart';
 import 'package:capira/features/portfolio/domain/entities/holding.dart';
+import 'package:capira/features/portfolio/domain/entities/portfolio_snapshot.dart';
 import 'package:capira/features/portfolio/domain/entities/portfolio_summary.dart';
 import 'package:capira/features/portfolio/domain/repositories/backup_repository.dart';
 import 'package:capira/features/portfolio/domain/repositories/portfolio_repository.dart';
+import 'package:capira/features/portfolio/domain/repositories/snapshot_repository.dart';
+import 'package:capira/features/portfolio/domain/services/period_summary_calculator.dart';
 import 'package:capira/features/portfolio/domain/services/portfolio_valuator.dart';
 import 'package:capira/features/portfolio/domain/usecases/add_transaction.dart';
 import 'package:capira/features/portfolio/domain/usecases/backup_use_cases.dart';
 import 'package:capira/features/portfolio/domain/usecases/delete_asset.dart';
 import 'package:capira/features/portfolio/domain/usecases/delete_transaction.dart';
+import 'package:capira/features/portfolio/domain/usecases/snapshot_use_cases.dart';
 import 'package:capira/features/portfolio/domain/usecases/update_transaction.dart';
 import 'package:capira/features/portfolio/domain/usecases/watch_asset_transactions.dart';
 import 'package:capira/features/portfolio/domain/usecases/watch_holdings.dart';
@@ -205,4 +210,65 @@ final availableDisplayCurrenciesProvider = Provider<List<DisplayCurrency>>((
     for (final c in DisplayCurrency.values)
       if (c.currencyCode == null || codes.contains(c.currencyCode)) c,
   ];
+});
+
+final snapshotRepositoryProvider = Provider<SnapshotRepository>(
+  (ref) => SnapshotRepositoryImpl(ref.watch(appDatabaseProvider)),
+);
+
+final recordSnapshotProvider = Provider<RecordSnapshot>(
+  (ref) => RecordSnapshot(ref.watch(snapshotRepositoryProvider)),
+);
+
+/// Daily portfolio values, oldest first, live.
+final snapshotsProvider = StreamProvider<List<PortfolioSnapshot>>(
+  (ref) => ref
+      .watch(snapshotRepositoryProvider)
+      .watchSnapshots()
+      .map(
+        (result) => switch (result) {
+          Success(:final value) => value,
+          Err(:final failure) => throw failure,
+        },
+      ),
+);
+
+/// Every transaction of every asset, live.
+final allTransactionsProvider = StreamProvider<List<AssetTransaction>>(
+  (ref) => ref
+      .watch(portfolioRepositoryProvider)
+      .watchPortfolio()
+      .map(
+        (result) => switch (result) {
+          Success(:final value) => [
+            for (final item in value) ...item.transactions,
+          ],
+          Err(:final failure) => throw failure,
+        },
+      ),
+);
+
+/// Last week's / month's performance; `null` until there is a stored day
+/// before today to compare with.
+final FutureProviderFamily<PeriodSummary?, SummaryPeriod>
+periodSummaryProvider = FutureProvider.family<PeriodSummary?, SummaryPeriod>((
+  ref,
+  period,
+) async {
+  final snapshots = await ref.watch(snapshotsProvider.future);
+  final transactions = await ref.watch(allTransactionsProvider.future);
+  final current = ref.watch(portfolioSummaryProvider).value;
+  if (current == null) return null;
+  final now = DateTime.now();
+  final base = PeriodSummaryCalculator.baseSnapshot(snapshots, period, now);
+  if (base == null) return null;
+  final assets = await ref.read(snapshotRepositoryProvider).assetsOn(base.day);
+  return PeriodSummaryCalculator.calculate(
+    period: period,
+    now: now,
+    snapshots: snapshots,
+    baseAssets: assets.valueOrNull ?? const [],
+    current: current,
+    transactions: transactions,
+  );
 });

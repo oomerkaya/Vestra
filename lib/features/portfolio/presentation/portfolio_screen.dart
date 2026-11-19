@@ -13,7 +13,9 @@ import 'package:capira/features/portfolio/domain/entities/portfolio_summary.dart
 import 'package:capira/features/portfolio/portfolio_providers.dart';
 import 'package:capira/features/portfolio/presentation/widgets/allocation_card.dart';
 import 'package:capira/features/portfolio/presentation/widgets/holding_tile.dart';
+import 'package:capira/features/portfolio/presentation/widgets/period_summary_section.dart';
 import 'package:capira/features/portfolio/presentation/widgets/portfolio_summary_card.dart';
+import 'package:capira/features/portfolio/presentation/widgets/value_history_section.dart';
 import 'package:capira/features/settings/presentation/display_preferences.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
@@ -102,16 +104,6 @@ class PortfolioScreen extends ConsumerWidget {
             onCurrencyChanged: (c) =>
                 unawaited(ref.read(displayCurrencyProvider.notifier).select(c)),
           ),
-          if (summary.totalValue > Decimal.zero) ...[
-            const SizedBox(height: AppSpacing.lg),
-            CollapsibleSection(
-              title: l10n.portfolioAllocation,
-              storageKey: 'portfolio-allocation',
-              // Closed by default; the user opens it when needed.
-              initiallyExpanded: false,
-              child: AllocationView(summary: summary),
-            ),
-          ],
           SectionHeader(l10n.portfolioHoldings),
           if (summary.isEmpty)
             AppCard(
@@ -157,6 +149,21 @@ class PortfolioScreen extends ConsumerWidget {
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
+          ],
+          // Analysis below the holdings: summary, history, allocation.
+          if (summary.totalValue > Decimal.zero) ...[
+            const SizedBox(height: AppSpacing.xl),
+            const PeriodSummarySection(),
+            const SizedBox(height: AppSpacing.lg),
+            const ValueHistorySection(),
+            const SizedBox(height: AppSpacing.lg),
+            CollapsibleSection(
+              title: l10n.portfolioAllocation,
+              storageKey: 'portfolio-allocation',
+              // Closed by default; the user opens it when needed.
+              initiallyExpanded: false,
+              child: AllocationView(summary: summary),
+            ),
           ],
         ],
       ),

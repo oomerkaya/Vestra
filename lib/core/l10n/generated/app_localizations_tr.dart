@@ -716,4 +716,68 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyShow => 'Tutarları göster';
+
+  @override
+  String get historyTitle => 'Değer geçmişi';
+
+  @override
+  String get historyRangeWeek => '1 hafta';
+
+  @override
+  String get historyRangeMonth => '1 ay';
+
+  @override
+  String get historyRangeQuarter => '3 ay';
+
+  @override
+  String get historyRangeYear => '1 yıl';
+
+  @override
+  String get historyRangeAll => 'Tümü';
+
+  @override
+  String get historyEmpty =>
+      'Grafik, uygulamayı açtığın her gün kaydedilen değerlerle oluşur. Birkaç gün sonra burada görünecek.';
+
+  @override
+  String get historyNote =>
+      'Uygulamanın açıldığı günlerin değeri kaydedilir. Alım ve satımlar da değeri değiştirir.';
+
+  @override
+  String historyChartLabel(String from, String to) {
+    return 'Portföy değeri grafiği, $from ile $to arası';
+  }
+
+  @override
+  String get summaryTitle => 'Özet';
+
+  @override
+  String get summaryWeek => 'Son 7 gün';
+
+  @override
+  String get summaryMonth => 'Son 30 gün';
+
+  @override
+  String get summaryMarketEffect => 'Piyasa etkisi';
+
+  @override
+  String get summaryChange => 'Toplam değişim';
+
+  @override
+  String get summaryNetInvested => 'Alım/satım';
+
+  @override
+  String get summaryBest => 'En çok yükselen';
+
+  @override
+  String get summaryWorst => 'En çok düşen';
+
+  @override
+  String summarySince(String date) {
+    return 'Kayıtlar $date tarihinden beri tutuluyor.';
+  }
+
+  @override
+  String get summaryEmpty =>
+      'Özet için önceki günlerin değeri gerekiyor; uygulamayı yarın açtığında burada olacak.';
 }

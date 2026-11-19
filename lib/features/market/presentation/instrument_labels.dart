@@ -86,3 +86,10 @@ String instrumentSubtitle(AppLocalizations l10n, Instrument instrument) =>
       (type: AssetType.stock, code: _) => l10n.exchangeBist,
       (type: AssetType.fund, code: _) => l10n.categoryFunds,
     };
+
+/// Compact name for one-line mentions: the ticker for stocks and funds,
+/// otherwise the localized name ("Gram Altın", "Amerikan Doları").
+String instrumentShortName(AppLocalizations l10n, Instrument instrument) =>
+    instrument.type == AssetType.stock || instrument.type == AssetType.fund
+    ? instrument.code
+    : instrumentName(l10n, instrument);

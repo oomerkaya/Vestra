@@ -5,6 +5,7 @@ import 'package:capira/core/widgets/amount_display.dart';
 import 'package:capira/features/market/presentation/price_refresh_controller.dart';
 import 'package:capira/features/portfolio/portfolio_providers.dart';
 import 'package:capira/features/portfolio/presentation/kap_refresh_controller.dart';
+import 'package:capira/features/portfolio/presentation/snapshot_recorder.dart';
 import 'package:capira/features/settings/presentation/theme_mode_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,10 +15,11 @@ class CapiraApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Keeps the price and KAP refreshers alive for the whole app session.
+    // Keeps the price/KAP refreshers and the daily value recorder alive.
     ref
       ..listen(priceRefreshControllerProvider, (_, _) {})
-      ..listen(kapRefreshControllerProvider, (_, _) {});
+      ..listen(kapRefreshControllerProvider, (_, _) {})
+      ..listen(snapshotRecorderProvider, (_, _) {});
     return MaterialApp.router(
       onGenerateTitle: (context) => context.l10n.appTitle,
       debugShowCheckedModeBanner: false,

@@ -88,6 +88,12 @@ void main() {
     expect(find.text('İşlem kaydedildi'), findsOneWidget);
     expect(find.text('Amerikan Doları'), findsOneWidget);
     expect(find.text('₺4.210,00'), findsWidgets); // value of 100 × 42,10
+    // Analysis sections sit below the holdings.
+    await tester.scrollUntilVisible(
+      find.text('DAĞILIM'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('DAĞILIM'), findsOneWidget);
 
     await unmount(tester);

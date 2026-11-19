@@ -104,6 +104,11 @@ void main() {
 
   Future<void> go(WidgetTester tester, Finder finder) async {
     if (finder.evaluate().isEmpty) {
+      // Back to the top first, then down until it shows up.
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, 5000));
+      await tester.pumpAndSettle();
+    }
+    if (finder.evaluate().isEmpty) {
       await tester.scrollUntilVisible(
         finder,
         200,
@@ -125,7 +130,7 @@ void main() {
     await go(tester, find.text('DAĞILIM'));
     await go(tester, find.byTooltip('KAP bildirimleri'));
     await go(tester, find.byType(BackButton));
-    await go(tester, find.text('THYAO').first);
+    await go(tester, find.text('THYAO'));
     await go(tester, find.byType(BackButton));
     await go(tester, find.text('Varlık ekle'));
     await go(tester, find.byType(BackButton));

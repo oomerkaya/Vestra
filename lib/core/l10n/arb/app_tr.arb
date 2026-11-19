@@ -345,5 +345,41 @@
     }
   },
   "privacyHide": "Tutarları gizle",
-  "privacyShow": "Tutarları göster"
+  "privacyShow": "Tutarları göster",
+  "historyTitle": "Değer geçmişi",
+  "historyRangeWeek": "1 hafta",
+  "historyRangeMonth": "1 ay",
+  "historyRangeQuarter": "3 ay",
+  "historyRangeYear": "1 yıl",
+  "historyRangeAll": "Tümü",
+  "historyEmpty": "Grafik, uygulamayı açtığın her gün kaydedilen değerlerle oluşur. Birkaç gün sonra burada görünecek.",
+  "historyNote": "Uygulamanın açıldığı günlerin değeri kaydedilir. Alım ve satımlar da değeri değiştirir.",
+  "historyChartLabel": "Portföy değeri grafiği, {from} ile {to} arası",
+  "@historyChartLabel": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryTitle": "Özet",
+  "summaryWeek": "Son 7 gün",
+  "summaryMonth": "Son 30 gün",
+  "summaryMarketEffect": "Piyasa etkisi",
+  "summaryChange": "Toplam değişim",
+  "summaryNetInvested": "Alım/satım",
+  "summaryBest": "En çok yükselen",
+  "summaryWorst": "En çok düşen",
+  "summarySince": "Kayıtlar {date} tarihinden beri tutuluyor.",
+  "@summarySince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryEmpty": "Özet için önceki günlerin değeri gerekiyor; uygulamayı yarın açtığında burada olacak."
 }

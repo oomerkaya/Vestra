@@ -153,11 +153,28 @@ void main() {
 
     // Closed by default.
     expect(find.text('Varlık'), findsNothing);
+    await tester.scrollUntilVisible(
+      find.text('DAĞILIM'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('DAĞILIM'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Varlık'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.pumpAndSettle();
     expect(find.text('Borsa'), findsWidgets);
     await tester.tap(find.text('Varlık'));
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('%100,0'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('%100,0'), findsOneWidget);
 
     await unmount(tester);

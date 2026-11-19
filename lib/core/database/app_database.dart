@@ -13,6 +13,9 @@ part 'app_database.g.dart';
     PriceCache,
     AppSettings,
     KapDisclosures,
+    PortfolioSnapshots,
+    AssetSnapshots,
+    Goals,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -21,7 +24,7 @@ class AppDatabase extends _$AppDatabase {
   /// Bump on every schema change, then run
   /// `dart run drift_dev make-migrations` and add a step in [migration].
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -34,6 +37,11 @@ class AppDatabase extends _$AppDatabase {
       },
       from2To3: (m, schema) async {
         await m.createTable(schema.kapDisclosures);
+      },
+      from3To4: (m, schema) async {
+        await m.createTable(schema.portfolioSnapshots);
+        await m.createTable(schema.assetSnapshots);
+        await m.createTable(schema.goals);
       },
     ),
     beforeOpen: (details) async {
