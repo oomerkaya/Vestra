@@ -1,5 +1,5 @@
-import 'package:vestra/features/market/domain/entities/quota_usage.dart';
-import 'package:vestra/features/market/domain/services/refresh_policy.dart';
+import 'package:capira/features/market/domain/entities/quota_usage.dart';
+import 'package:capira/features/market/domain/services/refresh_policy.dart';
 
 /// When KAP disclosures are fetched. Pure and fully testable.
 ///

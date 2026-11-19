@@ -1,7 +1,7 @@
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_transaction.dart';
-import 'package:vestra/features/portfolio/domain/entities/holding.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/portfolio/domain/entities/asset.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_transaction.dart';
+import 'package:capira/features/portfolio/domain/entities/holding.dart';
 
 abstract interface class PortfolioRepository {
   /// Emits every asset with its transactions whenever the data changes.

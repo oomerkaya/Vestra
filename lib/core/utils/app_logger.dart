@@ -7,20 +7,20 @@ import 'package:flutter/foundation.dart';
 /// Never pass API keys, auth headers or full request URLs containing
 /// secrets to these methods.
 abstract final class AppLogger {
-  static void debug(String message, {String tag = 'vestra'}) =>
+  static void debug(String message, {String tag = 'capira'}) =>
       _log(message, tag: tag, level: 500);
 
-  static void info(String message, {String tag = 'vestra'}) =>
+  static void info(String message, {String tag = 'capira'}) =>
       _log(message, tag: tag, level: 800);
 
-  static void warning(String message, {String tag = 'vestra'}) =>
+  static void warning(String message, {String tag = 'capira'}) =>
       _log(message, tag: tag, level: 900);
 
   static void error(
     String message, {
     Object? error,
     StackTrace? stackTrace,
-    String tag = 'vestra',
+    String tag = 'capira',
   }) => _log(
     message,
     tag: tag,

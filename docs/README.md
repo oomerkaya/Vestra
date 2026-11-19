@@ -1,4 +1,6 @@
-# Vestra Geliştirme Dokümanları
+# Capira Geliştirme Dokümanları
+
+> Uygulamanın adı 2026-11-19'da **Vestra → Capira** olarak değişti (bkz. [faz-5-cila.md](faz-5-cila.md) bölüm 5). Faz 0-4 dokümanları yazıldıkları andaki adı kullanır.
 
 Her faz bitiminde o fazda **ne yapıldığı, neden yapıldığı ve nasıl doğrulandığı** burada ayrı bir dosyaya yazılır. Plan için [`../ROADMAP.md`](../ROADMAP.md), kalıcı kurallar için [`../CLAUDE.md`](../CLAUDE.md).
 

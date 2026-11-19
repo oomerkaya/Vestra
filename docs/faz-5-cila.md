@@ -25,7 +25,7 @@ Ekran görüntülerindeki portföy ve fiyatlar **örnek veridir**.
 | Flutter **3.44.6'da kalındı** | 3.50'ye yükseltme + `material.dart` → `material_ui` | Kullanıcı kararı. Uygulama sorunsuz; yükseltme görünür bir yenilik getirmiyor, tüm import'ları değiştiriyor ve kullanıcının SDK'sını günceller. ROADMAP'te bekleyen olarak kaldı |
 | Yedekleme **dışa + içe aktarma** | Yalnız dışa aktarma; hiç yok | Kullanıcı kararı. Telefon değişince portföy taşınabilsin |
 | Yeni paketler: **`share_plus`** (paylaşım menüsü), **`file_picker`** (dosya seçme) | Dosyayı İndirilenler'e yazmak (depolama izni) | İzin gerekmez; kullanıcı Drive, e-posta, mesajlaşma ya da "Dosyalar'a kaydet" seçer. Kullanıcı onayladı |
-| Yedek biçimi: JSON, `{"app":"vestra","format":1,...}`, tutarlar **metin** | İkili / SQLite kopyası | Okunabilir, sürümlenebilir; `Decimal` hassasiyeti korunur. Şema değişse de okunabilir |
+| Yedek biçimi: JSON, `{"app":"capira","format":1,...}` (eski `vestra` yedekleri de okunur), tutarlar **metin** | İkili / SQLite kopyası | Okunabilir, sürümlenebilir; `Decimal` hassasiyeti korunur. Şema değişse de okunabilir |
 | Yedekte **yalnızca varlıklar ve işlemler** | Fiyatlar, KAP, ayarlar | Fiyat/KAP yeniden çekilir; **API anahtarı asla dosyaya girmez** (güvenlik kuralı) |
 | Geri yükleme **mevcut portföyün yerine** geçer, onayla | Birleştirme | Basit ve öngörülebilir; çift kayıt riski yok. Dosya tamamen doğrulanmadan hiçbir şey silinmez; değiştirme tek veritabanı işlemi |
 | Doğrulama elle girişle **aynı kurallar** (pozitif miktar, negatif olmayan fiyat, eldekinden fazla satış yok, yinelenen varlık yok) | Sadece biçim kontrolü | Bozuk ya da elle değiştirilmiş dosya tutarsız portföy yaratmasın |
@@ -40,7 +40,7 @@ Ekran görüntülerindeki portföy ve fiyatlar **örnek veridir**.
 ### 1. Yedekleme
 - **Domain:** `entities/portfolio_backup.dart` (`PortfolioBackup`, `BackupAsset`, `BackupFailure` + `BackupProblem`: `notABackup`, `newerFormat`, `invalidData`), `repositories/backup_repository.dart`, `usecases/backup_use_cases.dart` (`ExportPortfolio`, `ReadBackup` doğrulamalı, `RestoreBackup`).
 - **Data:** `data/backup/backup_codec.dart` (biçim 1, belgesi dosyada), `repositories/backup_repository_impl.dart`, `PortfolioLocalDataSource.getAssetsWithTransactions` ve `replaceAll` (tek işlem).
-- **Presentation:** `presentation/backup_files.dart` (`BackupFiles` arayüzü; testte bellekte sahte), `widgets/backup_section.dart` (Ayarlar → **Yedekleme**: "Portföyü dışa aktar", "Yedekten geri yükle", onay penceresi tarih/varlık/işlem sayısını gösterir). Dosya adı `vestra-yedek-YYYY-AA-GG.json`.
+- **Presentation:** `presentation/backup_files.dart` (`BackupFiles` arayüzü; testte bellekte sahte), `widgets/backup_section.dart` (Ayarlar → **Yedekleme**: "Portföyü dışa aktar", "Yedekten geri yükle", onay penceresi tarih/varlık/işlem sayısını gösterir). Dosya adı `capira-yedek-YYYY-AA-GG.json`.
 - `confirmDestructive`'e isteğe bağlı `confirmLabel` ("Geri yükle").
 
 ### 2. Erişilebilirlik
@@ -66,6 +66,26 @@ Ekran görüntülerindeki portföy ve fiyatlar **örnek veridir**.
   - Özellikler, kurulum (Flutter 3.44.6), API anahtarı, veri/güncelleme tablosu, geliştirme ve lisans.
 - `LICENSE`: MIT.
 - `docs/images/readme-{light,dark}-{portfolio,market,detail}.png`: geçici bir golden testiyle örnek veriden üretildi, test silindi.
+
+### 5. İsim değişikliği: Vestra → Capira (2026-11-19)
+
+- **Neden:** Google Play'de "Vestra" adında bir uygulama vardı. Kullanıcı yeni bir isim istedi.
+- **Araştırılan adaylar:** Hazne, Kıymet, Akçe, Folyo ve Capira için web araması yapıldı. Capira'nın kullanımları:
+  - OCLC'nin kütüphane uygulaması ürünü CapiraMobile.
+  - Dubai'de bir yatırım danışmanlık şirketi (Capira Capital).
+  - Doğrudan bir finans uygulaması çakışması bulunmadı.
+  - Kullanıcı bilgilendirildikten sonra **Capira**'yı seçti.
+- **Değişenler:**
+  - Görünen ad ve tüm metinler.
+  - Dart paket adı `vestra` → `capira` (tüm import'lar).
+  - `VestraApp` → `CapiraApp`, `VestraColors`/`context.vestraColors` → `CapiraColors`/`context.capiraColors`.
+  - Veritabanı dosyası `capira`, log etiketi, `drift_schemas/capira`, `test/drift/capira`.
+- **Uygulama kimliği:** `com.vestra.vestra` → **`io.github.oomerkaya.capira`** (GitHub kullanıcı adına bağlı; başka bir uygulamayla çakışmaz).
+  - Telefonda eski Vestra'dan **ayrı bir uygulama** olarak kurulur; veriler kendiliğinden taşınmaz.
+  - Taşıma: Vestra'da Ayarlar → Yedekleme → dışa aktar, Capira'da geri yükle.
+- **Eski yedekler:** `BackupCodec` hem `"app": "capira"` hem eski `"vestra"` yedeklerini okur (test var). Yeni dosya adı `capira-yedek-YYYY-AA-GG.json`.
+- **Değişmeyenler:** Faz 0-4 dokümanları tarihî kayıt olarak eski adı kullanır. Test fixture'ları Bürküt cevabıdır, isimden bağımsızdır.
+- **GitHub repo adı:** Kullanıcı tarafından `Vestra` → `Capira` yapılacak. README'deki klon adresi yeni adı gösteriyor; GitHub eski adresi yeni adrese yönlendirir.
 
 ## Doğrulama
 

@@ -1,7 +1,7 @@
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/widgets/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/widgets/messages.dart';
 
 /// Opens an https [url] in the browser; shows a message if that fails.
 /// Other schemes are refused.

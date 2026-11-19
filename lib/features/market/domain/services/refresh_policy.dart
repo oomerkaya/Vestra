@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:vestra/features/market/domain/entities/market_calendar.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
+import 'package:capira/features/market/domain/entities/market_calendar.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
 
 /// When each price category may be fetched. Pure and fully testable.
 ///

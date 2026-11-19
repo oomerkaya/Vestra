@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/core/utils/app_logger.dart';
-import 'package:vestra/features/portfolio/data/datasources/portfolio_local_data_source.dart';
-import 'package:vestra/features/portfolio/data/mappers/portfolio_mappers.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_transaction.dart';
-import 'package:vestra/features/portfolio/domain/entities/holding.dart';
-import 'package:vestra/features/portfolio/domain/repositories/portfolio_repository.dart';
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/core/utils/app_logger.dart';
+import 'package:capira/features/portfolio/data/datasources/portfolio_local_data_source.dart';
+import 'package:capira/features/portfolio/data/mappers/portfolio_mappers.dart';
+import 'package:capira/features/portfolio/domain/entities/asset.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_transaction.dart';
+import 'package:capira/features/portfolio/domain/entities/holding.dart';
+import 'package:capira/features/portfolio/domain/repositories/portfolio_repository.dart';
 
 class PortfolioRepositoryImpl implements PortfolioRepository {
   const PortfolioRepositoryImpl(this._local);

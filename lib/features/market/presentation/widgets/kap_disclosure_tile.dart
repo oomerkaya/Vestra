@@ -1,11 +1,11 @@
 import 'dart:async';
 
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/utils/formatters.dart';
+import 'package:capira/core/widgets/external_link.dart';
+import 'package:capira/features/market/domain/entities/kap_disclosure.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/utils/formatters.dart';
-import 'package:vestra/core/widgets/external_link.dart';
-import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
 
 /// One KAP disclosure: symbol · date, subject and type. Tapping opens the
 /// original on kap.org.tr in the browser.

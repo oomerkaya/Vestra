@@ -1,5 +1,5 @@
+import 'package:capira/core/utils/decimal_input.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/core/utils/decimal_input.dart';
 
 import '../helpers/fixtures.dart';
 

@@ -1,11 +1,11 @@
+import 'package:capira/core/database/app_database.dart';
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/market/data/datasources/kap_disclosure_local_data_source.dart';
+import 'package:capira/features/market/data/repositories/disclosure_repository_impl.dart';
+import 'package:capira/features/market/domain/entities/kap_disclosure.dart';
+import 'package:capira/features/market/domain/providers/price_providers.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/core/database/app_database.dart';
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/market/data/datasources/kap_disclosure_local_data_source.dart';
-import 'package:vestra/features/market/data/repositories/disclosure_repository_impl.dart';
-import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
-import 'package:vestra/features/market/domain/providers/price_providers.dart';
 
 import '../../../helpers/test_database.dart';
 

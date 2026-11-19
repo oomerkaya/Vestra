@@ -1,9 +1,9 @@
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/widgets/empty_state.dart';
+import 'package:capira/features/portfolio/portfolio_providers.dart';
+import 'package:capira/features/portfolio/presentation/screens/transaction_form_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/widgets/empty_state.dart';
-import 'package:vestra/features/portfolio/portfolio_providers.dart';
-import 'package:vestra/features/portfolio/presentation/screens/transaction_form_screen.dart';
 
 /// Loads the asset and transaction for `/portfolio/asset/:id/transaction/:tx`
 /// and opens the form in edit mode.

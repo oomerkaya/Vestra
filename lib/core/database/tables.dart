@@ -1,5 +1,5 @@
+import 'package:capira/core/database/converters.dart';
 import 'package:drift/drift.dart';
-import 'package:vestra/core/database/converters.dart';
 
 /// Enum-like columns are plain TEXT here; feature mappers own the mapping so
 /// that `core` does not depend on feature domain types.

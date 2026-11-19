@@ -1,5 +1,5 @@
+import 'package:capira/core/database/app_database.dart';
 import 'package:drift/drift.dart';
-import 'package:vestra/core/database/app_database.dart';
 
 /// Raw Drift access for the portfolio tables. Throws on DB errors; the
 /// repository converts exceptions into failures.

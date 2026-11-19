@@ -1,4 +1,4 @@
-import 'package:vestra/core/database/app_database.dart';
+import 'package:capira/core/database/app_database.dart';
 
 /// Small market bookkeeping values in `app_settings`.
 class MarketMetaLocalDataSource {

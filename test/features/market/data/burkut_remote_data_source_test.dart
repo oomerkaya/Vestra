@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:capira/features/market/data/datasources/burkut_remote_data_source.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/features/market/data/datasources/burkut_remote_data_source.dart';
 
 import '../../../helpers/fixtures.dart';
 

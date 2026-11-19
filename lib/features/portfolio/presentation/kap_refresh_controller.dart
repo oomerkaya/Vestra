@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:capira/features/market/domain/services/disclosure_policy.dart';
+import 'package:capira/features/market/market_providers.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vestra/features/market/domain/services/disclosure_policy.dart';
-import 'package:vestra/features/market/market_providers.dart';
 
 /// Reads the general KAP feed once a day ([DisclosurePolicy]) while the
 /// app is open: 20 s after start (the price refresh goes first), every

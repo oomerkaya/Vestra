@@ -1,4 +1,4 @@
-import 'package:vestra/core/domain/instrument.dart';
+import 'package:capira/core/domain/instrument.dart';
 
 /// Instruments a user can pick when adding currencies or metals. Stocks
 /// come from the BIST listing instead (see `StockDirectoryRepository`).

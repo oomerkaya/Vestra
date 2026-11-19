@@ -1,9 +1,9 @@
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/settings/domain/repositories/api_key_repository.dart';
+import 'package:capira/features/settings/domain/usecases/save_burkut_key.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/settings/domain/repositories/api_key_repository.dart';
-import 'package:vestra/features/settings/domain/usecases/save_burkut_key.dart';
 
 import '../../helpers/fakes.dart';
 

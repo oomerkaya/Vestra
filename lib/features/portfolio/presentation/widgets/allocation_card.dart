@@ -1,14 +1,14 @@
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/theme/app_colors.dart';
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/theme/app_typography.dart';
+import 'package:capira/core/utils/formatters.dart';
+import 'package:capira/core/widgets/donut_chart.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/portfolio/domain/entities/portfolio_summary.dart';
+import 'package:capira/features/portfolio/presentation/portfolio_labels.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/theme/app_colors.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/theme/app_typography.dart';
-import 'package:vestra/core/utils/formatters.dart';
-import 'package:vestra/core/widgets/donut_chart.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/portfolio/domain/entities/portfolio_summary.dart';
-import 'package:vestra/features/portfolio/presentation/portfolio_labels.dart';
 
 enum AllocationMode { category, asset }
 

@@ -1,6 +1,6 @@
+import 'package:capira/core/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:vestra/core/l10n/l10n.dart';
 
 /// Bottom navigation scaffold hosting the top-level branches.
 class AppShell extends StatelessWidget {

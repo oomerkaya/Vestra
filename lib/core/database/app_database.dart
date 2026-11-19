@@ -1,8 +1,8 @@
+import 'package:capira/core/database/app_database.steps.dart';
+import 'package:capira/core/database/converters.dart';
+import 'package:capira/core/database/tables.dart';
 import 'package:decimal/decimal.dart';
 import 'package:drift/drift.dart';
-import 'package:vestra/core/database/app_database.steps.dart';
-import 'package:vestra/core/database/converters.dart';
-import 'package:vestra/core/database/tables.dart';
 
 part 'app_database.g.dart';
 

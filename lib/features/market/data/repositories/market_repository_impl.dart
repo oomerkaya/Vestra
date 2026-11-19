@@ -1,18 +1,18 @@
 import 'dart:async';
 
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/core/utils/app_logger.dart';
-import 'package:vestra/features/market/data/datasources/market_meta_local_data_source.dart';
-import 'package:vestra/features/market/data/datasources/price_cache_local_data_source.dart';
-import 'package:vestra/features/market/data/datasources/quota_local_data_source.dart';
-import 'package:vestra/features/market/data/mappers/burkut_symbols.dart';
-import 'package:vestra/features/market/data/mappers/quote_mappers.dart';
-import 'package:vestra/features/market/domain/entities/quota_usage.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/market/domain/providers/price_providers.dart';
-import 'package:vestra/features/market/domain/repositories/market_repository.dart';
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/core/utils/app_logger.dart';
+import 'package:capira/features/market/data/datasources/market_meta_local_data_source.dart';
+import 'package:capira/features/market/data/datasources/price_cache_local_data_source.dart';
+import 'package:capira/features/market/data/datasources/quota_local_data_source.dart';
+import 'package:capira/features/market/data/mappers/burkut_symbols.dart';
+import 'package:capira/features/market/data/mappers/quote_mappers.dart';
+import 'package:capira/features/market/domain/entities/quota_usage.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/market/domain/providers/price_providers.dart';
+import 'package:capira/features/market/domain/repositories/market_repository.dart';
 
 /// Orchestrates providers and the local price cache.
 ///

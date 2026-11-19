@@ -1,5 +1,5 @@
+import 'package:capira/core/error/failure.dart';
 import 'package:dio/dio.dart';
-import 'package:vestra/core/error/failure.dart';
 
 /// Converts a [DioException] into a domain [Failure].
 ///

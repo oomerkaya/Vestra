@@ -1,4 +1,4 @@
-import 'package:vestra/core/error/failure.dart';
+import 'package:capira/core/error/failure.dart';
 
 /// Outcome of an operation that can fail without throwing.
 sealed class Result<T> {

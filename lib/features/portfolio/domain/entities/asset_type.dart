@@ -1,3 +1,3 @@
-export 'package:vestra/core/domain/instrument.dart' show AssetType;
+export 'package:capira/core/domain/instrument.dart' show AssetType;
 
 enum TransactionKind { buy, sell }

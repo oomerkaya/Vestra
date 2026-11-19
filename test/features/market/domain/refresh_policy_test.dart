@@ -1,7 +1,7 @@
+import 'package:capira/features/market/domain/entities/market_calendar.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/market/domain/services/refresh_policy.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/features/market/domain/entities/market_calendar.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/market/domain/services/refresh_policy.dart';
 
 /// Istanbul wall-clock time expressed as a UTC instant (Istanbul = UTC+3).
 DateTime ist(int y, int m, int d, int h, [int min = 0]) =>

@@ -1,15 +1,15 @@
 import 'dart:async';
 
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/widgets/app_card.dart';
+import 'package:capira/core/widgets/choice_tiles.dart';
+import 'package:capira/core/widgets/section_header.dart';
+import 'package:capira/features/portfolio/presentation/widgets/backup_section.dart';
+import 'package:capira/features/settings/presentation/theme_mode_provider.dart';
+import 'package:capira/features/settings/presentation/widgets/data_source_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/widgets/app_card.dart';
-import 'package:vestra/core/widgets/choice_tiles.dart';
-import 'package:vestra/core/widgets/section_header.dart';
-import 'package:vestra/features/portfolio/presentation/widgets/backup_section.dart';
-import 'package:vestra/features/settings/presentation/theme_mode_provider.dart';
-import 'package:vestra/features/settings/presentation/widgets/data_source_section.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});

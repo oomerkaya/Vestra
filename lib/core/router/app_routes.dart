@@ -1,5 +1,5 @@
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_type.dart';
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_type.dart';
 
 /// Route paths. Detail and form screens are pushed above the bottom
 /// navigation (root navigator).

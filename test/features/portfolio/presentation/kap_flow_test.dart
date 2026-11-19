@@ -1,20 +1,20 @@
+import 'package:capira/app.dart';
+import 'package:capira/core/database/app_database.dart';
+import 'package:capira/core/di/database_provider.dart';
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/features/market/data/datasources/kap_disclosure_local_data_source.dart';
+import 'package:capira/features/market/data/datasources/price_cache_local_data_source.dart';
+import 'package:capira/features/market/data/mappers/kap_disclosure_mapper.dart';
+import 'package:capira/features/market/data/mappers/quote_mappers.dart';
+import 'package:capira/features/market/domain/entities/kap_disclosure.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/market/market_providers.dart';
+import 'package:capira/features/settings/presentation/settings_screen.dart';
+import 'package:capira/features/settings/settings_providers.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/app.dart';
-import 'package:vestra/core/database/app_database.dart';
-import 'package:vestra/core/di/database_provider.dart';
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/features/market/data/datasources/kap_disclosure_local_data_source.dart';
-import 'package:vestra/features/market/data/datasources/price_cache_local_data_source.dart';
-import 'package:vestra/features/market/data/mappers/kap_disclosure_mapper.dart';
-import 'package:vestra/features/market/data/mappers/quote_mappers.dart';
-import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/market/market_providers.dart';
-import 'package:vestra/features/settings/presentation/settings_screen.dart';
-import 'package:vestra/features/settings/settings_providers.dart';
 
 import '../../../helpers/fakes.dart';
 import '../../../helpers/fixtures.dart';
@@ -85,7 +85,7 @@ void main() {
           autoRefreshEnabledProvider.overrideWithValue(false),
           apiKeyRepositoryProvider.overrideWithValue(FakeApiKeyRepository(key)),
         ],
-        child: const VestraApp(),
+        child: const CapiraApp(),
       ),
     );
     await tester.pumpAndSettle();

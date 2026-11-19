@@ -1,6 +1,6 @@
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/portfolio/domain/entities/holding.dart';
 import 'package:decimal/decimal.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/portfolio/domain/entities/holding.dart';
 
 /// A holding combined with its latest cached price. All money in TRY.
 class ValuedHolding {

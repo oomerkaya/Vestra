@@ -1,5 +1,5 @@
+import 'package:capira/core/database/app_database.dart';
 import 'package:drift/drift.dart';
-import 'package:vestra/core/database/app_database.dart';
 
 /// Stored KAP disclosures (`kap_disclosures`) and bookkeeping values in
 /// `app_settings`: `kap_feed_at` (general feed read) and `kap_seen_at`

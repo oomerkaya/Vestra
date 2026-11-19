@@ -1,12 +1,12 @@
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/core/utils/app_logger.dart';
-import 'package:vestra/features/market/data/datasources/kap_disclosure_local_data_source.dart';
-import 'package:vestra/features/market/data/mappers/kap_disclosure_mapper.dart';
-import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
-import 'package:vestra/features/market/domain/providers/price_providers.dart';
-import 'package:vestra/features/market/domain/repositories/disclosure_repository.dart';
-import 'package:vestra/features/market/domain/services/disclosure_policy.dart';
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/core/utils/app_logger.dart';
+import 'package:capira/features/market/data/datasources/kap_disclosure_local_data_source.dart';
+import 'package:capira/features/market/data/mappers/kap_disclosure_mapper.dart';
+import 'package:capira/features/market/domain/entities/kap_disclosure.dart';
+import 'package:capira/features/market/domain/providers/price_providers.dart';
+import 'package:capira/features/market/domain/repositories/disclosure_repository.dart';
+import 'package:capira/features/market/domain/services/disclosure_policy.dart';
 
 class DisclosureRepositoryImpl implements DisclosureRepository {
   DisclosureRepositoryImpl({

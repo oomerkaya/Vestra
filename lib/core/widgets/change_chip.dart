@@ -1,7 +1,7 @@
+import 'package:capira/core/theme/app_colors.dart';
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/theme/app_colors.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/theme/app_typography.dart';
 
 enum ChangeDirection { up, down, flat }
 
@@ -19,7 +19,7 @@ class ChangeChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.vestraColors;
+    final colors = context.capiraColors;
     final (fg, bg, icon) = switch (direction) {
       ChangeDirection.up => (
         colors.gain,

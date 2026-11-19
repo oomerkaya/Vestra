@@ -1,6 +1,6 @@
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/utils/formatters.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/utils/formatters.dart';
 
 /// Small label above a group of cards, with an optional trailing action.
 class SectionHeader extends StatelessWidget {

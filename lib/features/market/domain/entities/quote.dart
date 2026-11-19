@@ -1,5 +1,5 @@
+import 'package:capira/core/domain/instrument.dart';
 import 'package:decimal/decimal.dart';
-import 'package:vestra/core/domain/instrument.dart';
 
 enum QuoteSource { burkut }
 

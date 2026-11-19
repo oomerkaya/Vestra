@@ -1,7 +1,7 @@
+import 'package:capira/core/theme/app_colors.dart';
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/theme/app_typography.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/theme/app_colors.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/theme/app_typography.dart';
 
 /// "Clean fintech" theme: neutral backgrounds, borderless white/graphite
 /// cards, a single indigo accent, green/red reserved for gain/loss.
@@ -16,7 +16,7 @@ abstract final class AppTheme {
     textSecondary: AppPalette.lightTextSecondary,
     divider: AppPalette.lightDivider,
     error: AppPalette.lossLight,
-    extension: VestraColors.light,
+    extension: CapiraColors.light,
   );
 
   static ThemeData get dark => _build(
@@ -29,7 +29,7 @@ abstract final class AppTheme {
     textSecondary: AppPalette.darkTextSecondary,
     divider: AppPalette.darkDivider,
     error: AppPalette.lossDark,
-    extension: VestraColors.dark,
+    extension: CapiraColors.dark,
   );
 
   static ThemeData _build({
@@ -42,7 +42,7 @@ abstract final class AppTheme {
     required Color textSecondary,
     required Color divider,
     required Color error,
-    required VestraColors extension,
+    required CapiraColors extension,
   }) {
     final isDark = brightness == Brightness.dark;
     final scheme =

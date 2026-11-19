@@ -1,8 +1,8 @@
+import 'package:capira/core/database/app_database.dart';
+import 'package:capira/features/settings/data/datasources/settings_local_data_source.dart';
+import 'package:capira/features/settings/data/repositories/settings_repository_impl.dart';
+import 'package:capira/features/settings/domain/entities/theme_preference.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/core/database/app_database.dart';
-import 'package:vestra/features/settings/data/datasources/settings_local_data_source.dart';
-import 'package:vestra/features/settings/data/repositories/settings_repository_impl.dart';
-import 'package:vestra/features/settings/domain/entities/theme_preference.dart';
 
 import '../../helpers/test_database.dart';
 

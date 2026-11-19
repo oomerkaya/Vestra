@@ -1,5 +1,5 @@
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/market/domain/entities/stock_listing.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/market/domain/entities/stock_listing.dart';
 
 /// Full BIST stock list for search. Cached on the device and refreshed at
 /// most once a week (one request from the monthly quota).

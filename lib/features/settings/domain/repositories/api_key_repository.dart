@@ -1,4 +1,4 @@
-import 'package:vestra/core/error/result.dart';
+import 'package:capira/core/error/result.dart';
 
 /// Secret API keys. Backed by encrypted platform storage, never by the
 /// database, logs or source code.

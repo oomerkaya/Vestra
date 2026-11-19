@@ -1,13 +1,13 @@
 import 'dart:async';
 
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/market/domain/entities/market_calendar.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/market/domain/services/refresh_policy.dart';
+import 'package:capira/features/market/market_providers.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/market/domain/entities/market_calendar.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/market/domain/services/refresh_policy.dart';
-import 'package:vestra/features/market/market_providers.dart';
 
 @immutable
 class PriceRefreshState {

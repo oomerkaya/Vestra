@@ -1,16 +1,16 @@
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/theme/app_typography.dart';
+import 'package:capira/core/utils/formatters.dart';
+import 'package:capira/core/widgets/instrument_avatar.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/market/domain/entities/stock_listing.dart';
+import 'package:capira/features/market/market_providers.dart';
+import 'package:capira/features/market/presentation/instrument_labels.dart';
+import 'package:capira/features/portfolio/domain/instrument_catalog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/theme/app_typography.dart';
-import 'package:vestra/core/utils/formatters.dart';
-import 'package:vestra/core/widgets/instrument_avatar.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/market/domain/entities/stock_listing.dart';
-import 'package:vestra/features/market/market_providers.dart';
-import 'package:vestra/features/market/presentation/instrument_labels.dart';
-import 'package:vestra/features/portfolio/domain/instrument_catalog.dart';
 
 /// What the picker returns: the instrument and the name to store.
 typedef PickedInstrument = ({Instrument instrument, String name});

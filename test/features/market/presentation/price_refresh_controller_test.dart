@@ -1,16 +1,16 @@
 import 'dart:async';
 
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/market/domain/entities/market_calendar.dart';
+import 'package:capira/features/market/domain/entities/quota_usage.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/market/domain/repositories/market_repository.dart';
+import 'package:capira/features/market/market_providers.dart';
+import 'package:capira/features/market/presentation/price_refresh_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/market/domain/entities/market_calendar.dart';
-import 'package:vestra/features/market/domain/entities/quota_usage.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/market/domain/repositories/market_repository.dart';
-import 'package:vestra/features/market/market_providers.dart';
-import 'package:vestra/features/market/presentation/price_refresh_controller.dart';
 
 import '../../../helpers/fixtures.dart';
 

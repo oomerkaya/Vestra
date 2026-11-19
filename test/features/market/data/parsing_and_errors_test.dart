@@ -1,9 +1,9 @@
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/core/network/dio_failure_mapper.dart';
+import 'package:capira/features/market/data/dto/burkut_dtos.dart';
+import 'package:capira/features/market/data/dto/json_parsing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/core/network/dio_failure_mapper.dart';
-import 'package:vestra/features/market/data/dto/burkut_dtos.dart';
-import 'package:vestra/features/market/data/dto/json_parsing.dart';
 
 import '../../../helpers/fixtures.dart';
 

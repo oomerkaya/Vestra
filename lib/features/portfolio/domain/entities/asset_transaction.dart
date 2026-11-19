@@ -1,5 +1,5 @@
+import 'package:capira/features/portfolio/domain/entities/asset_type.dart';
 import 'package:decimal/decimal.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_type.dart';
 
 /// A single buy or sell. Holdings are always derived from these.
 class AssetTransaction {

@@ -1,7 +1,7 @@
+import 'package:capira/core/database/app_database.dart';
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
 import 'package:drift/drift.dart';
-import 'package:vestra/core/database/app_database.dart';
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
 
 extension QuoteToRow on Quote {
   PriceCacheCompanion toCompanion() => PriceCacheCompanion.insert(

@@ -4,7 +4,7 @@ Bu dosya, projede çalışan Claude Code oturumları için kalıcı bağlamdır.
 
 ## Proje
 
-Flutter ile yazılmış **kişisel portföy takip uygulaması**: **Vestra** (`com.vestra.vestra`). Kullanıcı elindeki döviz, altın ve hisseleri **kendisi elle girer**; uygulama güncel değerleri gösterir.
+Flutter ile yazılmış **kişisel portföy takip uygulaması**: **Capira** (`io.github.oomerkaya.capira`). 2026-11-19'a kadar adı Vestra'ydı (`com.vestra.vestra`); eski Faz 0-4 dokümanlarında o isim geçer, eski yedek dosyaları (`"app": "vestra"`) hâlâ okunur. Kullanıcı elindeki döviz, altın ve hisseleri **kendisi elle girer**; uygulama güncel değerleri gösterir.
 
 - Mağaza ürünü değil: kaynak kod GitHub'da durur, herkes kendi telefonuna kendi derler/kurar. İlk hedef **Android**, iOS sonra.
 - Ücretsiz ve kişisel kullanım. Yatırım tavsiyesi vermez; ayarlarda ve README'de bu uyarı bulunur.
@@ -54,8 +54,8 @@ Kurallar:
 ## Tasarım
 
 Sade fintech tarzı, Inter yazı tipi. Ayrıntı: `docs/tasarim-sistemi.md`.
-- Renk/boşluk/köşe için `AppPalette` yerine tema + `context.vestraColors`, `AppSpacing`, `AppRadius` tokenlarını kullan; çıplak sayı yazma.
-- Yeşil/kırmızı yalnızca kâr/zarar için (`ChangeChip`, `vestraColors.gain/loss`).
+- Renk/boşluk/köşe için `AppPalette` yerine tema + `context.capiraColors`, `AppSpacing`, `AppRadius` tokenlarını kullan; çıplak sayı yazma.
+- Yeşil/kırmızı yalnızca kâr/zarar için (`ChangeChip`, `capiraColors.gain/loss`).
 - Tutarlar `MoneyText` / `Formatters` ile gösterilir; `double` ile biçimlendirme yok.
 - Ortak bileşenler `lib/core/widgets/`'ta (`AppCard`, `SectionHeader`, `MoneyText`, `ChangeChip`, `ChoiceTiles`, `EmptyState`, `DonutChart`, `InstrumentAvatar`, `confirmDestructive`).
 - Bildirim için `ScaffoldMessenger.of(context).showMessage(...)` kullan (sıraya girmez); doğrudan `showSnackBar` çağırma.

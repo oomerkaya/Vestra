@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:vestra/core/database/app_database.dart';
-import 'package:vestra/features/market/domain/entities/stock_listing.dart';
+import 'package:capira/core/database/app_database.dart';
+import 'package:capira/features/market/domain/entities/stock_listing.dart';
 
 /// Caches the BIST stock list as JSON in `app_settings` (~25 KB). Public
 /// market metadata only; no prices.

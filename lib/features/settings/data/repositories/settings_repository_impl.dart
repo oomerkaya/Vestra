@@ -1,9 +1,9 @@
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/core/utils/app_logger.dart';
-import 'package:vestra/features/settings/data/datasources/settings_local_data_source.dart';
-import 'package:vestra/features/settings/domain/entities/theme_preference.dart';
-import 'package:vestra/features/settings/domain/repositories/settings_repository.dart';
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/core/utils/app_logger.dart';
+import 'package:capira/features/settings/data/datasources/settings_local_data_source.dart';
+import 'package:capira/features/settings/domain/entities/theme_preference.dart';
+import 'package:capira/features/settings/domain/repositories/settings_repository.dart';
 
 class SettingsRepositoryImpl implements SettingsRepository {
   const SettingsRepositoryImpl(this._local);

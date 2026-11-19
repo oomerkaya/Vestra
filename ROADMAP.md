@@ -8,7 +8,7 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 - [x] İlk hedef Android
 - [x] MVP kapsamı: varlık ekleme/düzenleme/silme, portföy özeti, fiyat güncelleme, ayarlar (tema: sistem/aydınlık/karanlık dahil)
 - [x] Para/miktar tipi: `Decimal` (`decimal` paketi), DB'de TEXT olarak saklanır
-- [x] Uygulama adı: Vestra, applicationId `com.vestra.vestra`
+- [x] Uygulama adı: Capira, applicationId `io.github.oomerkaya.capira` (2026-11-19'a kadar Vestra / `com.vestra.vestra`; Google Play'de aynı isimde uygulama olduğu için değişti)
 
 ## Faz 1: İskelet
 1. [x] `flutter create` (org adı, Android only), Git deposu, `.gitignore`

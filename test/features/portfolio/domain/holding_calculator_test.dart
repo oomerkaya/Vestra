@@ -1,6 +1,6 @@
+import 'package:capira/features/portfolio/domain/entities/asset_type.dart';
+import 'package:capira/features/portfolio/domain/services/holding_calculator.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_type.dart';
-import 'package:vestra/features/portfolio/domain/services/holding_calculator.dart';
 
 import '../../../helpers/fixtures.dart';
 

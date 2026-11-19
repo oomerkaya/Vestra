@@ -1,16 +1,16 @@
 import 'dart:async';
 
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/theme/app_colors.dart';
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/utils/formatters.dart';
+import 'package:capira/core/widgets/app_card.dart';
+import 'package:capira/features/market/market_providers.dart';
+import 'package:capira/features/market/presentation/price_refresh_controller.dart';
+import 'package:capira/features/settings/presentation/widgets/api_key_sheet.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/theme/app_colors.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/utils/formatters.dart';
-import 'package:vestra/core/widgets/app_card.dart';
-import 'package:vestra/features/market/market_providers.dart';
-import 'package:vestra/features/market/presentation/price_refresh_controller.dart';
-import 'package:vestra/features/settings/presentation/widgets/api_key_sheet.dart';
 
 /// API key status, monthly quota usage and data-source notes. Opening it
 /// refreshes the quota from the server (free).
@@ -97,7 +97,7 @@ class _DataSourceSectionState extends ConsumerState<DataSourceSection> {
                               ),
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: quota.isExhausted
-                              ? context.vestraColors.loss
+                              ? context.capiraColors.loss
                               : theme.colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w600,
                         ),
@@ -112,9 +112,9 @@ class _DataSourceSectionState extends ConsumerState<DataSourceSection> {
                           ? 1
                           : (quota.used / quota.limit).clamp(0, 1),
                       minHeight: 6,
-                      backgroundColor: context.vestraColors.surfaceMuted,
+                      backgroundColor: context.capiraColors.surfaceMuted,
                       color: quota.isExhausted
-                          ? context.vestraColors.loss
+                          ? context.capiraColors.loss
                           : theme.colorScheme.primary,
                     ),
                   ),

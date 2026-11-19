@@ -1,7 +1,7 @@
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/utils/formatters.dart';
+import 'package:capira/core/widgets/app_card.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/utils/formatters.dart';
-import 'package:vestra/core/widgets/app_card.dart';
 
 /// Card with a tappable header that expands/collapses its [child].
 ///

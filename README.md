@@ -1,9 +1,9 @@
-# Vestra
+# Capira
 
-Döviz, altın, gümüş, BIST hisseleri ve TEFAS fonlarını tek ekranda takip etmek için kişisel portföy uygulaması (Android, Flutter). Varlıklarını sen girersin; Vestra güncel değerini, kâr/zararını ve portföydeki hisselerin KAP bildirimlerini gösterir.
+Döviz, altın, gümüş, BIST hisseleri ve TEFAS fonlarını tek ekranda takip etmek için kişisel portföy uygulaması (Android, Flutter). Varlıklarını sen girersin; Capira güncel değerini, kâr/zararını ve portföydeki hisselerin KAP bildirimlerini gösterir.
 
 > [!IMPORTANT]
-> **Vestra resmi bir Bürküt uygulaması değildir.** Fiyatlar için [Bürküt Portföy](https://burkutportfoy.com) herkese açık API'sini kullanan, topluluk tarafından geliştirilen bağımsız bir istemcidir. Her kullanıcı kendi ücretsiz API anahtarını kullanır.
+> **Capira resmi bir Bürküt uygulaması değildir.** Fiyatlar için [Bürküt Portföy](https://burkutportfoy.com) herkese açık API'sini kullanan, topluluk tarafından geliştirilen bağımsız bir istemcidir. Her kullanıcı kendi ücretsiz API anahtarını kullanır.
 
 > [!WARNING]
 > **Yatırım tavsiyesi değildir.** Gösterilen fiyatlar gecikmeli olabilir (BIST verileri en az 15 dakika gecikmelidir) ve yalnızca bilgi amaçlıdır. Bürküt lisanslı bir veri dağıtıcısı değildir. Uygulama hiçbir garanti verilmeden sunulur (bkz. [LICENSE](LICENSE)).
@@ -23,13 +23,13 @@ Döviz, altın, gümüş, BIST hisseleri ve TEFAS fonlarını tek ekranda takip 
 
 ## Kurulum
 
-Vestra mağazada yok; kendi telefonuna kendin derleyip kurarsın.
+Capira mağazada yok; kendi telefonuna kendin derleyip kurarsın.
 
 1. [Flutter](https://docs.flutter.dev/get-started/install) **3.44.6** (stable) ve Android Studio kur.
 2. Depoyu indir ve bağımlılıkları yükle:
    ```bash
-   git clone https://github.com/oomerkaya/Vestra.git
-   cd Vestra
+   git clone https://github.com/oomerkaya/Capira.git
+   cd Capira
    flutter pub get
    ```
 3. Telefonu USB hata ayıklama açık bağla ve çalıştır:
@@ -41,13 +41,13 @@ Vestra mağazada yok; kendi telefonuna kendin derleyip kurarsın.
 ## API anahtarı
 
 1. [burkutportfoy.com/developers](https://burkutportfoy.com/developers) adresinden ücretsiz hesap aç ve bir API anahtarı oluştur (ayda 1.000 istek).
-2. Vestra'da **Ayarlar → Veri kaynağı → Bürküt API anahtarı**'na gir. Anahtar kaydedilmeden önce doğrulanır.
+2. Capira'da **Ayarlar → Veri kaynağı → Bürküt API anahtarı**'na gir. Anahtar kaydedilmeden önce doğrulanır.
 
 Anahtar olmadan fiyat ve KAP bildirimi gelmez; portföyü yine de girebilirsin.
 
 ## Veri ve güncelleme
 
-Vestra kotayı korumak için yalnızca uygulama açıkken ve aşağıdaki aralıklarla istek gönderir; ekranı aşağı çekmek bu aralıkları kısaltmaz.
+Capira kotayı korumak için yalnızca uygulama açıkken ve aşağıdaki aralıklarla istek gönderir; ekranı aşağı çekmek bu aralıkları kısaltmaz.
 
 | Veri | Ne zaman | İstek |
 |---|---|---|

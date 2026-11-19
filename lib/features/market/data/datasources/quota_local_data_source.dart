@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:vestra/core/database/app_database.dart';
-import 'package:vestra/features/market/domain/entities/quota_usage.dart';
+import 'package:capira/core/database/app_database.dart';
+import 'package:capira/features/market/domain/entities/quota_usage.dart';
 
 /// Counts Bürküt requests per calendar month in `app_settings`.
 ///

@@ -1,4 +1,4 @@
-import 'package:vestra/core/error/failure.dart';
+import 'package:capira/core/error/failure.dart';
 
 enum TransactionValidationReason {
   /// Quantity is zero or negative.

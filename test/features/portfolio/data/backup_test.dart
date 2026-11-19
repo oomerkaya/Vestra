@@ -1,17 +1,17 @@
 import 'dart:convert';
 
+import 'package:capira/core/database/app_database.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/portfolio/data/backup/backup_codec.dart';
+import 'package:capira/features/portfolio/data/datasources/portfolio_local_data_source.dart';
+import 'package:capira/features/portfolio/data/repositories/backup_repository_impl.dart';
+import 'package:capira/features/portfolio/data/repositories/portfolio_repository_impl.dart';
+import 'package:capira/features/portfolio/domain/entities/asset.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_transaction.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_type.dart';
+import 'package:capira/features/portfolio/domain/entities/portfolio_backup.dart';
+import 'package:capira/features/portfolio/domain/usecases/backup_use_cases.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/core/database/app_database.dart';
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/portfolio/data/backup/backup_codec.dart';
-import 'package:vestra/features/portfolio/data/datasources/portfolio_local_data_source.dart';
-import 'package:vestra/features/portfolio/data/repositories/backup_repository_impl.dart';
-import 'package:vestra/features/portfolio/data/repositories/portfolio_repository_impl.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_transaction.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_type.dart';
-import 'package:vestra/features/portfolio/domain/entities/portfolio_backup.dart';
-import 'package:vestra/features/portfolio/domain/usecases/backup_use_cases.dart';
 
 import '../../../helpers/fixtures.dart';
 import '../../../helpers/test_database.dart';
@@ -67,7 +67,7 @@ void main() {
         ]),
       );
       final json = jsonDecode(text) as Map<String, dynamic>;
-      expect(json['app'], 'vestra');
+      expect(json['app'], 'capira');
       expect(json['format'], 1);
       final tx =
           ((json['assets'] as List).single as Map)['transactions'] as List;
@@ -90,18 +90,30 @@ void main() {
         BackupProblem.notABackup,
       );
       expect(
-        problemOf('{"app": "vestra", "format": 2, "assets": []}'),
+        problemOf('{"app": "capira", "format": 2, "assets": []}'),
         BackupProblem.newerFormat,
       );
       expect(
         problemOf(
-          '{"app": "vestra", "format": 1, "exportedAt": "2026-11-19", '
+          '{"app": "capira", "format": 1, "exportedAt": "2026-11-19", '
           '"assets": [{"type": "spaceship", "code": "X", "name": "X", '
           '"transactions": []}]}',
         ),
         BackupProblem.invalidData,
       );
     });
+  });
+
+  test('backups of the old Vestra app still load', () {
+    final backup = BackupCodec.decode(
+      '{"app": "vestra", "format": 1, "exportedAt": "2026-11-19T18:00:00Z", '
+      '"assets": [{"type": "currency", "code": "USD", "name": "USD", '
+      '"transactions": [{"kind": "buy", "quantity": "300", '
+      '"unitPriceTry": "41", "date": "2026-10-01T00:00:00Z", '
+      '"note": null}]}]}',
+    );
+    expect(backup.assets.single.asset.code, 'USD');
+    expect(backup.transactionCount, 1);
   });
 
   group('validation', () {

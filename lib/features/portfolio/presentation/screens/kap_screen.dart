@@ -1,16 +1,16 @@
 import 'dart:async';
 
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/widgets/app_card.dart';
+import 'package:capira/core/widgets/empty_state.dart';
+import 'package:capira/features/market/domain/entities/kap_disclosure.dart';
+import 'package:capira/features/market/presentation/widgets/kap_disclosure_tile.dart';
+import 'package:capira/features/portfolio/portfolio_providers.dart';
+import 'package:capira/features/portfolio/presentation/kap_refresh_controller.dart';
+import 'package:capira/features/portfolio/presentation/widgets/kap_sections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/widgets/app_card.dart';
-import 'package:vestra/core/widgets/empty_state.dart';
-import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
-import 'package:vestra/features/market/presentation/widgets/kap_disclosure_tile.dart';
-import 'package:vestra/features/portfolio/portfolio_providers.dart';
-import 'package:vestra/features/portfolio/presentation/kap_refresh_controller.dart';
-import 'package:vestra/features/portfolio/presentation/widgets/kap_sections.dart';
 
 /// All stored KAP disclosures of held stocks (last 30 days), newest first,
 /// with a filter per stock. Reads storage only. Opening it clears the

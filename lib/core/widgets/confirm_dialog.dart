@@ -1,5 +1,5 @@
+import 'package:capira/core/l10n/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/l10n/l10n.dart';
 
 /// "Are you sure?" dialog for destructive actions. Returns `true` only if
 /// the user confirmed.

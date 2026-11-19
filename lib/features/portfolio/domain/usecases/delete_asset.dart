@@ -1,5 +1,5 @@
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/portfolio/domain/repositories/portfolio_repository.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/portfolio/domain/repositories/portfolio_repository.dart';
 
 /// Removes an asset together with all of its transactions.
 class DeleteAsset {

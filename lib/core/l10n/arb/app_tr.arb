@@ -1,6 +1,6 @@
 {
   "@@locale": "tr",
-  "appTitle": "Vestra",
+  "appTitle": "Capira",
   "navPortfolio": "Portföy",
   "navMarket": "Piyasa",
   "navSettings": "Ayarlar",
@@ -13,7 +13,7 @@
   "themeLight": "Aydınlık",
   "themeDark": "Karanlık",
   "settingsDisclaimerTitle": "Yasal uyarı",
-  "settingsDisclaimer": "Vestra yatırım tavsiyesi vermez. Gösterilen fiyatlar gecikmeli olabilir ve yalnızca bilgi amaçlıdır.",
+  "settingsDisclaimer": "Capira yatırım tavsiyesi vermez. Gösterilen fiyatlar gecikmeli olabilir ve yalnızca bilgi amaçlıdır.",
   "portfolioTotalValue": "Toplam değer",
   "portfolioHoldings": "Varlıklar",
   "settingsSectionAppearance": "Görünüm",
@@ -91,7 +91,7 @@
       }
     }
   },
-  "settingsDataNote": "API anahtarını burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Vestra resmi bir Bürküt uygulaması değildir.",
+  "settingsDataNote": "API anahtarını burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Capira resmi bir Bürküt uygulaması değildir.",
   "apiKeySheetTitle": "Bürküt API anahtarı",
   "apiKeySheetHelp": "Anahtarı burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Yalnızca bu cihazda şifreli saklanır.",
   "apiKeyFieldLabel": "API anahtarı",
@@ -308,7 +308,7 @@
   "backupNote": "Yedekte fiyatlar ve API anahtarı bulunmaz.",
   "backupEmpty": "Portföy boş; yedeklenecek bir şey yok.",
   "backupExportFailed": "Yedek oluşturulamadı.",
-  "backupShareSubject": "Vestra portföy yedeği",
+  "backupShareSubject": "Capira portföy yedeği",
   "backupRestoreConfirmTitle": "Yedek geri yüklensin mi?",
   "backupRestoreConfirmMessage": "{date} tarihli yedekte {assets} varlık ve {transactions} işlem var. Mevcut portföyün silinip yerine bunlar yüklenecek.",
   "@backupRestoreConfirmMessage": {
@@ -327,8 +327,8 @@
   "backupRestoreAction": "Geri yükle",
   "backupRestored": "Yedek geri yüklendi",
   "backupRestoreFailed": "Yedek geri yüklenemedi; portföyün değişmedi.",
-  "backupErrorNotABackup": "Bu dosya bir Vestra yedeği değil.",
-  "backupErrorNewer": "Bu yedek daha yeni bir Vestra sürümüyle oluşturulmuş. Önce uygulamayı güncelle.",
+  "backupErrorNotABackup": "Bu dosya bir Capira yedeği değil.",
+  "backupErrorNewer": "Bu yedek daha yeni bir Capira sürümüyle oluşturulmuş. Önce uygulamayı güncelle.",
   "backupErrorInvalid": "Yedek dosyası bozuk ya da tutarsız; portföyün değişmedi.",
   "errorLoadTitle": "Veriler okunamadı",
   "errorLoadMessage": "Telefondaki kayıtlara erişilemedi. Uygulamayı kapatıp yeniden aç."

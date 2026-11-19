@@ -1,8 +1,8 @@
+import 'package:capira/features/portfolio/domain/entities/asset.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_transaction.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_type.dart';
+import 'package:capira/features/portfolio/domain/entities/holding.dart';
 import 'package:decimal/decimal.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_transaction.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_type.dart';
-import 'package:vestra/features/portfolio/domain/entities/holding.dart';
 
 /// Pure weighted-average-cost calculation over a transaction list.
 ///

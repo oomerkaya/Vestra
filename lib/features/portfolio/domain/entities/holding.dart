@@ -1,6 +1,6 @@
+import 'package:capira/features/portfolio/domain/entities/asset.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_transaction.dart';
 import 'package:decimal/decimal.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_transaction.dart';
 
 /// Current position in one asset, computed from its transactions with the
 /// weighted average cost method. Cost fields are `null` when at least one

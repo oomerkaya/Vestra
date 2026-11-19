@@ -2,14 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:capira/core/database/app_database.dart';
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/features/market/data/datasources/burkut_remote_data_source.dart';
+import 'package:capira/features/market/data/datasources/quota_local_data_source.dart';
+import 'package:capira/features/market/data/providers/burkut_price_provider.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/core/database/app_database.dart';
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/features/market/data/datasources/burkut_remote_data_source.dart';
-import 'package:vestra/features/market/data/datasources/quota_local_data_source.dart';
-import 'package:vestra/features/market/data/providers/burkut_price_provider.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
 
 import '../../../helpers/fixtures.dart';
 import '../../../helpers/test_database.dart';

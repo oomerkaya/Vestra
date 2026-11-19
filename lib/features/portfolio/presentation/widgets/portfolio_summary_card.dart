@@ -1,12 +1,12 @@
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/utils/formatters.dart';
+import 'package:capira/core/widgets/app_card.dart';
+import 'package:capira/core/widgets/change_chip.dart';
+import 'package:capira/core/widgets/money_text.dart';
+import 'package:capira/features/portfolio/domain/entities/portfolio_summary.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/utils/formatters.dart';
-import 'package:vestra/core/widgets/app_card.dart';
-import 'package:vestra/core/widgets/change_chip.dart';
-import 'package:vestra/core/widgets/money_text.dart';
-import 'package:vestra/features/portfolio/domain/entities/portfolio_summary.dart';
 
 /// Total value, unrealized P/L and today's change.
 class PortfolioSummaryCard extends StatelessWidget {

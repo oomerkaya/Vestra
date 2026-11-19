@@ -1,7 +1,7 @@
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_transaction.dart';
-import 'package:vestra/features/portfolio/domain/repositories/portfolio_repository.dart';
-import 'package:vestra/features/portfolio/domain/usecases/transaction_validator.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_transaction.dart';
+import 'package:capira/features/portfolio/domain/repositories/portfolio_repository.dart';
+import 'package:capira/features/portfolio/domain/usecases/transaction_validator.dart';
 
 /// Deletes a transaction unless doing so would leave a later sell uncovered
 /// (e.g. deleting the only buy before a sell).

@@ -1,18 +1,18 @@
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/core/router/app_routes.dart';
+import 'package:capira/core/router/app_shell.dart';
+import 'package:capira/features/market/presentation/market_screen.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_type.dart';
+import 'package:capira/features/portfolio/portfolio_providers.dart';
+import 'package:capira/features/portfolio/presentation/portfolio_screen.dart';
+import 'package:capira/features/portfolio/presentation/screens/asset_detail_screen.dart';
+import 'package:capira/features/portfolio/presentation/screens/edit_transaction_route.dart';
+import 'package:capira/features/portfolio/presentation/screens/kap_screen.dart';
+import 'package:capira/features/portfolio/presentation/screens/transaction_form_screen.dart';
+import 'package:capira/features/settings/presentation/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/core/router/app_routes.dart';
-import 'package:vestra/core/router/app_shell.dart';
-import 'package:vestra/features/market/presentation/market_screen.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_type.dart';
-import 'package:vestra/features/portfolio/portfolio_providers.dart';
-import 'package:vestra/features/portfolio/presentation/portfolio_screen.dart';
-import 'package:vestra/features/portfolio/presentation/screens/asset_detail_screen.dart';
-import 'package:vestra/features/portfolio/presentation/screens/edit_transaction_route.dart';
-import 'package:vestra/features/portfolio/presentation/screens/kap_screen.dart';
-import 'package:vestra/features/portfolio/presentation/screens/transaction_form_screen.dart';
-import 'package:vestra/features/settings/presentation/settings_screen.dart';
 
 /// Root navigator: detail and form screens are pushed above the bottom
 /// navigation bar.

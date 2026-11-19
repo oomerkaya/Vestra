@@ -1,7 +1,7 @@
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/market/domain/entities/quota_usage.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/market/domain/entities/quota_usage.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
 
 /// Outcome of one refresh. Partial success is normal (e.g. FX ok via
 /// fallback, metals failed because no API key is set).

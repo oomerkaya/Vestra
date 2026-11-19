@@ -1,5 +1,5 @@
+import 'package:capira/features/market/data/dto/json_parsing.dart';
 import 'package:decimal/decimal.dart';
-import 'package:vestra/features/market/data/dto/json_parsing.dart';
 
 /// One item from `/forex`, `/gold` or `/stocks`.
 ///

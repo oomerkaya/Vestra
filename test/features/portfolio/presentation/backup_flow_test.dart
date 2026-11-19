@@ -1,16 +1,16 @@
+import 'package:capira/app.dart';
+import 'package:capira/core/database/app_database.dart';
+import 'package:capira/core/di/database_provider.dart';
+import 'package:capira/features/market/market_providers.dart';
+import 'package:capira/features/portfolio/data/datasources/portfolio_local_data_source.dart';
+import 'package:capira/features/portfolio/data/repositories/portfolio_repository_impl.dart';
+import 'package:capira/features/portfolio/domain/entities/asset.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_type.dart';
+import 'package:capira/features/portfolio/presentation/backup_files.dart';
+import 'package:capira/features/settings/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/app.dart';
-import 'package:vestra/core/database/app_database.dart';
-import 'package:vestra/core/di/database_provider.dart';
-import 'package:vestra/features/market/market_providers.dart';
-import 'package:vestra/features/portfolio/data/datasources/portfolio_local_data_source.dart';
-import 'package:vestra/features/portfolio/data/repositories/portfolio_repository_impl.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_type.dart';
-import 'package:vestra/features/portfolio/presentation/backup_files.dart';
-import 'package:vestra/features/settings/settings_providers.dart';
 
 import '../../../helpers/fakes.dart';
 import '../../../helpers/fixtures.dart';
@@ -59,7 +59,7 @@ void main() {
           ),
           backupFilesProvider.overrideWithValue(files),
         ],
-        child: const VestraApp(),
+        child: const CapiraApp(),
       ),
     );
     await tester.pumpAndSettle();
@@ -90,7 +90,7 @@ void main() {
     await tapText(tester, 'Portföyü dışa aktar');
     expect(
       files.sharedName,
-      matches(RegExp(r'^vestra-yedek-\d{4}-\d\d-\d\d\.json$')),
+      matches(RegExp(r'^capira-yedek-\d{4}-\d\d-\d\d\.json$')),
     );
     expect(files.content, contains('"USD"'));
 
@@ -125,7 +125,7 @@ void main() {
     await tapText(tester, 'Ayarlar');
     await tapText(tester, 'Yedekten geri yükle');
 
-    expect(find.text('Bu dosya bir Vestra yedeği değil.'), findsOneWidget);
+    expect(find.text('Bu dosya bir Capira yedeği değil.'), findsOneWidget);
     expect(find.text('Yedek geri yüklensin mi?'), findsNothing);
 
     await tester.pumpWidget(const SizedBox());

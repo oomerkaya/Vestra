@@ -1,6 +1,6 @@
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/core/l10n/l10n.dart';
 import 'package:decimal/decimal.dart';
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/core/l10n/l10n.dart';
 
 /// Decimals to show for a unit price. Small prices (funds, JPY) need more
 /// digits, but only as many as the value has: 0.1127 -> 4, 0.000123 -> 6;

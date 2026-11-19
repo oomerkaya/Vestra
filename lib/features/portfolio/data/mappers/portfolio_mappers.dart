@@ -1,8 +1,8 @@
+import 'package:capira/core/database/app_database.dart';
+import 'package:capira/features/portfolio/domain/entities/asset.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_transaction.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_type.dart';
 import 'package:drift/drift.dart';
-import 'package:vestra/core/database/app_database.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_transaction.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_type.dart';
 
 /// DB stores enum names as TEXT. Renaming an enum value requires a
 /// migration that rewrites existing rows.

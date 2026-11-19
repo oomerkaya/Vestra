@@ -1,6 +1,6 @@
-import 'package:vestra/core/domain/instrument.dart';
+import 'package:capira/core/domain/instrument.dart';
 
-/// Maps Bürküt `/gold` symbols to Vestra instruments.
+/// Maps Bürküt `/gold` symbols to Capira instruments.
 ///
 /// Canonical codes from Bürküt's REST spec: `ALTIN` (gram), `CEYREK_YENI`,
 /// `YARIM`, `TAM`, `CUMHURIYET`, `ATA`, `GUMTRY` (gram silver, TRY).

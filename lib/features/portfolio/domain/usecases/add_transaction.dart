@@ -1,8 +1,8 @@
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_transaction.dart';
-import 'package:vestra/features/portfolio/domain/repositories/portfolio_repository.dart';
-import 'package:vestra/features/portfolio/domain/usecases/transaction_validator.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/portfolio/domain/entities/asset.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_transaction.dart';
+import 'package:capira/features/portfolio/domain/repositories/portfolio_repository.dart';
+import 'package:capira/features/portfolio/domain/usecases/transaction_validator.dart';
 
 /// Records a buy or sell. Creates the asset on its first transaction.
 /// "Add asset" in the UI is a buy through this use case.

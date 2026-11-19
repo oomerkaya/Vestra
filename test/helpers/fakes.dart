@@ -1,5 +1,5 @@
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/settings/domain/repositories/api_key_repository.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/settings/domain/repositories/api_key_repository.dart';
 
 /// In-memory replacement for secure storage (no platform channel in tests).
 class FakeApiKeyRepository implements ApiKeyRepository {

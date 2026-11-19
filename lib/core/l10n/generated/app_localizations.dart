@@ -97,7 +97,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Vestra'**
+  /// **'Capira'**
   String get appTitle;
 
   /// No description provided for @navPortfolio.
@@ -175,7 +175,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsDisclaimer.
   ///
   /// In tr, this message translates to:
-  /// **'Vestra yatırım tavsiyesi vermez. Gösterilen fiyatlar gecikmeli olabilir ve yalnızca bilgi amaçlıdır.'**
+  /// **'Capira yatırım tavsiyesi vermez. Gösterilen fiyatlar gecikmeli olabilir ve yalnızca bilgi amaçlıdır.'**
   String get settingsDisclaimer;
 
   /// No description provided for @portfolioTotalValue.
@@ -457,7 +457,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsDataNote.
   ///
   /// In tr, this message translates to:
-  /// **'API anahtarını burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Vestra resmi bir Bürküt uygulaması değildir.'**
+  /// **'API anahtarını burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Capira resmi bir Bürküt uygulaması değildir.'**
   String get settingsDataNote;
 
   /// No description provided for @apiKeySheetTitle.
@@ -1303,7 +1303,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupShareSubject.
   ///
   /// In tr, this message translates to:
-  /// **'Vestra portföy yedeği'**
+  /// **'Capira portföy yedeği'**
   String get backupShareSubject;
 
   /// No description provided for @backupRestoreConfirmTitle.
@@ -1343,13 +1343,13 @@ abstract class AppLocalizations {
   /// No description provided for @backupErrorNotABackup.
   ///
   /// In tr, this message translates to:
-  /// **'Bu dosya bir Vestra yedeği değil.'**
+  /// **'Bu dosya bir Capira yedeği değil.'**
   String get backupErrorNotABackup;
 
   /// No description provided for @backupErrorNewer.
   ///
   /// In tr, this message translates to:
-  /// **'Bu yedek daha yeni bir Vestra sürümüyle oluşturulmuş. Önce uygulamayı güncelle.'**
+  /// **'Bu yedek daha yeni bir Capira sürümüyle oluşturulmuş. Önce uygulamayı güncelle.'**
   String get backupErrorNewer;
 
   /// No description provided for @backupErrorInvalid.

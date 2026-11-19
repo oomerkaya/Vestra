@@ -1,7 +1,7 @@
+import 'package:capira/features/portfolio/domain/entities/asset_transaction.dart';
+import 'package:capira/features/portfolio/domain/entities/transaction_validation_failure.dart';
+import 'package:capira/features/portfolio/domain/services/holding_calculator.dart';
 import 'package:decimal/decimal.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_transaction.dart';
-import 'package:vestra/features/portfolio/domain/entities/transaction_validation_failure.dart';
-import 'package:vestra/features/portfolio/domain/services/holding_calculator.dart';
 
 /// Shared checks for add / update / delete.
 abstract final class TransactionValidator {

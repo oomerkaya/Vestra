@@ -1,33 +1,33 @@
 import 'dart:async';
 
+import 'package:capira/core/error/result.dart';
+import 'package:capira/core/l10n/failure_messages.dart';
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/router/app_routes.dart';
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/theme/app_typography.dart';
+import 'package:capira/core/utils/formatters.dart';
+import 'package:capira/core/widgets/app_card.dart';
+import 'package:capira/core/widgets/change_chip.dart';
+import 'package:capira/core/widgets/confirm_dialog.dart';
+import 'package:capira/core/widgets/empty_state.dart';
+import 'package:capira/core/widgets/error_state.dart';
+import 'package:capira/core/widgets/instrument_avatar.dart';
+import 'package:capira/core/widgets/messages.dart';
+import 'package:capira/core/widgets/section_header.dart';
+import 'package:capira/features/market/presentation/instrument_labels.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_transaction.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_type.dart';
+import 'package:capira/features/portfolio/domain/entities/holding.dart';
+import 'package:capira/features/portfolio/domain/entities/portfolio_summary.dart';
+import 'package:capira/features/portfolio/portfolio_providers.dart';
+import 'package:capira/features/portfolio/presentation/portfolio_labels.dart';
+import 'package:capira/features/portfolio/presentation/widgets/kap_sections.dart';
+import 'package:capira/features/portfolio/presentation/widgets/portfolio_summary_card.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/core/l10n/failure_messages.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/router/app_routes.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/theme/app_typography.dart';
-import 'package:vestra/core/utils/formatters.dart';
-import 'package:vestra/core/widgets/app_card.dart';
-import 'package:vestra/core/widgets/change_chip.dart';
-import 'package:vestra/core/widgets/confirm_dialog.dart';
-import 'package:vestra/core/widgets/empty_state.dart';
-import 'package:vestra/core/widgets/error_state.dart';
-import 'package:vestra/core/widgets/instrument_avatar.dart';
-import 'package:vestra/core/widgets/messages.dart';
-import 'package:vestra/core/widgets/section_header.dart';
-import 'package:vestra/features/market/presentation/instrument_labels.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_transaction.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_type.dart';
-import 'package:vestra/features/portfolio/domain/entities/holding.dart';
-import 'package:vestra/features/portfolio/domain/entities/portfolio_summary.dart';
-import 'package:vestra/features/portfolio/portfolio_providers.dart';
-import 'package:vestra/features/portfolio/presentation/portfolio_labels.dart';
-import 'package:vestra/features/portfolio/presentation/widgets/kap_sections.dart';
-import 'package:vestra/features/portfolio/presentation/widgets/portfolio_summary_card.dart';
 
 /// One asset: position summary, buy/sell shortcuts and its transactions.
 class AssetDetailScreen extends ConsumerWidget {

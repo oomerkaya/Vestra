@@ -1,17 +1,17 @@
 import 'dart:async';
 
+import 'package:capira/core/error/result.dart';
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/utils/formatters.dart';
+import 'package:capira/core/widgets/app_card.dart';
+import 'package:capira/core/widgets/confirm_dialog.dart';
+import 'package:capira/core/widgets/messages.dart';
+import 'package:capira/features/portfolio/domain/entities/portfolio_backup.dart';
+import 'package:capira/features/portfolio/portfolio_providers.dart';
+import 'package:capira/features/portfolio/presentation/backup_files.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/utils/formatters.dart';
-import 'package:vestra/core/widgets/app_card.dart';
-import 'package:vestra/core/widgets/confirm_dialog.dart';
-import 'package:vestra/core/widgets/messages.dart';
-import 'package:vestra/features/portfolio/domain/entities/portfolio_backup.dart';
-import 'package:vestra/features/portfolio/portfolio_providers.dart';
-import 'package:vestra/features/portfolio/presentation/backup_files.dart';
 
 /// Settings: export the portfolio to a file and restore it from one.
 class BackupSection extends ConsumerWidget {
@@ -72,7 +72,7 @@ class BackupSection extends ConsumerWidget {
           await ref
               .read(backupFilesProvider)
               .share(
-                fileName: 'vestra-yedek-$stamp.json',
+                fileName: 'capira-yedek-$stamp.json',
                 content: content,
                 subject: l10n.backupShareSubject,
               );

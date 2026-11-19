@@ -1,5 +1,5 @@
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/market/domain/entities/kap_disclosure.dart';
 
 /// Locally stored KAP disclosures (all companies, last 30 days).
 abstract interface class DisclosureRepository {

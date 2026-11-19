@@ -1,4 +1,4 @@
-import 'package:vestra/features/market/data/dto/json_parsing.dart';
+import 'package:capira/features/market/data/dto/json_parsing.dart';
 
 /// One item from `/kap`. Verified against the live API on 2026-11-19
 /// (`test/fixtures/burkut/kap_feed.json`):

@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/settings/domain/entities/theme_preference.dart';
+import 'package:capira/features/settings/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/settings/domain/entities/theme_preference.dart';
-import 'package:vestra/features/settings/settings_providers.dart';
 
 /// Current theme mode, persisted through [settingsRepositoryProvider].
 ///

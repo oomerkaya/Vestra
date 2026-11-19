@@ -1,5 +1,5 @@
+import 'package:capira/core/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
 
 /// Centered illustration-style icon + title + message, for empty screens.
 class EmptyState extends StatelessWidget {

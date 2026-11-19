@@ -1,8 +1,8 @@
+import 'package:capira/features/market/data/dto/burkut_dtos.dart';
+import 'package:capira/features/market/data/dto/json_parsing.dart';
+import 'package:capira/features/market/data/dto/kap_disclosure_dto.dart';
+import 'package:capira/features/market/domain/entities/quota_usage.dart';
 import 'package:dio/dio.dart';
-import 'package:vestra/features/market/data/dto/burkut_dtos.dart';
-import 'package:vestra/features/market/data/dto/json_parsing.dart';
-import 'package:vestra/features/market/data/dto/kap_disclosure_dto.dart';
-import 'package:vestra/features/market/domain/entities/quota_usage.dart';
 
 /// Raw HTTP access to the Bürküt public API. Throws [DioException].
 ///

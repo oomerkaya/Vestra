@@ -1,8 +1,8 @@
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/portfolio/domain/entities/holding.dart';
+import 'package:capira/features/portfolio/domain/entities/portfolio_summary.dart';
 import 'package:decimal/decimal.dart';
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/portfolio/domain/entities/holding.dart';
-import 'package:vestra/features/portfolio/domain/entities/portfolio_summary.dart';
 
 /// Pure valuation of holdings against cached quotes.
 ///

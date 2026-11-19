@@ -9,7 +9,7 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
-  String get appTitle => 'Vestra';
+  String get appTitle => 'Capira';
 
   @override
   String get navPortfolio => 'Portföy';
@@ -51,7 +51,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsDisclaimer =>
-      'Vestra yatırım tavsiyesi vermez. Gösterilen fiyatlar gecikmeli olabilir ve yalnızca bilgi amaçlıdır.';
+      'Capira yatırım tavsiyesi vermez. Gösterilen fiyatlar gecikmeli olabilir ve yalnızca bilgi amaçlıdır.';
 
   @override
   String get portfolioTotalValue => 'Toplam değer';
@@ -205,7 +205,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsDataNote =>
-      'API anahtarını burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Vestra resmi bir Bürküt uygulaması değildir.';
+      'API anahtarını burkutportfoy.com/developer adresinden ücretsiz alabilirsin. Capira resmi bir Bürküt uygulaması değildir.';
 
   @override
   String get apiKeySheetTitle => 'Bürküt API anahtarı';
@@ -661,7 +661,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get backupExportFailed => 'Yedek oluşturulamadı.';
 
   @override
-  String get backupShareSubject => 'Vestra portföy yedeği';
+  String get backupShareSubject => 'Capira portföy yedeği';
 
   @override
   String get backupRestoreConfirmTitle => 'Yedek geri yüklensin mi?';
@@ -686,11 +686,11 @@ class AppLocalizationsTr extends AppLocalizations {
       'Yedek geri yüklenemedi; portföyün değişmedi.';
 
   @override
-  String get backupErrorNotABackup => 'Bu dosya bir Vestra yedeği değil.';
+  String get backupErrorNotABackup => 'Bu dosya bir Capira yedeği değil.';
 
   @override
   String get backupErrorNewer =>
-      'Bu yedek daha yeni bir Vestra sürümüyle oluşturulmuş. Önce uygulamayı güncelle.';
+      'Bu yedek daha yeni bir Capira sürümüyle oluşturulmuş. Önce uygulamayı güncelle.';
 
   @override
   String get backupErrorInvalid =>

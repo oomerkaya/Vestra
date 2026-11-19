@@ -1,4 +1,4 @@
-import 'package:vestra/features/portfolio/domain/entities/asset_type.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_type.dart';
 
 /// Something the user holds: a currency, a gold/silver unit or a stock.
 /// Identity is `(type, code)`; only one row exists per pair.

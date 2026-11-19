@@ -1,7 +1,7 @@
+import 'package:capira/core/database/app_database.dart';
+import 'package:capira/features/market/data/dto/kap_disclosure_dto.dart';
+import 'package:capira/features/market/domain/entities/kap_disclosure.dart';
 import 'package:drift/drift.dart';
-import 'package:vestra/core/database/app_database.dart';
-import 'package:vestra/features/market/data/dto/kap_disclosure_dto.dart';
-import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
 
 extension KapDisclosureDtoMapper on KapDisclosureDto {
   /// One entity per company: a disclosure naming "GARAN, TGB" is shown

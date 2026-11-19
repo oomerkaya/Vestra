@@ -4,7 +4,7 @@
 
 ## Özet
 
-Vestra'nın görsel dili **sade fintech**: nötr arka plan, kenarlıksız yuvarlak kartlar, tek vurgu rengi (indigo), bol boşluk. Yeşil ve kırmızı **yalnızca kâr/zarar** için kullanılır. Yazı tipi **Inter**; tutarlarda eşit genişlikte rakamlar (tabular figures) kullanılır, böylece listelerde rakamlar alt alta hizalanır.
+Capira'nın görsel dili **sade fintech**: nötr arka plan, kenarlıksız yuvarlak kartlar, tek vurgu rengi (indigo), bol boşluk. Yeşil ve kırmızı **yalnızca kâr/zarar** için kullanılır. Yazı tipi **Inter**; tutarlarda eşit genişlikte rakamlar (tabular figures) kullanılır, böylece listelerde rakamlar alt alta hizalanır.
 
 Neden şimdi yapıldı: Faz 4'te yazılacak bütün ekranlar bu temelin üzerine kurulacak. Sonradan eklenseydi her ekranın tekrar elden geçmesi gerekirdi.
 
@@ -20,7 +20,7 @@ Neden şimdi yapıldı: Faz 4'te yazılacak bütün ekranlar bu temelin üzerine
 | Sade fintech tarzı | Koyu premium, renkli/canlı | Kullanıcı tercihi. Finans verisinde okunabilirlik ön planda |
 | Inter yazı tipi, uygulamaya gömülü | Manrope, sistem fontu (Roboto); `google_fonts` paketi | Fintech standardı, tam Türkçe karakter desteği, tabular rakamlar. Gömülü olduğu için çevrimdışı çalışır, ağ isteği yapmaz |
 | 4 ağırlık (400/500/600/700), statik TTF | Variable font | Flutter'da statik ağırlıklar daha güvenilir. Toplam ~1,6 MB (APK'da sıkıştırılır) |
-| Renkler `ThemeExtension` (`VestraColors`) ile | Sabit renkleri doğrudan kullanmak | Açık/koyu tema geçişi otomatik olur, widget'lar tema bilmeden doğru rengi alır |
+| Renkler `ThemeExtension` (`CapiraColors`) ile | Sabit renkleri doğrudan kullanmak | Açık/koyu tema geçişi otomatik olur, widget'lar tema bilmeden doğru rengi alır |
 | Sayı biçimlendirme `Decimal` üzerinde, elle | `intl` `NumberFormat` | `NumberFormat` `double` ister. Kendi biçimlendiricimizle gösterilen değer, saklanan değerin birebir yuvarlanmış hali olur |
 | Tema seçici için özel `ChoiceTiles` | Material `SegmentedButton` | `SegmentedButton` dar ekranda "Aydınlık" kelimesini ikiye bölüyordu; karanlık temada seçili seçenek de seçilmemiş gibi görünüyordu (önizlemede tespit edildi) |
 
@@ -46,7 +46,7 @@ Inter v4.1, resmi sürüm: `github.com/rsms/inter/releases` → `extras/ttf/`. L
 
 Varlık türü işaret renkleri (avatar ve küçük işaretler için, Faz 4): döviz `#3B82F6`, altın `#D4A017`, gümüş `#94A3B8`, hisse `#8B5CF6`.
 
-Kullanım: `Theme.of(context).colorScheme.primary`, `context.vestraColors.gain`. `AppPalette` doğrudan kullanılmaz.
+Kullanım: `Theme.of(context).colorScheme.primary`, `context.capiraColors.gain`. `AppPalette` doğrudan kullanılmaz.
 
 ### Boşluk, köşe, süre ([`app_tokens.dart`](../lib/core/theme/app_tokens.dart))
 

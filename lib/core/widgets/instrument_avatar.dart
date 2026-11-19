@@ -1,7 +1,7 @@
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/core/theme/app_colors.dart';
+import 'package:capira/core/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/core/theme/app_colors.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
 
 /// Rounded square with a type-colored tint and a short label (e.g. `USD`).
 class InstrumentAvatar extends StatelessWidget {

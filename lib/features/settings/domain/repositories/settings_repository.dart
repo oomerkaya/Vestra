@@ -1,5 +1,5 @@
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/settings/domain/entities/theme_preference.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/settings/domain/entities/theme_preference.dart';
 
 /// Non-secret app preferences. API keys live in secure storage (Phase 3).
 abstract interface class SettingsRepository {

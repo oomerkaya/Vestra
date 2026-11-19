@@ -1,6 +1,6 @@
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_transaction.dart';
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/features/portfolio/domain/entities/asset.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_transaction.dart';
 
 /// One asset with its transactions, as stored in a backup.
 class BackupAsset {
@@ -23,7 +23,7 @@ class PortfolioBackup {
 }
 
 enum BackupProblem {
-  /// Not JSON or not a Vestra backup at all.
+  /// Not JSON or not a Capira (or Vestra) backup at all.
   notABackup,
 
   /// Written by a newer app version.

@@ -1,16 +1,16 @@
 import 'dart:convert';
 
+import 'package:capira/features/portfolio/domain/entities/asset.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_transaction.dart';
+import 'package:capira/features/portfolio/domain/entities/asset_type.dart';
+import 'package:capira/features/portfolio/domain/entities/portfolio_backup.dart';
 import 'package:decimal/decimal.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_transaction.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset_type.dart';
-import 'package:vestra/features/portfolio/domain/entities/portfolio_backup.dart';
 
-/// Vestra backup file, format 1 (JSON, UTF-8):
+/// Capira backup file, format 1 (JSON, UTF-8):
 ///
 /// ```json
 /// {
-///   "app": "vestra",
+///   "app": "capira",
 ///   "format": 1,
 ///   "exportedAt": "2026-11-19T18:00:00.000Z",
 ///   "assets": [
@@ -28,7 +28,10 @@ import 'package:vestra/features/portfolio/domain/entities/portfolio_backup.dart'
 /// Amounts are strings so no precision is lost (`Decimal`). Enum values are
 /// the Dart enum names, as in the database.
 abstract final class BackupCodec {
-  static const String appId = 'vestra';
+  static const String appId = 'capira';
+
+  /// The app was called Vestra until 2026-11-19; its backups still load.
+  static const Set<String> _readableAppIds = {appId, 'vestra'};
   static const int format = 1;
 
   static String encode(PortfolioBackup backup) =>
@@ -64,7 +67,8 @@ abstract final class BackupCodec {
     } on FormatException {
       throw const BackupFailure(BackupProblem.notABackup);
     }
-    if (json is! Map<String, dynamic> || json['app'] != appId) {
+    if (json is! Map<String, dynamic> ||
+        !_readableAppIds.contains(json['app'])) {
       throw const BackupFailure(BackupProblem.notABackup);
     }
     final version = json['format'];

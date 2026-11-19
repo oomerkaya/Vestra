@@ -1,20 +1,20 @@
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/core/network/dio_failure_mapper.dart';
+import 'package:capira/core/utils/app_logger.dart';
+import 'package:capira/features/market/data/datasources/burkut_remote_data_source.dart';
+import 'package:capira/features/market/data/datasources/quota_local_data_source.dart';
+import 'package:capira/features/market/data/dto/burkut_dtos.dart';
+import 'package:capira/features/market/data/mappers/burkut_symbols.dart';
+import 'package:capira/features/market/data/mappers/kap_disclosure_mapper.dart';
+import 'package:capira/features/market/domain/entities/kap_disclosure.dart';
+import 'package:capira/features/market/domain/entities/quota_usage.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/market/domain/entities/stock_listing.dart';
+import 'package:capira/features/market/domain/providers/price_providers.dart';
+import 'package:capira/features/settings/domain/repositories/api_key_repository.dart';
 import 'package:dio/dio.dart';
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/core/network/dio_failure_mapper.dart';
-import 'package:vestra/core/utils/app_logger.dart';
-import 'package:vestra/features/market/data/datasources/burkut_remote_data_source.dart';
-import 'package:vestra/features/market/data/datasources/quota_local_data_source.dart';
-import 'package:vestra/features/market/data/dto/burkut_dtos.dart';
-import 'package:vestra/features/market/data/mappers/burkut_symbols.dart';
-import 'package:vestra/features/market/data/mappers/kap_disclosure_mapper.dart';
-import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
-import 'package:vestra/features/market/domain/entities/quota_usage.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/market/domain/entities/stock_listing.dart';
-import 'package:vestra/features/market/domain/providers/price_providers.dart';
-import 'package:vestra/features/settings/domain/repositories/api_key_repository.dart';
 
 /// Bürküt implementation of all price interfaces and KAP disclosures.
 ///

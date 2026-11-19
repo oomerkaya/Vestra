@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Raw palette. Widgets should read colors from `Theme.of(context)` or
-/// `context.vestraColors`, never from here directly.
+/// `context.capiraColors`, never from here directly.
 abstract final class AppPalette {
   // Brand accent (indigo).
   static const Color accent = Color(0xFF4F5BD5);
@@ -51,8 +51,8 @@ abstract final class AppPalette {
 
 /// Colors that Material's [ColorScheme] does not cover.
 @immutable
-class VestraColors extends ThemeExtension<VestraColors> {
-  const VestraColors({
+class CapiraColors extends ThemeExtension<CapiraColors> {
+  const CapiraColors({
     required this.gain,
     required this.loss,
     required this.gainContainer,
@@ -61,7 +61,7 @@ class VestraColors extends ThemeExtension<VestraColors> {
     required this.surfaceMuted,
   });
 
-  static const light = VestraColors(
+  static const light = CapiraColors(
     gain: AppPalette.gainLight,
     loss: AppPalette.lossLight,
     gainContainer: Color(0xFFE7F6EC),
@@ -70,7 +70,7 @@ class VestraColors extends ThemeExtension<VestraColors> {
     surfaceMuted: AppPalette.lightSurfaceMuted,
   );
 
-  static const dark = VestraColors(
+  static const dark = CapiraColors(
     gain: AppPalette.gainDark,
     loss: AppPalette.lossDark,
     gainContainer: Color(0xFF0F2A20),
@@ -87,14 +87,14 @@ class VestraColors extends ThemeExtension<VestraColors> {
   final Color surfaceMuted;
 
   @override
-  VestraColors copyWith({
+  CapiraColors copyWith({
     Color? gain,
     Color? loss,
     Color? gainContainer,
     Color? lossContainer,
     Color? textSecondary,
     Color? surfaceMuted,
-  }) => VestraColors(
+  }) => CapiraColors(
     gain: gain ?? this.gain,
     loss: loss ?? this.loss,
     gainContainer: gainContainer ?? this.gainContainer,
@@ -104,9 +104,9 @@ class VestraColors extends ThemeExtension<VestraColors> {
   );
 
   @override
-  VestraColors lerp(VestraColors? other, double t) {
+  CapiraColors lerp(CapiraColors? other, double t) {
     if (other == null) return this;
-    return VestraColors(
+    return CapiraColors(
       gain: Color.lerp(gain, other.gain, t)!,
       loss: Color.lerp(loss, other.loss, t)!,
       gainContainer: Color.lerp(gainContainer, other.gainContainer, t)!,
@@ -117,6 +117,6 @@ class VestraColors extends ThemeExtension<VestraColors> {
   }
 }
 
-extension VestraColorsX on BuildContext {
-  VestraColors get vestraColors => Theme.of(this).extension<VestraColors>()!;
+extension CapiraColorsX on BuildContext {
+  CapiraColors get capiraColors => Theme.of(this).extension<CapiraColors>()!;
 }

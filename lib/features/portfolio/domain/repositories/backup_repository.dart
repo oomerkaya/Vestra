@@ -1,5 +1,5 @@
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/portfolio/domain/entities/portfolio_backup.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/portfolio/domain/entities/portfolio_backup.dart';
 
 /// Reads and writes portfolio backups. The file format is the data layer's
 /// business; the domain only sees [PortfolioBackup].

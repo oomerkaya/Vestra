@@ -1,6 +1,6 @@
+import 'package:capira/core/theme/app_colors.dart';
+import 'package:capira/core/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/theme/app_colors.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
 
 class ChoiceTile<T> {
   const ChoiceTile({
@@ -62,7 +62,7 @@ class _Tile<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final accent = theme.colorScheme.primary;
-    final muted = context.vestraColors.surfaceMuted;
+    final muted = context.capiraColors.surfaceMuted;
     final fg = isSelected ? accent : theme.colorScheme.onSurfaceVariant;
 
     return Semantics(

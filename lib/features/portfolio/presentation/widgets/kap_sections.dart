@@ -1,10 +1,10 @@
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/widgets/collapsible_section.dart';
+import 'package:capira/features/market/domain/entities/kap_disclosure.dart';
+import 'package:capira/features/market/presentation/widgets/kap_disclosure_tile.dart';
+import 'package:capira/features/portfolio/portfolio_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/widgets/collapsible_section.dart';
-import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
-import 'package:vestra/features/market/presentation/widgets/kap_disclosure_tile.dart';
-import 'package:vestra/features/portfolio/portfolio_providers.dart';
 
 /// Asset detail screen of a held stock: its disclosures of the last 30
 /// days from storage. Never sends a request.

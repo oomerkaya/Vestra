@@ -1,15 +1,15 @@
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/core/l10n/failure_messages.dart';
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/theme/app_colors.dart';
+import 'package:capira/core/utils/formatters.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/market/presentation/instrument_labels.dart';
+import 'package:capira/features/portfolio/domain/entities/asset.dart';
+import 'package:capira/features/portfolio/domain/entities/transaction_validation_failure.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/core/l10n/failure_messages.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/theme/app_colors.dart';
-import 'package:vestra/core/utils/formatters.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/market/presentation/instrument_labels.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset.dart';
-import 'package:vestra/features/portfolio/domain/entities/transaction_validation_failure.dart';
 
 String categoryLabel(AppLocalizations l10n, QuoteCategory category) =>
     switch (category) {

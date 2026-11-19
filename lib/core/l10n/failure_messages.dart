@@ -1,5 +1,5 @@
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/core/l10n/generated/app_localizations.dart';
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/core/l10n/generated/app_localizations.dart';
 
 /// User-facing Turkish text for a [Failure]. Feature-specific failures
 /// (validation reasons) are mapped where they are handled.

@@ -2,11 +2,11 @@
 // to sit behind one so providers can be swapped in the data layer only.
 // ignore_for_file: one_member_abstracts
 
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/market/domain/entities/kap_disclosure.dart';
-import 'package:vestra/features/market/domain/entities/quota_usage.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/market/domain/entities/stock_listing.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/market/domain/entities/kap_disclosure.dart';
+import 'package:capira/features/market/domain/entities/quota_usage.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/market/domain/entities/stock_listing.dart';
 
 /// Every external price source sits behind one of these interfaces, so a
 /// provider can be swapped by changing only the data layer.

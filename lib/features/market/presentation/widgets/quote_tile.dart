@@ -1,15 +1,15 @@
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/theme/app_typography.dart';
+import 'package:capira/core/utils/formatters.dart';
+import 'package:capira/core/widgets/change_chip.dart';
+import 'package:capira/core/widgets/instrument_avatar.dart';
+import 'package:capira/core/widgets/trailing_figures.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/market/presentation/instrument_labels.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/theme/app_typography.dart';
-import 'package:vestra/core/utils/formatters.dart';
-import 'package:vestra/core/widgets/change_chip.dart';
-import 'package:vestra/core/widgets/instrument_avatar.dart';
-import 'package:vestra/core/widgets/trailing_figures.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/market/presentation/instrument_labels.dart';
 
 /// One price row: avatar, name + code, price and daily change.
 class QuoteTile extends StatelessWidget {

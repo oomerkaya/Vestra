@@ -1,6 +1,6 @@
+import 'package:capira/core/error/failure.dart';
+import 'package:capira/core/error/result.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/core/error/failure.dart';
-import 'package:vestra/core/error/result.dart';
 
 void main() {
   group('Result', () {

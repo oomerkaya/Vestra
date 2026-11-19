@@ -1,6 +1,6 @@
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/widgets/empty_state.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/widgets/empty_state.dart';
 
 /// Shown instead of a screen's content when its local data could not be
 /// read (database error). Never shown for network problems: prices then

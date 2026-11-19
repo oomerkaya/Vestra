@@ -1,7 +1,7 @@
+import 'package:capira/core/theme/app_typography.dart';
+import 'package:capira/core/utils/formatters.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/theme/app_typography.dart';
-import 'package:vestra/core/utils/formatters.dart';
 
 /// A TRY amount with tabular digits. The fractional part is rendered
 /// smaller and dimmer when [emphasizeInteger] is set (for big totals).

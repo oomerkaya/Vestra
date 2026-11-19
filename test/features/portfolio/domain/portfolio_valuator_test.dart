@@ -1,9 +1,9 @@
+import 'package:capira/core/domain/instrument.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/portfolio/domain/entities/asset.dart';
+import 'package:capira/features/portfolio/domain/entities/holding.dart';
+import 'package:capira/features/portfolio/domain/services/portfolio_valuator.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vestra/core/domain/instrument.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/portfolio/domain/entities/asset.dart';
-import 'package:vestra/features/portfolio/domain/entities/holding.dart';
-import 'package:vestra/features/portfolio/domain/services/portfolio_valuator.dart';
 
 import '../../../helpers/fixtures.dart';
 

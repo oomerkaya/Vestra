@@ -1,9 +1,9 @@
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/theme/app_colors.dart';
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/features/market/domain/entities/quote.dart';
+import 'package:capira/features/market/presentation/widgets/market_category_tab.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/theme/app_colors.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/features/market/domain/entities/quote.dart';
-import 'package:vestra/features/market/presentation/widgets/market_category_tab.dart';
 
 /// Market prices in three tabs: currencies, metals, stocks. Each tab has
 /// its own "last updated" time and refresh rules (see `RefreshPolicy`).
@@ -60,7 +60,7 @@ class _SegmentedTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = context.vestraColors;
+    final colors = context.capiraColors;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.surfaceMuted,

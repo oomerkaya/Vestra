@@ -1,4 +1,4 @@
-import 'package:vestra/core/database/app_database.dart';
+import 'package:capira/core/database/app_database.dart';
 
 class SettingsLocalDataSource {
   const SettingsLocalDataSource(this._db);

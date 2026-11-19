@@ -1,5 +1,5 @@
+import 'package:capira/core/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
 
 /// Borderless rounded surface used for every grouped block on a screen.
 class AppCard extends StatelessWidget {

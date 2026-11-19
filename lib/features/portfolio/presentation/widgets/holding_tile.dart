@@ -1,15 +1,15 @@
+import 'package:capira/core/l10n/l10n.dart';
+import 'package:capira/core/theme/app_tokens.dart';
+import 'package:capira/core/theme/app_typography.dart';
+import 'package:capira/core/utils/formatters.dart';
+import 'package:capira/core/widgets/change_chip.dart';
+import 'package:capira/core/widgets/instrument_avatar.dart';
+import 'package:capira/core/widgets/trailing_figures.dart';
+import 'package:capira/features/market/presentation/instrument_labels.dart';
+import 'package:capira/features/portfolio/domain/entities/portfolio_summary.dart';
+import 'package:capira/features/portfolio/presentation/portfolio_labels.dart';
+import 'package:capira/features/portfolio/presentation/widgets/portfolio_summary_card.dart';
 import 'package:flutter/material.dart';
-import 'package:vestra/core/l10n/l10n.dart';
-import 'package:vestra/core/theme/app_tokens.dart';
-import 'package:vestra/core/theme/app_typography.dart';
-import 'package:vestra/core/utils/formatters.dart';
-import 'package:vestra/core/widgets/change_chip.dart';
-import 'package:vestra/core/widgets/instrument_avatar.dart';
-import 'package:vestra/core/widgets/trailing_figures.dart';
-import 'package:vestra/features/market/presentation/instrument_labels.dart';
-import 'package:vestra/features/portfolio/domain/entities/portfolio_summary.dart';
-import 'package:vestra/features/portfolio/presentation/portfolio_labels.dart';
-import 'package:vestra/features/portfolio/presentation/widgets/portfolio_summary_card.dart';
 
 /// One holding: avatar, name (and company name for stocks/funds),
 /// quantity · avg cost, value and P/L. A small "KAP" pill marks a stock

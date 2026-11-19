@@ -1,7 +1,7 @@
-import 'package:vestra/core/error/result.dart';
-import 'package:vestra/features/portfolio/domain/entities/holding.dart';
-import 'package:vestra/features/portfolio/domain/repositories/portfolio_repository.dart';
-import 'package:vestra/features/portfolio/domain/services/holding_calculator.dart';
+import 'package:capira/core/error/result.dart';
+import 'package:capira/features/portfolio/domain/entities/holding.dart';
+import 'package:capira/features/portfolio/domain/repositories/portfolio_repository.dart';
+import 'package:capira/features/portfolio/domain/services/holding_calculator.dart';
 
 /// Live list of holdings. Closed positions (quantity 0) are included so the
 /// UI can decide whether to show them.
