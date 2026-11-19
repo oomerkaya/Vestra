@@ -47,12 +47,13 @@ Durum: `[ ]` bekliyor, `[x]` bitti. Kararlar için `CLAUDE.md`'ye bak.
 - [x] Fonlar yalnızca seans içinde
 - [x] KAP bildirimleri: günde tek istek (genel akış), her şey 30 gün saklanır, ekranlar yalnızca kayıttan okur; ayrı sayfa (`docs/oneri-kap-bildirimleri.md`)
 - [x] Arayüz: şirket adı, detayda fiyat/değişim, son güncelleme, anahtar kartı, dağılım Tür/Varlık, KAP etiketi
-- [ ] Kullanıcının belirteceği diğer güncellemeler ve genel kontroller
-- [ ] Ardından Faz 5
+- [x] Kullanıcının belirteceği diğer güncellemeler ve genel kontroller (Bürküt adı sadeleştirme, `/quota`)
+- [x] Ardından Faz 5
 
 ## Faz 5: Cila ve yayın
-- [ ] Flutter yükseltmesi + `material.dart` → `material_ui` geçişi (CI sürümüyle birlikte)
-- [ ] Hata ekranları, boş durumlar, erişilebilirlik
-- [ ] Yedekleme/dışa aktarma (veri yerelde olduğu için)
-- [ ] README: kurulum, kendi API anahtarını alma, veri kaynağı ve gecikme uyarısı, yatırım tavsiyesi değildir notu; "resmi Bürküt uygulaması değildir, bağımsız topluluk istemcisidir" notu (Bürküt şartı); LICENSE dosyası (garanti yok maddesi); repo linkini Bürküt'e (Samet) ilet
-- [ ] GitHub Releases ile APK
+- [ ] (Ertelendi, kullanıcı kararı) Flutter yükseltmesi + `material.dart` → `material_ui` geçişi (CI sürümüyle birlikte)
+- [x] Hata ekranları, boş durumlar, erişilebilirlik (büyük yazı, dokunma alanı, kontrast testleri)
+- [x] Yedekleme: JSON dışa/içe aktarma (share_plus, file_picker)
+- [x] README (Türkçe) ve MIT LICENSE; "resmi Bürküt uygulaması değildir" notu README başında
+- [ ] Repo linkini Bürküt'e (Samet) ilet (e-posta taslağı hazır; gönderim kullanıcıda)
+- [ ] GitHub Releases ile APK (sonra)

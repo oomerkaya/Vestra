@@ -19,6 +19,7 @@ Flutter ile yazılmış **kişisel portföy takip uygulaması**: **Vestra** (`co
 | Navigasyon | go_router |
 | HTTP | dio |
 | Gizli veri | flutter_secure_storage (API anahtarı) |
+| Bağlantı / paylaşım / dosya | url_launcher (KAP linkleri), share_plus (yedek paylaşımı), file_picker (yedek seçme) |
 | Lint | very_good_analysis |
 | Test | flutter_test + mocktail |
 | Para tipi | decimal |
@@ -60,6 +61,9 @@ Sade fintech tarzı, Inter yazı tipi. Ayrıntı: `docs/tasarim-sistemi.md`.
 - Bildirim için `ScaffoldMessenger.of(context).showMessage(...)` kullan (sıraya girmez); doğrudan `showSnackBar` çağırma.
 - Arayüzde **Bürküt adı yalnızca Ayarlar → API anahtarı bölümünde** geçer (anahtarın nereden alınacağı ve "resmi Bürküt uygulaması değildir" notu). Diğer yerlerde kaynak adı yazılmaz; gecikme için yalnızca "Veriler gecikmelidir". Metinler kısa ve öz.
 - Kullanıcıdan sayı alırken `parseDecimalInput` (Türkçe `12,5` / `1.250,75`) ve `formatDecimalInput` kullan.
+- Liste satırlarının sağındaki tutar + değişim çipi `TrailingFigures` içinde olur (büyük yazıda taşmasın). `test/accessibility_test.dart` (1,8× yazı, dokunma alanı, etiket, WCAG kontrast) her zaman geçmeli; ikincil metin rengi `#636A77`'den açık olamaz.
+- Veritabanı okunamazsa ekran `ErrorState` gösterir; ağ hatası bu ekranı açmaz (son fiyatlar kalır).
+- Yedek dosyası (`BackupCodec`, biçim 1) yalnızca varlık ve işlemleri içerir; API anahtarı ve fiyatlar asla girmez. Biçim değişirse `format` artırılır ve eski biçim okunmaya devam eder.
 - Widget testlerinde Drift akışları kapanırken zamanlayıcı bırakır; testin sonunda uygulamayı kaldır (`pumpWidget(SizedBox())` + `pump(1 sn)`).
 
 ## Veri kaynakları

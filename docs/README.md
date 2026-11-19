@@ -10,11 +10,11 @@ Her faz bitiminde o fazda **ne yapıldığı, neden yapıldığı ve nasıl doğ
 | Ara - Tasarım sistemi | [tasarim-sistemi.md](tasarim-sistemi.md) | Bitti |
 | 3 - Piyasa verisi | [faz-3-piyasa-verisi.md](faz-3-piyasa-verisi.md) | Bitti (canlı doğrulandı) |
 | 4 - Özellikler | [faz-4-ozellikler.md](faz-4-ozellikler.md) | Bitti |
-| 5 - Cila ve yayın | — | Bekliyor |
+| 5 - Cila ve yayın | [faz-5-cila.md](faz-5-cila.md) | Bitti (APK yayını sonra) |
 
 ## Taslak öneriler
 
-- [oneri-kap-bildirimleri.md](oneri-kap-bildirimleri.md): portföydeki hisseler için KAP bildirimleri (karar bekliyor)
+- [oneri-kap-bildirimleri.md](oneri-kap-bildirimleri.md): portföydeki hisseler için KAP bildirimleri (karar verildi, uygulandı)
 
 ## Doküman şablonu
 
